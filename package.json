@@ -1,0 +1,111 @@
+{
+    "name": "@rentnerkev/inputs",
+    "version": "1.0.0",
+    "description": "Controlled React input components with validation, icons, length counters, and Tailwind design hooks.",
+    "author": "RentnerKev",
+    "license": "MIT",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "files": [
+        "dist"
+    ],
+    "sideEffects": false,
+    "scripts": {
+        "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\" && tsc",
+        "typecheck": "tsc --noEmit",
+        "prepare": "bun run build",
+        "pack:check": "bun pm pack --dry-run",
+        "playground:dev": "bun --cwd playground dev",
+        "playground:build": "bun --cwd playground build",
+        "lint": "oxlint .",
+        "lint:fix": "oxlint --fix .",
+        "format": "oxfmt .",
+        "format:check": "oxfmt --check .",
+        "verify": "bun run typecheck && bun run lint && bun run format:check && bun run build && bun run pack:check"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/RentnerKev/RentnerInputs.git"
+    },
+    "homepage": "https://github.com/RentnerKev/RentnerInputs#readme",
+    "bugs": {
+        "url": "https://github.com/RentnerKev/RentnerInputs/issues"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org"
+    },
+    "dependencies": {
+        "lucide-react": "^1.33.0",
+        "@radix-ui/react-tooltip": "^1.2.16"
+    },
+    "peerDependencies": {
+        "react": "^19.2.8",
+        "react-dom": "^19.2.8"
+    },
+    "devDependencies": {
+        "@types/react": "^19.2.18",
+        "@types/react-dom": "^19.2.4",
+        "react": "^19.3.0",
+        "react-dom": "^19.3.0",
+        "@tailwindcss/vite": "^4.3.3",
+        "@vitejs/plugin-react": "^6.1.0",
+        "tailwindcss": "^4.3.3",
+        "typescript": "^7.0.2",
+        "vite": "^8.2.2",
+        "oxfmt": "^0.66.0",
+        "oxlint": "^1.79.0"
+    },
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./input": {
+            "import": "./dist/Components/CustomInput.js",
+            "types": "./dist/Components/CustomInput.d.ts"
+        },
+        "./text-input": {
+            "import": "./dist/Components/Inputs/TextInput.js",
+            "types": "./dist/Components/Inputs/TextInput.d.ts"
+        },
+        "./number-input": {
+            "import": "./dist/Components/Inputs/NumberInput.js",
+            "types": "./dist/Components/Inputs/NumberInput.d.ts"
+        },
+        "./phone-input": {
+            "import": "./dist/Components/Inputs/PhoneInput.js",
+            "types": "./dist/Components/Inputs/PhoneInput.d.ts"
+        },
+        "./email-input": {
+            "import": "./dist/Components/Inputs/EmailInput.js",
+            "types": "./dist/Components/Inputs/EmailInput.d.ts"
+        },
+        "./money-input": {
+            "import": "./dist/Components/Inputs/MoneyInput.js",
+            "types": "./dist/Components/Inputs/MoneyInput.d.ts"
+        },
+        "./password-input": {
+            "import": "./dist/Components/Inputs/PasswordInput.js",
+            "types": "./dist/Components/Inputs/PasswordInput.d.ts"
+        },
+        "./quantity-input": {
+            "import": "./dist/Components/Inputs/QuantityInput.js",
+            "types": "./dist/Components/Inputs/QuantityInput.d.ts"
+        },
+        "./time-input": {
+            "import": "./dist/Components/Inputs/TimeInput.js",
+            "types": "./dist/Components/Inputs/TimeInput.d.ts"
+        },
+        "./textarea": {
+            "import": "./dist/Components/Inputs/Textarea.js",
+            "types": "./dist/Components/Inputs/Textarea.d.ts"
+        },
+        "./types": {
+            "import": "./dist/types.js",
+            "types": "./dist/types.d.ts"
+        }
+    },
+    "packageManager": "bun@1.4.2"
+}
