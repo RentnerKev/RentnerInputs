@@ -1,6 +1,7 @@
 import type {
     ChangeEventHandler,
     InputHTMLAttributes,
+    Ref,
     ReactNode,
     TextareaHTMLAttributes,
 } from 'react'
@@ -32,11 +33,14 @@ export interface CustomDesign {
 
 export interface InputVisualProps {
     label?: ReactNode
+    description?: ReactNode
+    error?: string | null
     icon?: ReactNode
     customDesign?: CustomDesign
     showLength?: boolean
     locale?: InputLocale
     messages?: Partial<InputMessages>
+    triggerRef?: Ref<HTMLInputElement | HTMLTextAreaElement>
 }
 
 type ReplacedInputAttributes = 'value' | 'defaultValue' | 'onChange' | 'type'

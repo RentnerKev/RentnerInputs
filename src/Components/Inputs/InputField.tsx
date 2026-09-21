@@ -3,6 +3,7 @@ import { CustomTooltip } from '../../Internal/Tooltip.js'
 import { useId, type InputHTMLAttributes, type ReactNode } from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
 import { resolveInputMessages } from '../../Config/messages.js'
+import { mergeAriaDescribedBy } from '../../Utils/fieldA11y.utils.js'
 import type {
     BaseInputProps,
     PasswordStrength,
@@ -33,8 +34,12 @@ export function InputField({
     onBlur: _onBlur,
     onInvalid: _onInvalid,
     label,
+    required: nativeRequired,
     icon,
     customDesign,
+    description,
+    error,
+    triggerRef: _triggerRef,
     showLength,
     maxLength,
     minLength,
@@ -42,12 +47,35 @@ export function InputField({
     messages,
     className = 'w-full py-3 rounded-xl',
     disabled,
+    'aria-describedby': ariaDescribedBy,
+    'aria-errormessage': ariaErrorMessage,
+    'aria-invalid': ariaInvalid,
+    'aria-labelledby': ariaLabelledBy,
+    'aria-required': ariaRequired,
     ...nativeProps
 }: InputFieldProps) {
-    void [_value, _onChange, _onFocus, _onBlur, _onInvalid]
+    void [_value, _onChange, _onFocus, _onBlur, _onInvalid, _triggerRef, error]
     const resolvedMessages = resolveInputMessages(locale, messages)
     const generatedId = useId()
     const fieldId = nativeProps.id ?? generatedId
+    const labelId = `${fieldId}-label`
+    const descriptionId = `${fieldId}-description`
+    const errorId = `${fieldId}-error`
+    const hasDescription =
+        description !== undefined &&
+        description !== null &&
+        description !== false
+    const hasLabel = label !== undefined && label !== null && label !== false
+    const hasVisibleError = logic.state.hasError && Boolean(logic.state.error)
+    const describedBy = mergeAriaDescribedBy(
+        ariaDescribedBy,
+        hasDescription ? descriptionId : undefined,
+        hasVisibleError ? errorId : undefined,
+    )
+    const labelledBy = mergeAriaDescribedBy(
+        ariaLabelledBy,
+        hasLabel ? labelId : undefined,
+    )
     const design = { ...DESIGN_CONFIG, ...customDesign }
     const hasLeftIcon = Boolean(icon || logic.state.hasError)
     const fieldClassName = `peer block ${hasLeftIcon ? 'pl-11' : 'pl-4'} focus:outline-none transition-all ${className} ${design.bg} border ${design.text} ${design.placeholder} ${
@@ -66,8 +94,9 @@ export function InputField({
 
     return (
         <div className="group w-full">
-            {label && (
+            {hasLabel && (
                 <label
+                    id={labelId}
                     htmlFor={fieldId}
                     className={`mb-2 block text-sm font-medium ${design.labelText}`}
                 >
@@ -110,7 +139,22 @@ export function InputField({
                     maxLength={maxLength}
                     minLength={minLength}
                     disabled={disabled}
-                    aria-invalid={logic.state.hasError || undefined}
+                    required={error === undefined ? nativeRequired : undefined}
+                    aria-describedby={describedBy}
+                    aria-errormessage={
+                        hasVisibleError ? errorId : ariaErrorMessage
+                    }
+                    aria-invalid={
+                        logic.state.hasError || ariaInvalid || undefined
+                    }
+                    aria-labelledby={labelledBy}
+                    aria-required={
+                        disabled
+                            ? undefined
+                            : error === undefined
+                              ? nativeRequired || ariaRequired || undefined
+                              : ariaRequired
+                    }
                     style={{
                         ...nativeProps.style,
                         paddingRight: `${logic.state.dynamicPaddingRight}px`,
@@ -132,6 +176,21 @@ export function InputField({
                     </div>
                 )}
             </div>
+
+            {hasDescription && (
+                <p
+                    id={descriptionId}
+                    className="mt-1 text-xs text-secondary-text"
+                >
+                    {description}
+                </p>
+            )}
+
+            {hasVisibleError && (
+                <p id={errorId} className={`mt-1 text-xs ${design.errorText}`}>
+                    {logic.state.error}
+                </p>
+            )}
 
             {showPasswordStrength && passwordStrength && (
                 <div className="mt-2 space-y-1.5">

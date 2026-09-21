@@ -1,8 +1,12 @@
 import { AlertCircle, ChevronDown, Clock } from 'lucide-react'
 import { CustomTooltip } from '../../Internal/Tooltip.js'
-import { forwardRef, useId } from 'react'
+import { forwardRef, useId, type AriaAttributes, type Ref } from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
 import { resolveInputMessages } from '../../Config/messages.js'
+import {
+    mergeAriaDescribedBy,
+    partitionAriaProps,
+} from '../../Utils/fieldA11y.utils.js'
 import useTimeInputLogic from '../../Hooks/Inputs/useTimeInput.logic.js'
 import type { TimeInputProps } from '../../Types/TimeInput.types.js'
 
@@ -12,7 +16,11 @@ interface TimeDropdownProps {
     placeholder: string
     options: string[]
     isOpen: boolean
+    id?: string
     disabled?: boolean
+    readOnly?: boolean
+    buttonRef?: Ref<HTMLButtonElement>
+    fieldAria?: AriaAttributes
     onToggle: () => void
     onSelect: (value: string) => void
 }
@@ -23,16 +31,30 @@ function TimeDropdown({
     placeholder,
     options,
     isOpen,
+    id,
     disabled,
+    readOnly,
+    buttonRef,
+    fieldAria,
     onToggle,
     onSelect,
 }: TimeDropdownProps) {
     return (
         <div className="relative flex-1">
             <button
+                ref={buttonRef}
+                id={id}
                 type="button"
+                {...fieldAria}
                 aria-haspopup="listbox"
                 aria-expanded={isOpen}
+                aria-label={
+                    fieldAria?.['aria-label'] ??
+                    (fieldAria?.['aria-labelledby'] ? undefined : label)
+                }
+                aria-readonly={
+                    fieldAria?.['aria-readonly'] ?? (readOnly || undefined)
+                }
                 disabled={disabled}
                 onClick={onToggle}
                 className="flex h-11 w-full cursor-pointer items-center justify-between rounded-lg border border-border-dark bg-background-dark/60 px-3 text-left text-sm font-semibold text-white transition-colors hover:border-secondary-text/70 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
@@ -58,6 +80,7 @@ function TimeDropdown({
                                 type="button"
                                 role="option"
                                 aria-selected={option === value}
+                                disabled={disabled || readOnly}
                                 onClick={() => onSelect(option)}
                                 className={`flex w-full cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none ${
                                     option === value
@@ -82,34 +105,87 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             label,
             icon,
             customDesign,
+            description,
+            error,
             locale,
             messages,
             className = 'w-full py-3 rounded-xl',
             disabled,
+            triggerRef,
+            required: nativeRequired,
             showLength: _showLength,
             minuteStep,
+            'aria-describedby': ariaDescribedBy,
+            'aria-errormessage': ariaErrorMessage,
+            'aria-invalid': ariaInvalid,
+            'aria-label': ariaLabel,
+            'aria-labelledby': ariaLabelledBy,
+            'aria-required': ariaRequired,
             ...props
         },
         ref,
     ) {
         void [_type, _showLength]
+        const { ariaProps: additionalAria, otherProps: inputProps } =
+            partitionAriaProps(props)
         const resolvedMessages = resolveInputMessages(locale, messages)
         const logic = useTimeInputLogic(
             {
-                ...props,
+                ...inputProps,
                 icon,
                 customDesign,
+                description,
+                error,
                 locale,
                 messages,
                 className,
                 disabled,
+                triggerRef,
+                required: nativeRequired,
                 minuteStep,
             },
             ref,
         )
         const generatedId = useId()
-        const fieldId = props.id ?? generatedId
+        const fieldId = inputProps.id ?? generatedId
         const labelId = `${fieldId}-label`
+        const descriptionId = `${fieldId}-description`
+        const errorId = `${fieldId}-error`
+        const hasDescription =
+            description !== undefined &&
+            description !== null &&
+            description !== false
+        const hasLabel =
+            label !== undefined && label !== null && label !== false
+        const hasVisibleError =
+            logic.state.hasError && Boolean(logic.state.error)
+        const describedBy = mergeAriaDescribedBy(
+            ariaDescribedBy,
+            hasDescription ? descriptionId : undefined,
+            hasVisibleError ? errorId : undefined,
+        )
+        const labelledBy = mergeAriaDescribedBy(
+            ariaLabelledBy,
+            hasLabel ? labelId : undefined,
+        )
+        const readOnly = inputProps.readOnly
+        const fieldInvalid = logic.state.hasError || ariaInvalid || undefined
+        const fieldRequired = disabled
+            ? undefined
+            : error === undefined
+              ? nativeRequired || ariaRequired || undefined
+              : ariaRequired
+        const fieldAria = {
+            ...additionalAria,
+            'aria-label': ariaLabel,
+            'aria-labelledby': labelledBy,
+            'aria-describedby': describedBy,
+            'aria-errormessage': hasVisibleError ? errorId : ariaErrorMessage,
+            'aria-invalid': fieldInvalid,
+            'aria-required': fieldRequired,
+            'aria-readonly': readOnly || undefined,
+            'aria-disabled': disabled || undefined,
+        } satisfies AriaAttributes
         const design = { ...DESIGN_CONFIG, ...customDesign }
         const hasLeftIcon = Boolean(icon || logic.state.hasError)
         const fieldClassName = `peer flex min-h-14 items-center gap-3 ${hasLeftIcon ? 'pl-11' : 'pl-4'} pr-4 transition-all ${className} ${design.bg} border ${design.text} ${
@@ -120,7 +196,7 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
 
         return (
             <div className="group w-full">
-                {label && (
+                {hasLabel && (
                     <label
                         id={labelId}
                         htmlFor={fieldId}
@@ -153,8 +229,8 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
                     )}
 
                     <input
-                        {...props}
-                        id={fieldId}
+                        {...inputProps}
+                        id={`${fieldId}-input`}
                         ref={logic.ref.field}
                         type="time"
                         value={logic.state.safeValue}
@@ -163,23 +239,30 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
                         onBlur={logic.handler.handleBlur}
                         onInvalid={logic.handler.handleInvalid}
                         disabled={disabled}
+                        required={
+                            error === undefined ? nativeRequired : undefined
+                        }
                         aria-hidden="true"
                         tabIndex={-1}
                         className="pointer-events-none absolute h-px w-px opacity-0"
                     />
 
-                    <div
-                        className={fieldClassName}
-                        aria-invalid={logic.state.hasError || undefined}
-                        aria-labelledby={label ? labelId : undefined}
-                    >
+                    <div className={fieldClassName} role="group" {...fieldAria}>
                         <TimeDropdown
+                            id={fieldId}
+                            buttonRef={logic.ref.trigger}
                             label={resolvedMessages.hourSelect}
                             value={logic.state.selectedHour}
                             placeholder={resolvedMessages.hourPlaceholder}
                             options={logic.state.hours}
-                            isOpen={logic.state.isHourDropdownOpen}
+                            isOpen={
+                                logic.state.isHourDropdownOpen &&
+                                !disabled &&
+                                !readOnly
+                            }
                             disabled={disabled}
+                            readOnly={readOnly}
+                            fieldAria={fieldAria}
                             onToggle={logic.handler.toggleHourDropdown}
                             onSelect={logic.handler.selectHour}
                         />
@@ -191,13 +274,36 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
                             value={logic.state.selectedMinute}
                             placeholder={resolvedMessages.minutePlaceholder}
                             options={logic.state.minutes}
-                            isOpen={logic.state.isMinuteDropdownOpen}
+                            isOpen={
+                                logic.state.isMinuteDropdownOpen &&
+                                !disabled &&
+                                !readOnly
+                            }
                             disabled={disabled}
+                            readOnly={readOnly}
                             onToggle={logic.handler.toggleMinuteDropdown}
                             onSelect={logic.handler.selectMinute}
                         />
                     </div>
                 </div>
+
+                {hasDescription && (
+                    <p
+                        id={descriptionId}
+                        className="mt-1 text-xs text-secondary-text"
+                    >
+                        {description}
+                    </p>
+                )}
+
+                {hasVisibleError && (
+                    <p
+                        id={errorId}
+                        className={`mt-1 text-xs ${design.errorText}`}
+                    >
+                        {logic.state.error}
+                    </p>
+                )}
             </div>
         )
     },

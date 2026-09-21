@@ -115,19 +115,32 @@ Interne Handler und übergebene Handler werden kombiniert. Ein eigenes `onFocus`
 
 ## Gemeinsame Props
 
-| Prop           | Typ                      | Standard                 | Beschreibung                                         |
-| -------------- | ------------------------ | ------------------------ | ---------------------------------------------------- |
-| `value`        | `string`                 | erforderlich             | Kontrollierter Feldwert.                             |
-| `onChange`     | `ChangeEventHandler`     | erforderlich             | Wird nach der internen Eingabeprüfung aufgerufen.    |
-| `label`        | `ReactNode`              | –                        | Zeigt ein verknüpftes Label über dem Feld.           |
-| `icon`         | `ReactNode`              | –                        | Icon links im Feld.                                  |
-| `showLength`   | `boolean`                | `false`                  | Zeigt die aktuelle Zeichenanzahl.                    |
-| `customDesign` | `CustomDesign`           | –                        | Überschreibt einzelne Designklassen.                 |
-| `locale`       | `InputLocale`            | `'de'`                   | Sprache der Texte und optionaler Intl-Locale-String. |
-| `messages`     | `Partial<InputMessages>` | –                        | Überschreibt einzelne Texte der gewählten Sprache.   |
-| `className`    | `string`                 | `w-full py-3 rounded-xl` | Klassen des eigentlichen Eingabefelds.               |
+| Prop           | Typ                                            | Standard                 | Beschreibung                                                     |
+| -------------- | ---------------------------------------------- | ------------------------ | ---------------------------------------------------------------- |
+| `value`        | `string`                                       | erforderlich             | Kontrollierter Feldwert.                                         |
+| `onChange`     | `ChangeEventHandler`                           | erforderlich             | Wird nach der internen Eingabeprüfung aufgerufen.                |
+| `label`        | `ReactNode`                                    | –                        | Zeigt ein verknüpftes Label über dem Feld.                       |
+| `description`  | `ReactNode`                                    | –                        | Hilfetext mit stabiler ID und ARIA-Verknüpfung.                  |
+| `error`        | `string \| null`                               | –                        | Externer Fehler; überschreibt interne Fehler, `null` löscht sie. |
+| `icon`         | `ReactNode`                                    | –                        | Icon links im Feld.                                              |
+| `triggerRef`   | `Ref<HTMLInputElement \| HTMLTextAreaElement>` | –                        | Alias-Ref zusätzlich zum bestehenden `ref`.                      |
+| `showLength`   | `boolean`                                      | `false`                  | Zeigt die aktuelle Zeichenanzahl.                                |
+| `customDesign` | `CustomDesign`                                 | –                        | Überschreibt einzelne Designklassen.                             |
+| `locale`       | `InputLocale`                                  | `'de'`                   | Sprache der Texte und optionaler Intl-Locale-String.             |
+| `messages`     | `Partial<InputMessages>`                       | –                        | Überschreibt einzelne Texte der gewählten Sprache.               |
+| `className`    | `string`                                       | `w-full py-3 rounded-xl` | Klassen des eigentlichen Eingabefelds.                           |
 
 Zeichenlimits werden über die nativen Props `maxLength` und `minLength` gesteuert. Mit `showLength` lässt sich zusätzlich der Zeichenzähler einblenden.
+
+`aria-describedby` wird aus übergebenen Consumer-IDs, der Description-ID und
+der ID eines sichtbaren Fehlers zusammengeführt. Bei einem ungültigen Submit
+wird das sichtbare Feld fokussiert. `disabled` nimmt das Feld aus der internen
+Validierung; `readOnly` verhindert versehentliche Änderungen und interne
+Constraint-Validierung, lässt aber den Wert sowie die übrigen nativen Attribute
+und ARIA-Angaben bestehen.
+
+Beim `TimeInput` zeigt `triggerRef` auf den sichtbaren Stunden-Trigger; bei
+`CustomInput` ist diese Button-Ref für `type="time"` ebenfalls verfügbar.
 
 ## Typabhängige Props
 

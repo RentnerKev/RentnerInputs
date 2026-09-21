@@ -2,6 +2,7 @@ import { AlertCircle } from 'lucide-react'
 import { CustomTooltip } from '../../Internal/Tooltip.js'
 import { forwardRef, useId } from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
+import { mergeAriaDescribedBy } from '../../Utils/fieldA11y.utils.js'
 import useTextareaLogic from '../../Hooks/Inputs/useTextarea.logic.js'
 import type { TextareaProps } from '../../Types/Textarea.types.js'
 
@@ -15,6 +16,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             onBlur: _onBlur,
             onInvalid: _onInvalid,
             label,
+            description,
+            error,
             icon,
             customDesign,
             locale,
@@ -24,6 +27,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             minLength,
             className = 'w-full py-3 rounded-xl',
             disabled,
+            triggerRef,
+            required: nativeRequired,
+            'aria-describedby': ariaDescribedBy,
+            'aria-errormessage': ariaErrorMessage,
+            'aria-invalid': ariaInvalid,
+            'aria-labelledby': ariaLabelledBy,
+            'aria-required': ariaRequired,
             rows = 4,
             ...nativeProps
         },
@@ -38,6 +48,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             onBlur: _onBlur,
             onInvalid: _onInvalid,
             label,
+            description,
+            error,
             icon,
             customDesign,
             locale,
@@ -47,11 +59,32 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             minLength,
             className,
             disabled,
+            triggerRef,
+            required: nativeRequired,
             rows,
         } satisfies TextareaProps
         const logic = useTextareaLogic(props, ref)
         const generatedId = useId()
         const fieldId = nativeProps.id ?? generatedId
+        const descriptionId = `${fieldId}-description`
+        const errorId = `${fieldId}-error`
+        const hasDescription =
+            description !== undefined &&
+            description !== null &&
+            description !== false
+        const hasLabel =
+            label !== undefined && label !== null && label !== false
+        const hasVisibleError =
+            logic.state.hasError && Boolean(logic.state.error)
+        const describedBy = mergeAriaDescribedBy(
+            ariaDescribedBy,
+            hasDescription ? descriptionId : undefined,
+            hasVisibleError ? errorId : undefined,
+        )
+        const labelledBy = mergeAriaDescribedBy(
+            ariaLabelledBy,
+            hasLabel ? `${fieldId}-label` : undefined,
+        )
         const design = { ...DESIGN_CONFIG, ...customDesign }
         const hasLeftIcon = Boolean(icon || logic.state.hasError)
         const fieldClassName = `peer block min-h-28 resize-y ${hasLeftIcon ? 'pl-11' : 'pl-4'} focus:outline-none transition-all ${className} ${design.bg} border ${design.text} ${design.placeholder} ${
@@ -62,8 +95,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
         return (
             <div className="group w-full">
-                {label && (
+                {hasLabel && (
                     <label
+                        id={`${fieldId}-label`}
                         htmlFor={fieldId}
                         className={`mb-2 block text-sm font-medium ${design.labelText}`}
                     >
@@ -106,7 +140,24 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                         maxLength={maxLength}
                         minLength={minLength}
                         disabled={disabled}
-                        aria-invalid={logic.state.hasError || undefined}
+                        required={
+                            error === undefined ? nativeRequired : undefined
+                        }
+                        aria-describedby={describedBy}
+                        aria-errormessage={
+                            hasVisibleError ? errorId : ariaErrorMessage
+                        }
+                        aria-invalid={
+                            logic.state.hasError || ariaInvalid || undefined
+                        }
+                        aria-labelledby={labelledBy}
+                        aria-required={
+                            disabled
+                                ? undefined
+                                : error === undefined
+                                  ? nativeRequired || ariaRequired || undefined
+                                  : ariaRequired
+                        }
                         style={{
                             ...nativeProps.style,
                             paddingRight: `${logic.state.dynamicPaddingRight}px`,
@@ -126,6 +177,24 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                         </div>
                     )}
                 </div>
+
+                {hasDescription && (
+                    <p
+                        id={descriptionId}
+                        className="mt-1 text-xs text-secondary-text"
+                    >
+                        {description}
+                    </p>
+                )}
+
+                {hasVisibleError && (
+                    <p
+                        id={errorId}
+                        className={`mt-1 text-xs ${design.errorText}`}
+                    >
+                        {logic.state.error}
+                    </p>
+                )}
             </div>
         )
     },

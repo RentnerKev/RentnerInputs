@@ -1,4 +1,4 @@
-import type { ChangeEventHandler, InputHTMLAttributes } from 'react'
+import type { ChangeEventHandler, InputHTMLAttributes, Ref } from 'react'
 import type {
     InputVisualProps,
     NumericValueProps,
@@ -21,11 +21,12 @@ type ReplacedCustomAttributes = 'value' | 'defaultValue' | 'onChange' | 'type'
 export interface CustomInputProps
     extends
         Omit<InputHTMLAttributes<CustomInputElement>, ReplacedCustomAttributes>,
-        InputVisualProps,
+        Omit<InputVisualProps, 'triggerRef'>,
         NumericValueProps {
     value: string
     onChange: ChangeEventHandler<CustomInputElement>
     type?: CustomInputType
+    triggerRef?: InputVisualProps['triggerRef'] | Ref<HTMLButtonElement>
     rows?: number
     wrap?: 'hard' | 'soft' | 'off'
     currency?: string

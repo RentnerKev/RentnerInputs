@@ -24,6 +24,8 @@ export interface UseInputFieldLogicOptions<Element extends InputElement> {
     onBlur?: FocusEventHandler<Element>
     onInvalid?: FormEventHandler<Element>
     forwardedRef?: Ref<Element>
+    triggerRef?: Ref<InputElement>
+    focusTarget?: () => HTMLElement | null
     required?: boolean
     minLength?: number
     maxLength?: number
@@ -33,6 +35,9 @@ export interface UseInputFieldLogicOptions<Element extends InputElement> {
     selectZeroOnFocus?: boolean
     locale?: InputLocale
     messages?: Partial<InputMessages>
+    error?: string | null
+    disabled?: boolean
+    readOnly?: boolean
 }
 
 function assignRef<Element>(
@@ -50,6 +55,8 @@ export function useInputFieldLogic<Element extends InputElement>({
     onBlur,
     onInvalid,
     forwardedRef,
+    triggerRef,
+    focusTarget,
     required,
     minLength,
     maxLength,
@@ -59,6 +66,9 @@ export function useInputFieldLogic<Element extends InputElement>({
     selectZeroOnFocus,
     locale,
     messages,
+    error: externalError,
+    disabled = false,
+    readOnly = false,
 }: UseInputFieldLogicOptions<Element>) {
     const safeValue = value === null || value === undefined ? '' : String(value)
     const resolvedMessages = resolveInputMessages(locale, messages)
@@ -70,6 +80,7 @@ export function useInputFieldLogic<Element extends InputElement>({
     const valueChangedByInputRef = useRef(false)
 
     function validateValue(nextValue: string) {
+        if (disabled || readOnly) return null
         if (required && !nextValue) return resolvedMessages.required
         if (minLength && nextValue && nextValue.length < minLength) {
             return resolvedMessages.minLength(minLength)
@@ -78,16 +89,22 @@ export function useInputFieldLogic<Element extends InputElement>({
     }
 
     const validationError = validateValue(safeValue)
-    const currentError = validationError ?? nativeError
-    const hasError = isTouched && currentError !== null
+    const internalError =
+        disabled || readOnly ? null : (validationError ?? nativeError)
+    const currentError =
+        externalError !== undefined ? externalError : internalError
+    const hasError =
+        Boolean(currentError) && (externalError !== undefined || isTouched)
     const counterText = maxLength
         ? `${safeValue.length} / ${maxLength}`
         : `${safeValue.length}`
     const dynamicPaddingRight = showLength ? counterText.length * 8 + 24 : 16
 
     useEffect(() => {
-        inputRef.current?.setCustomValidity(validationError ?? '')
-    }, [validationError])
+        inputRef.current?.setCustomValidity(
+            disabled || readOnly ? '' : (currentError ?? ''),
+        )
+    }, [currentError, disabled, readOnly])
 
     useEffect(() => {
         const input = inputRef.current
@@ -118,6 +135,14 @@ export function useInputFieldLogic<Element extends InputElement>({
     function setFieldRef(element: Element | null) {
         inputRef.current = element
         assignRef(forwardedRef, element)
+        if (forwardedRef !== triggerRef) {
+            assignRef(triggerRef, element)
+        }
+    }
+
+    function focusField() {
+        const focusElement = focusTarget?.() ?? inputRef.current
+        focusElement?.focus()
     }
 
     function handleFocus(event: FocusEvent<Element>) {
@@ -138,6 +163,7 @@ export function useInputFieldLogic<Element extends InputElement>({
     }
 
     function handleInputChange(event: ChangeEvent<Element>) {
+        if (disabled || readOnly) return
         const nextValue = event.currentTarget.value
         if (maxLength && nextValue.length > maxLength) return
         if (acceptsValue && !acceptsValue(nextValue)) return
@@ -149,12 +175,14 @@ export function useInputFieldLogic<Element extends InputElement>({
     }
 
     function handleInvalid(event: InvalidEvent<Element>) {
+        if (disabled || readOnly) return
         event.preventDefault()
         setIsTouched(true)
         setNativeError(
             event.currentTarget.validationMessage ||
                 resolvedMessages.invalidInput,
         )
+        focusField()
         onInvalid?.(event)
     }
 

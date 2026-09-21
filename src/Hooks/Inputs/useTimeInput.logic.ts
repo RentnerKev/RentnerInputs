@@ -28,10 +28,13 @@ export default function useTimeInputLogic(
     const [isHourDropdownOpen, setIsHourDropdownOpen] = useState(false)
     const [isMinuteDropdownOpen, setIsMinuteDropdownOpen] = useState(false)
     const hiddenInputRef = useRef<HTMLInputElement | null>(null)
+    const triggerRef = useRef<HTMLButtonElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
+    const { triggerRef: forwardedTriggerRef, ...fieldProps } = props
     const field = useInputFieldLogic<HTMLInputElement>({
-        ...props,
+        ...fieldProps,
         forwardedRef: setHiddenInputRef,
+        focusTarget: () => triggerRef.current,
     })
     const safeMinuteStep =
         props.minuteStep && props.minuteStep > 0 ? props.minuteStep : 1
@@ -54,7 +57,13 @@ export default function useTimeInputLogic(
         assignRef(forwardedRef, element)
     }
 
+    function setTriggerRef(element: HTMLButtonElement | null) {
+        triggerRef.current = element
+        assignRef(forwardedTriggerRef, element)
+    }
+
     function dispatchTimeChange(nextValue: string) {
+        if (props.disabled || props.readOnly) return
         const input = hiddenInputRef.current
         if (!input) return
 
@@ -81,13 +90,13 @@ export default function useTimeInputLogic(
     }
 
     function toggleHourDropdown() {
-        if (props.disabled) return
+        if (props.disabled || props.readOnly) return
         setIsHourDropdownOpen((currentValue) => !currentValue)
         setIsMinuteDropdownOpen(false)
     }
 
     function toggleMinuteDropdown() {
-        if (props.disabled) return
+        if (props.disabled || props.readOnly) return
         setIsMinuteDropdownOpen((currentValue) => !currentValue)
         setIsHourDropdownOpen(false)
     }
@@ -107,7 +116,7 @@ export default function useTimeInputLogic(
 
     return {
         ...field,
-        ref: { ...field.ref, wrapper: wrapperRef },
+        ref: { ...field.ref, trigger: setTriggerRef, wrapper: wrapperRef },
         state: {
             ...field.state,
             hours,
