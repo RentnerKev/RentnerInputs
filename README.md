@@ -115,27 +115,29 @@ Interne Handler und übergebene Handler werden kombiniert. Ein eigenes `onFocus`
 
 ## Gemeinsame Props
 
-| Prop           | Typ                  | Standard                 | Beschreibung                                      |
-| -------------- | -------------------- | ------------------------ | ------------------------------------------------- |
-| `value`        | `string`             | erforderlich             | Kontrollierter Feldwert.                          |
-| `onChange`     | `ChangeEventHandler` | erforderlich             | Wird nach der internen Eingabeprüfung aufgerufen. |
-| `label`        | `ReactNode`          | –                        | Zeigt ein verknüpftes Label über dem Feld.        |
-| `icon`         | `ReactNode`          | –                        | Icon links im Feld.                               |
-| `showLength`   | `boolean`            | `false`                  | Zeigt die aktuelle Zeichenanzahl.                 |
-| `customDesign` | `CustomDesign`       | –                        | Überschreibt einzelne Designklassen.              |
-| `className`    | `string`             | `w-full py-3 rounded-xl` | Klassen des eigentlichen Eingabefelds.            |
+| Prop           | Typ                      | Standard                 | Beschreibung                                         |
+| -------------- | ------------------------ | ------------------------ | ---------------------------------------------------- |
+| `value`        | `string`                 | erforderlich             | Kontrollierter Feldwert.                             |
+| `onChange`     | `ChangeEventHandler`     | erforderlich             | Wird nach der internen Eingabeprüfung aufgerufen.    |
+| `label`        | `ReactNode`              | –                        | Zeigt ein verknüpftes Label über dem Feld.           |
+| `icon`         | `ReactNode`              | –                        | Icon links im Feld.                                  |
+| `showLength`   | `boolean`                | `false`                  | Zeigt die aktuelle Zeichenanzahl.                    |
+| `customDesign` | `CustomDesign`           | –                        | Überschreibt einzelne Designklassen.                 |
+| `locale`       | `InputLocale`            | `'de'`                   | Sprache der Texte und optionaler Intl-Locale-String. |
+| `messages`     | `Partial<InputMessages>` | –                        | Überschreibt einzelne Texte der gewählten Sprache.   |
+| `className`    | `string`                 | `w-full py-3 rounded-xl` | Klassen des eigentlichen Eingabefelds.               |
 
 Zeichenlimits werden über die nativen Props `maxLength` und `minLength` gesteuert. Mit `showLength` lässt sich zusätzlich der Zeichenzähler einblenden.
 
 ## Typabhängige Props
 
-| Komponente      | Zusätzliche Props                                                      |
-| --------------- | ---------------------------------------------------------------------- |
-| `NumberInput`   | `minValue`, `maxValue`                                                 |
-| `MoneyInput`    | `currency` (Standard `EUR`), `locale` (Standard `de-DE`)               |
-| `PasswordInput` | `showPasswordStrength`                                                 |
-| `QuantityInput` | `minValue`, `maxValue`, `suffix` (Standard `x`)                        |
-| `Textarea`      | native Textarea-Props wie `rows`, `wrap` und `resize` über `className` |
+| Komponente      | Zusätzliche Props                                                       |
+| --------------- | ----------------------------------------------------------------------- |
+| `NumberInput`   | `minValue`, `maxValue`                                                  |
+| `MoneyInput`    | `currency` (Standard `EUR`), `locale` (`'de'`, `'en'` oder Intl-String) |
+| `PasswordInput` | `showPasswordStrength`                                                  |
+| `QuantityInput` | `minValue`, `maxValue`, `suffix` (Standard `x`)                         |
+| `Textarea`      | native Textarea-Props wie `rows`, `wrap` und `resize` über `className`  |
 
 ## Exporte
 
@@ -150,6 +152,24 @@ import {
 ```
 
 Zusätzlich stehen direkte Subpath-Exporte wie `@rentnerkev/inputs/money-input` und `@rentnerkev/inputs/textarea` zur Verfügung.
+
+Der gemeinsame Nachrichtenkatalog ist über `@rentnerkev/inputs` oder
+`@rentnerkev/inputs/messages` verfügbar. Deutsche Texte bleiben der Standard;
+mit `locale="en"` werden die vollständigen englischen Standardtexte verwendet.
+Beliebige bestehende Intl-Locale-Strings wie `locale="en-GB"` bleiben für die
+Geldformatierung erhalten; englische `en-`- oder `en_`-Varianten verwenden die
+englischen Messages.
+Einzelne Texte lassen sich über `messages` überschreiben:
+
+```tsx
+<EmailInput
+    value={email}
+    onChange={(event) => setEmail(event.target.value)}
+    locale="en"
+    messages={{ required: 'Please enter your email address' }}
+    required
+/>
+```
 
 ## Design anpassen
 

@@ -29,7 +29,6 @@ export interface CustomInputProps
     rows?: number
     wrap?: 'hard' | 'soft' | 'off'
     currency?: string
-    locale?: string
     suffix?: string
     showPasswordStrength?: boolean
     minuteStep?: number

@@ -8,6 +8,11 @@ export { QuantityInput } from './Components/Inputs/QuantityInput.js'
 export { Textarea } from './Components/Inputs/Textarea.js'
 export { TextInput } from './Components/Inputs/TextInput.js'
 export { TimeInput } from './Components/Inputs/TimeInput.js'
+export {
+    inputMessageCatalog,
+    resolveInputIntlLocale,
+    resolveInputMessages,
+} from './Config/messages.js'
 export type {
     CustomDesign,
     CustomInputProps,
@@ -22,3 +27,4 @@ export type {
     TextInputProps,
     TimeInputProps,
 } from './types.js'
+export type { InputLocale, InputMessages } from './types.js'

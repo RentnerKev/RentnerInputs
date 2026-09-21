@@ -2,6 +2,7 @@ import { AlertCircle } from 'lucide-react'
 import { CustomTooltip } from '../../Internal/Tooltip.js'
 import { useId, type InputHTMLAttributes, type ReactNode } from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
+import { resolveInputMessages } from '../../Config/messages.js'
 import type {
     BaseInputProps,
     PasswordStrength,
@@ -37,11 +38,14 @@ export function InputField({
     showLength,
     maxLength,
     minLength,
+    locale,
+    messages,
     className = 'w-full py-3 rounded-xl',
     disabled,
     ...nativeProps
 }: InputFieldProps) {
     void [_value, _onChange, _onFocus, _onBlur, _onInvalid]
+    const resolvedMessages = resolveInputMessages(locale, messages)
     const generatedId = useId()
     const fieldId = nativeProps.id ?? generatedId
     const design = { ...DESIGN_CONFIG, ...customDesign }
@@ -133,7 +137,7 @@ export function InputField({
                 <div className="mt-2 space-y-1.5">
                     <div className="flex items-center justify-between text-xs font-medium">
                         <span className={design.passwordStrengthText}>
-                            Passwortstärke
+                            {resolvedMessages.passwordStrength}
                         </span>
                         <span className={design.passwordStrengthText}>
                             {passwordStrength.label}

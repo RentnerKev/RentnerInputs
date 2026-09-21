@@ -1,6 +1,10 @@
 import type { Ref } from 'react'
 import type { MoneyInputProps } from '../../Types/MoneyInput.types.js'
 import {
+    resolveInputIntlLocale,
+    resolveInputMessages,
+} from '../../Config/messages.js'
+import {
     acceptsMoney,
     validateMoney,
 } from '../../Utils/inputValidation.utils.js'
@@ -10,9 +14,10 @@ export default function useMoneyInputLogic(
     props: MoneyInputProps,
     forwardedRef?: Ref<HTMLInputElement>,
 ) {
+    const messages = resolveInputMessages(props.locale, props.messages)
     const field = useInputFieldLogic<HTMLInputElement>({
         ...props,
-        validate: validateMoney,
+        validate: (value) => validateMoney(value, messages),
         acceptsValue: acceptsMoney,
         selectZeroOnFocus: true,
         forwardedRef,
@@ -25,7 +30,7 @@ export default function useMoneyInputLogic(
         )
         displayValue = Number.isNaN(numericValue)
             ? `${displayValue} ${props.currency ?? 'EUR'}`
-            : new Intl.NumberFormat(props.locale ?? 'de-DE', {
+            : new Intl.NumberFormat(resolveInputIntlLocale(props.locale), {
                   style: 'currency',
                   currency: props.currency ?? 'EUR',
               }).format(numericValue)

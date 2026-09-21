@@ -1,3 +1,4 @@
+import { inputMessageCatalog, type InputMessages } from '../Config/messages.js'
 import type { PasswordStrength } from '../Types/InputShared.types.js'
 
 const COMMON_PASSWORDS = new Set([
@@ -46,10 +47,17 @@ function containsSequence(password: string) {
     })
 }
 
-export function getPasswordStrength(password: string): PasswordStrength {
+export function getPasswordStrength(
+    password: string,
+    messages: InputMessages = inputMessageCatalog.de,
+): PasswordStrength {
     const normalizedPassword = password.trim()
     if (!normalizedPassword)
-        return { score: 0, percentage: 0, label: 'Noch leer' }
+        return {
+            score: 0,
+            percentage: 0,
+            label: messages.passwordStrengthEmpty,
+        }
 
     const lowerPassword = normalizedPassword.toLowerCase()
     const length = normalizedPassword.length
@@ -107,7 +115,13 @@ export function getPasswordStrength(password: string): PasswordStrength {
                 : rawStrength >= 30
                   ? 1
                   : 0
-    const labels = ['Sehr schwach', 'Schwach', 'Okay', 'Stark', 'Sehr stark']
+    const labels = [
+        messages.passwordStrengthVeryWeak,
+        messages.passwordStrengthWeak,
+        messages.passwordStrengthOkay,
+        messages.passwordStrengthStrong,
+        messages.passwordStrengthVeryStrong,
+    ]
 
     return { score, percentage: score * 25, label: labels[score] ?? labels[0] }
 }

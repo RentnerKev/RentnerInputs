@@ -19,3 +19,4 @@ export type {
     NumericValueProps,
     PasswordStrength,
 } from './Types/InputShared.types.js'
+export type { InputLocale, InputMessages } from './Config/messages.js'

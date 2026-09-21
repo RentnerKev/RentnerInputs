@@ -4,6 +4,7 @@ import type {
     ReactNode,
     TextareaHTMLAttributes,
 } from 'react'
+import type { InputLocale, InputMessages } from '../Config/messages.js'
 
 export interface CustomDesign {
     bg?: string
@@ -34,6 +35,8 @@ export interface InputVisualProps {
     icon?: ReactNode
     customDesign?: CustomDesign
     showLength?: boolean
+    locale?: InputLocale
+    messages?: Partial<InputMessages>
 }
 
 type ReplacedInputAttributes = 'value' | 'defaultValue' | 'onChange' | 'type'

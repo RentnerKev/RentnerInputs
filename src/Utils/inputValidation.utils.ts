@@ -1,14 +1,23 @@
+import { inputMessageCatalog } from '../Config/messages.js'
+import type { InputMessages } from '../Config/messages.js'
+
 export type InputValidator = (value: string) => string | null
 
-export function validateEmail(value: string) {
+export function validateEmail(
+    value: string,
+    messages: InputMessages = inputMessageCatalog.de,
+) {
     return value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-        ? 'Ungültige E-Mail-Adresse'
+        ? messages.invalidEmail
         : null
 }
 
-export function validatePhone(value: string) {
+export function validatePhone(
+    value: string,
+    messages: InputMessages = inputMessageCatalog.de,
+) {
     return value && !/^[+]*[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/.test(value)
-        ? 'Ungültige Telefonnummer'
+        ? messages.invalidPhone
         : null
 }
 
@@ -16,20 +25,24 @@ export function validateNumber(
     value: string,
     minValue?: number,
     maxValue?: number,
+    messages: InputMessages = inputMessageCatalog.de,
 ) {
-    if (value && Number.isNaN(Number(value))) return 'Nur Zahlen erlaubt'
+    if (value && Number.isNaN(Number(value))) return messages.onlyNumbers
     if (value && minValue !== undefined && Number(value) < minValue) {
-        return `Der Wert muss mindestens ${minValue} sein`
+        return messages.minValue(minValue)
     }
     if (value && maxValue !== undefined && Number(value) > maxValue) {
-        return `Der Wert darf maximal ${maxValue} sein`
+        return messages.maxValue(maxValue)
     }
     return null
 }
 
-export function validateMoney(value: string) {
+export function validateMoney(
+    value: string,
+    messages: InputMessages = inputMessageCatalog.de,
+) {
     return value && !/^[0-9.,]*$/.test(value)
-        ? 'Nur Zahlen, Punkt und Komma erlaubt'
+        ? messages.onlyMoneyCharacters
         : null
 }
 

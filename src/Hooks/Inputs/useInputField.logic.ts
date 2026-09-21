@@ -8,6 +8,11 @@ import type {
     InvalidEvent,
     Ref,
 } from 'react'
+import {
+    resolveInputMessages,
+    type InputLocale,
+    type InputMessages,
+} from '../../Config/messages.js'
 import type { InputValidator } from '../../Utils/inputValidation.utils.js'
 
 type InputElement = HTMLInputElement | HTMLTextAreaElement
@@ -26,6 +31,8 @@ export interface UseInputFieldLogicOptions<Element extends InputElement> {
     validate?: InputValidator
     acceptsValue?: (value: string) => boolean
     selectZeroOnFocus?: boolean
+    locale?: InputLocale
+    messages?: Partial<InputMessages>
 }
 
 function assignRef<Element>(
@@ -50,8 +57,11 @@ export function useInputFieldLogic<Element extends InputElement>({
     validate,
     acceptsValue,
     selectZeroOnFocus,
+    locale,
+    messages,
 }: UseInputFieldLogicOptions<Element>) {
     const safeValue = value === null || value === undefined ? '' : String(value)
+    const resolvedMessages = resolveInputMessages(locale, messages)
     const [isTouched, setIsTouched] = useState(false)
     const [isFocused, setIsFocused] = useState(false)
     const [nativeError, setNativeError] = useState<string | null>(null)
@@ -60,9 +70,9 @@ export function useInputFieldLogic<Element extends InputElement>({
     const valueChangedByInputRef = useRef(false)
 
     function validateValue(nextValue: string) {
-        if (required && !nextValue) return 'Dieses Feld ist erforderlich'
+        if (required && !nextValue) return resolvedMessages.required
         if (minLength && nextValue && nextValue.length < minLength) {
-            return `Mindestens ${minLength} Zeichen erforderlich`
+            return resolvedMessages.minLength(minLength)
         }
         return validate?.(nextValue) ?? null
     }
@@ -142,7 +152,8 @@ export function useInputFieldLogic<Element extends InputElement>({
         event.preventDefault()
         setIsTouched(true)
         setNativeError(
-            event.currentTarget.validationMessage || 'Ungültige Eingabe',
+            event.currentTarget.validationMessage ||
+                resolvedMessages.invalidInput,
         )
         onInvalid?.(event)
     }

@@ -2,6 +2,7 @@ import { AlertCircle, ChevronDown, Clock } from 'lucide-react'
 import { CustomTooltip } from '../../Internal/Tooltip.js'
 import { forwardRef, useId } from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
+import { resolveInputMessages } from '../../Config/messages.js'
 import useTimeInputLogic from '../../Hooks/Inputs/useTimeInput.logic.js'
 import type { TimeInputProps } from '../../Types/TimeInput.types.js'
 
@@ -81,6 +82,8 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             label,
             icon,
             customDesign,
+            locale,
+            messages,
             className = 'w-full py-3 rounded-xl',
             disabled,
             showLength: _showLength,
@@ -90,8 +93,18 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
         ref,
     ) {
         void [_type, _showLength]
+        const resolvedMessages = resolveInputMessages(locale, messages)
         const logic = useTimeInputLogic(
-            { ...props, icon, customDesign, className, disabled, minuteStep },
+            {
+                ...props,
+                icon,
+                customDesign,
+                locale,
+                messages,
+                className,
+                disabled,
+                minuteStep,
+            },
             ref,
         )
         const generatedId = useId()
@@ -161,9 +174,9 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
                         aria-labelledby={label ? labelId : undefined}
                     >
                         <TimeDropdown
-                            label="Stunde auswählen"
+                            label={resolvedMessages.hourSelect}
                             value={logic.state.selectedHour}
-                            placeholder="Stunde"
+                            placeholder={resolvedMessages.hourPlaceholder}
                             options={logic.state.hours}
                             isOpen={logic.state.isHourDropdownOpen}
                             disabled={disabled}
@@ -174,9 +187,9 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
                             :
                         </span>
                         <TimeDropdown
-                            label="Minute auswählen"
+                            label={resolvedMessages.minuteSelect}
                             value={logic.state.selectedMinute}
-                            placeholder="Minute"
+                            placeholder={resolvedMessages.minutePlaceholder}
                             options={logic.state.minutes}
                             isOpen={logic.state.isMinuteDropdownOpen}
                             disabled={disabled}

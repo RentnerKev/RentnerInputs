@@ -22,7 +22,8 @@
         "lint:fix": "oxlint --fix .",
         "format": "oxfmt .",
         "format:check": "oxfmt --check .",
-        "verify": "bun run typecheck && bun run lint && bun run format:check && bun run build && bun run pack:check"
+        "test": "bun test",
+        "verify": "bun run typecheck && bun run lint && bun run format:check && bun run test && bun run build && bun run pack:check"
     },
     "repository": {
         "type": "git",
@@ -105,6 +106,10 @@
         "./types": {
             "import": "./dist/types.js",
             "types": "./dist/types.d.ts"
+        },
+        "./messages": {
+            "import": "./dist/Config/messages.js",
+            "types": "./dist/Config/messages.d.ts"
         }
     },
     "packageManager": "bun@1.4.2"
