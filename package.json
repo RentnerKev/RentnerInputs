@@ -37,7 +37,7 @@
         "registry": "https://registry.npmjs.org"
     },
     "dependencies": {
-        "lucide-react": "^1.33.0",
+        "lucide-react": "^1.47.0",
         "@radix-ui/react-tooltip": "^1.2.16"
     },
     "peerDependencies": {
