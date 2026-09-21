@@ -54,7 +54,7 @@
         "tailwindcss": "^4.3.3",
         "typescript": "^7.0.2",
         "vite": "^8.3.0",
-        "oxfmt": "^0.66.0",
+        "oxfmt": "^0.68.0",
         "oxlint": "^1.83.0"
     },
     "exports": {
