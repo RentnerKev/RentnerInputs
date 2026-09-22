@@ -1,18 +1,25 @@
 # @rentnerkev/inputs
 
-Eine Sammlung kontrollierter React-Eingabekomponenten mit Labels, Validierung, Icons, Längenzähler und anpassbarem Tailwind-Design.
+Controlled React input components with labels, validation, icons, length
+counters, localization, and customizable Tailwind styling.
 
 ## Installation
 
-Installiere das Paket mit npm oder Bun:
+With npm:
 
 ```bash
 npm install @rentnerkev/inputs
 ```
 
-## Komponenten
+Or with Bun:
 
-Jeder Feldtyp besitzt eine eigene Komponente, einen eigenen Logic-Hook und eigene Props-Typen:
+```bash
+bun add @rentnerkev/inputs
+```
+
+## Components
+
+Each field type has a dedicated component, logic hook, and props type:
 
 - `TextInput`
 - `EmailInput`
@@ -21,12 +28,13 @@ Jeder Feldtyp besitzt eine eigene Komponente, einen eigenen Logic-Hook und eigen
 - `MoneyInput`
 - `PasswordInput`
 - `QuantityInput`
-- `Textarea`
 - `TimeInput`
+- `Textarea`
 
-`CustomInput` bleibt als kompatibler Einstieg bestehen und wählt die konkrete Komponente über `type` aus.
+`CustomInput` remains available as a backward-compatible entry point and
+selects the concrete component through its `type` prop.
 
-## Empfohlene Verwendung
+## Quick start
 
 ```tsx
 import { useRef, useState } from 'react'
@@ -42,16 +50,14 @@ export function ContactForm() {
             <EmailInput
                 ref={emailRef}
                 id="email"
-                label="E-Mail-Adresse"
+                label="Email address"
                 name="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                onFocus={() => console.log('E-Mail-Feld fokussiert')}
-                onBlur={() => console.log('E-Mail-Feld verlassen')}
                 onKeyDown={(event) => {
                     if (event.key === 'Escape') emailRef.current?.blur()
                 }}
-                placeholder="name@beispiel.de"
+                placeholder="name@example.com"
                 autoComplete="email"
                 required
                 maxLength={120}
@@ -60,11 +66,11 @@ export function ContactForm() {
 
             <Textarea
                 id="message"
-                label="Nachricht"
+                label="Message"
                 name="message"
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
-                placeholder="Deine Nachricht"
+                placeholder="Your message"
                 rows={6}
                 minLength={10}
                 maxLength={500}
@@ -76,7 +82,10 @@ export function ContactForm() {
 }
 ```
 
-## Verwendung über CustomInput
+## `CustomInput`
+
+Use `CustomInput` when the field type is selected dynamically or when migrating
+from an earlier package version.
 
 ```tsx
 import { CustomInput } from '@rentnerkev/inputs'
@@ -85,7 +94,7 @@ import { CustomInput } from '@rentnerkev/inputs'
     type="password"
     value={password}
     onChange={(event) => setPassword(event.target.value)}
-    placeholder="Passwort"
+    placeholder="Password"
     autoComplete="current-password"
     showPasswordStrength
 />
@@ -94,85 +103,77 @@ import { CustomInput } from '@rentnerkev/inputs'
     type="quantity"
     value={quantity}
     onChange={(event) => setQuantity(event.target.value)}
-    placeholder="Menge"
+    placeholder="Quantity"
     minValue={1}
     maxValue={999}
     suffix="x"
 />
 ```
 
-## Native Attribute und Events
+## Native attributes and events
 
-Die konkreten Input-Komponenten unterstützen alle üblichen `InputHTMLAttributes<HTMLInputElement>`. `Textarea` unterstützt alle `TextareaHTMLAttributes<HTMLTextAreaElement>`. Dazu gehören unter anderem:
+The concrete input components support the usual
+`InputHTMLAttributes<HTMLInputElement>`. `Textarea` supports
+`TextareaHTMLAttributes<HTMLTextAreaElement>`, including:
 
-- Events: `onFocus`, `onBlur`, `onInvalid`, `onInput`, `onKeyDown`, `onKeyUp`, `onClick`, `onPaste` und `onCopy`
-- Formularattribute: `id`, `name`, `required`, `disabled`, `readOnly`, `form` und `autoComplete`
-- Validierung: `minLength`, `maxLength`, `min`, `max`, `step` und `pattern`
-- Barrierefreiheit und Metadaten: `aria-*`, `data-*`, `tabIndex` und `title`
-- React-Refs über `ref`
+- events such as `onFocus`, `onBlur`, `onInvalid`, `onInput`, `onKeyDown`,
+  `onKeyUp`, `onClick`, `onPaste`, and `onCopy`;
+- form attributes such as `id`, `name`, `required`, `disabled`, `readOnly`,
+  `form`, and `autoComplete`;
+- constraints such as `minLength`, `maxLength`, `min`, `max`, `step`, and
+  `pattern`;
+- accessibility and metadata attributes such as `aria-*`, `data-*`,
+  `tabIndex`, and `title`;
+- React refs through `ref`.
 
-Interne Handler und übergebene Handler werden kombiniert. Ein eigenes `onFocus` ersetzt daher nicht die interne Fokuslogik.
+Internal and consumer event handlers are composed. A custom `onFocus`, for
+example, does not replace the package's focus handling.
 
-## Gemeinsame Props
+## Shared field contract
 
-| Prop           | Typ                                            | Standard                 | Beschreibung                                                     |
-| -------------- | ---------------------------------------------- | ------------------------ | ---------------------------------------------------------------- |
-| `value`        | `string`                                       | erforderlich             | Kontrollierter Feldwert.                                         |
-| `onChange`     | `ChangeEventHandler`                           | erforderlich             | Wird nach der internen Eingabeprüfung aufgerufen.                |
-| `label`        | `ReactNode`                                    | –                        | Zeigt ein verknüpftes Label über dem Feld.                       |
-| `description`  | `ReactNode`                                    | –                        | Hilfetext mit stabiler ID und ARIA-Verknüpfung.                  |
-| `error`        | `string \| null`                               | –                        | Externer Fehler; überschreibt interne Fehler, `null` löscht sie. |
-| `icon`         | `ReactNode`                                    | –                        | Icon links im Feld.                                              |
-| `triggerRef`   | `Ref<HTMLInputElement \| HTMLTextAreaElement>` | –                        | Alias-Ref zusätzlich zum bestehenden `ref`.                      |
-| `showLength`   | `boolean`                                      | `false`                  | Zeigt die aktuelle Zeichenanzahl.                                |
-| `customDesign` | `CustomDesign`                                 | –                        | Überschreibt einzelne Designklassen.                             |
-| `locale`       | `InputLocale`                                  | `'de'`                   | Sprache der Texte und optionaler Intl-Locale-String.             |
-| `messages`     | `Partial<InputMessages>`                       | –                        | Überschreibt einzelne Texte der gewählten Sprache.               |
-| `className`    | `string`                                       | `w-full py-3 rounded-xl` | Klassen des eigentlichen Eingabefelds.                           |
+| Prop           | Type                                           | Default                  | Description                                                          |
+| -------------- | ---------------------------------------------- | ------------------------ | -------------------------------------------------------------------- |
+| `value`        | `string`                                       | Required                 | Controlled field value.                                              |
+| `onChange`     | `ChangeEventHandler`                           | Required                 | Called after internal input handling.                                |
+| `label`        | `ReactNode`                                    | –                        | Accessible label above the field.                                    |
+| `description`  | `ReactNode`                                    | –                        | Help text with a stable ARIA relationship.                           |
+| `error`        | `string \| null`                               | –                        | External error; overrides internal errors, while `null` clears them. |
+| `icon`         | `ReactNode`                                    | –                        | Icon displayed on the left.                                          |
+| `triggerRef`   | `Ref<HTMLInputElement \| HTMLTextAreaElement>` | –                        | Alias ref in addition to the standard `ref`.                         |
+| `showLength`   | `boolean`                                      | `false`                  | Displays the current character count.                                |
+| `customDesign` | `CustomDesign`                                 | –                        | Overrides individual design classes.                                 |
+| `locale`       | `InputLocale`                                  | `'de'`                   | Message language or Intl locale string.                              |
+| `messages`     | `Partial<InputMessages>`                       | –                        | Overrides selected localized messages.                               |
+| `className`    | `string`                                       | `w-full py-3 rounded-xl` | Classes for the actual input element.                                |
 
-Zeichenlimits werden über die nativen Props `maxLength` und `minLength` gesteuert. Mit `showLength` lässt sich zusätzlich der Zeichenzähler einblenden.
+Use native `maxLength` and `minLength` props for character constraints.
+`showLength` adds the visible counter.
 
-`aria-describedby` wird aus übergebenen Consumer-IDs, der Description-ID und
-der ID eines sichtbaren Fehlers zusammengeführt. Bei einem ungültigen Submit
-wird das sichtbare Feld fokussiert. `disabled` nimmt das Feld aus der internen
-Validierung; `readOnly` verhindert versehentliche Änderungen und interne
-Constraint-Validierung, lässt aber den Wert sowie die übrigen nativen Attribute
-und ARIA-Angaben bestehen.
+Consumer IDs, the description ID, and the visible error ID are merged into
+`aria-describedby`. An invalid native submit focuses the visible field.
+`disabled` removes the field from internal validation. `readOnly` prevents
+changes and internal constraint validation while retaining its value and native
+attributes.
 
-Beim `TimeInput` zeigt `triggerRef` auf den sichtbaren Stunden-Trigger; bei
-`CustomInput` ist diese Button-Ref für `type="time"` ebenfalls verfügbar.
+For `TimeInput`, `triggerRef` points to the visible hour trigger. The same
+button ref is available through `CustomInput` when `type="time"`.
 
-## Typabhängige Props
+## Component-specific props
 
-| Komponente      | Zusätzliche Props                                                       |
-| --------------- | ----------------------------------------------------------------------- |
-| `NumberInput`   | `minValue`, `maxValue`                                                  |
-| `MoneyInput`    | `currency` (Standard `EUR`), `locale` (`'de'`, `'en'` oder Intl-String) |
-| `PasswordInput` | `showPasswordStrength`                                                  |
-| `QuantityInput` | `minValue`, `maxValue`, `suffix` (Standard `x`)                         |
-| `Textarea`      | native Textarea-Props wie `rows`, `wrap` und `resize` über `className`  |
+| Component       | Additional props                                                            |
+| --------------- | --------------------------------------------------------------------------- |
+| `NumberInput`   | `minValue`, `maxValue`                                                      |
+| `MoneyInput`    | `currency` (default `EUR`), `locale` (`'de'`, `'en'`, or an Intl locale)    |
+| `PasswordInput` | `showPasswordStrength`                                                      |
+| `QuantityInput` | `minValue`, `maxValue`, `suffix` (default `x`)                              |
+| `Textarea`      | Native textarea props such as `rows` and `wrap`; resize through `className` |
 
-## Exporte
+## Localization and messages
 
-Alle Komponenten und Props-Typen sind über den Paketeinstieg verfügbar:
-
-```tsx
-import {
-    MoneyInput,
-    type MoneyInputProps,
-    type CustomDesign,
-} from '@rentnerkev/inputs'
-```
-
-Zusätzlich stehen direkte Subpath-Exporte wie `@rentnerkev/inputs/money-input` und `@rentnerkev/inputs/textarea` zur Verfügung.
-
-Der gemeinsame Nachrichtenkatalog ist über `@rentnerkev/inputs` oder
-`@rentnerkev/inputs/messages` verfügbar. Deutsche Texte bleiben der Standard;
-mit `locale="en"` werden die vollständigen englischen Standardtexte verwendet.
-Beliebige bestehende Intl-Locale-Strings wie `locale="en-GB"` bleiben für die
-Geldformatierung erhalten; englische `en-`- oder `en_`-Varianten verwenden die
-englischen Messages.
-Einzelne Texte lassen sich über `messages` überschreiben:
+German remains the default for backward compatibility. Set `locale="en"` for
+the complete English validation and ARIA messages. Existing Intl locale strings
+such as `en-GB` remain available to `MoneyInput`; `en-` and `en_` variants use
+the English message catalog.
 
 ```tsx
 <EmailInput
@@ -184,7 +185,10 @@ Einzelne Texte lassen sich über `messages` überschreiben:
 />
 ```
 
-## Design anpassen
+The typed catalog is available from the root entry and
+`@rentnerkev/inputs/messages`.
+
+## Custom design
 
 ```tsx
 <EmailInput
@@ -199,33 +203,59 @@ Einzelne Texte lassen sich über `messages` überschreiben:
 />
 ```
 
-`CustomDesign` unterstützt `bg`, `border`, `text`, `labelText`, `placeholder`, `focusRing`, `focusBorder`, `errorBorder`, `errorRing`, `errorText`, `iconColor`, `iconFocus`, `counterBg`, `counterText`, `counterBorderFocus` sowie die Klassen der Passwortstärke-Anzeige.
+`CustomDesign` supports `bg`, `border`, `text`, `labelText`, `placeholder`,
+`focusRing`, `focusBorder`, `errorBorder`, `errorRing`, `errorText`,
+`iconColor`, `iconFocus`, `counterBg`, `counterText`, `counterBorderFocus`, and
+the password-strength classes.
 
-Ist keine `id` gesetzt, erzeugt die Komponente automatisch eine stabile ID, damit `label` und Eingabefeld auch barrierefrei miteinander verknüpft sind.
+When no `id` is provided, the component creates a stable ID so its label and
+field remain accessible.
 
-## CSS-Integration
+## Tailwind CSS
 
-Die Bibliothek liefert einen eigenen Tailwind-Einstieg. Importiere ihn nach
-Tailwind CSS in deine Haupt-CSS-Datei:
+Import the package entry after Tailwind CSS in your main stylesheet:
 
 ```css
 @import 'tailwindcss';
 @import '@rentnerkev/inputs/tailwind.css';
 ```
 
-Der Paket-Einstieg scannt ausschließlich die veröffentlichten JavaScript-Dateien
-unter `dist`. Er stellt die gemeinsamen Theme-Tokens `primary`, `primary-hover`,
-`background-dark`, `surface-dark`, `input-dark`, `border-dark`, `secondary-text`
-und `muted-foreground` bereit. Eigene Werte können danach mit einem weiteren
-`@theme`-Block überschrieben werden.
+The entry scans only published JavaScript under `dist`. It provides the shared
+`primary`, `primary-hover`, `background-dark`, `surface-dark`, `input-dark`,
+`border-dark`, `secondary-text`, and `muted-foreground` theme tokens. Override
+them with a later `@theme` block when needed.
 
-## Entwicklung
+## Public entry points
+
+All components and prop types are exported from `@rentnerkev/inputs`. Direct
+component entry points are also available:
+
+- `@rentnerkev/inputs/input`
+- `@rentnerkev/inputs/text-input`
+- `@rentnerkev/inputs/number-input`
+- `@rentnerkev/inputs/phone-input`
+- `@rentnerkev/inputs/email-input`
+- `@rentnerkev/inputs/money-input`
+- `@rentnerkev/inputs/password-input`
+- `@rentnerkev/inputs/quantity-input`
+- `@rentnerkev/inputs/time-input`
+- `@rentnerkev/inputs/textarea`
+- `@rentnerkev/inputs/types`
+- `@rentnerkev/inputs/messages`
+- `@rentnerkev/inputs/tailwind.css`
+
+## Development
 
 ```bash
-bun install
+bun install --frozen-lockfile
+bun install --cwd playground --frozen-lockfile
 bun run verify
-bun run playground:dev
+bun run playground:build
 ```
 
-`bun run verify` prüft Typen, Oxlint, Oxfmt, den Paket-Build und den
-veröffentlichten Paketinhalt per Dry Run.
+`bun run verify` checks types, Oxlint, Oxfmt, tests, the package build, and the
+published package contents.
+
+## License
+
+MIT
