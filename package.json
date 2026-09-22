@@ -1,6 +1,6 @@
 {
     "name": "@rentnerkev/inputs",
-    "version": "2.1.2",
+    "version": "2.1.3",
     "description": "Controlled React input components with validation, icons, length counters, and Tailwind design hooks.",
     "author": "RentnerKev",
     "license": "MIT",

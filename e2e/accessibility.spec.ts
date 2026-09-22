@@ -46,11 +46,15 @@ test('keeps text clear of leading icons in inputs and textareas', async ({
 }) => {
     await page.goto('/')
 
-    for (const label of ['Text', 'Nachricht']) {
+    for (const [label, minimum] of [
+        ['Text', 44],
+        ['Nachricht', 44],
+        ['Telefonnummer', 16],
+    ] as const) {
         const field = page.getByLabel(label, { exact: true })
         const paddingLeft = await field.evaluate((element) =>
             Number.parseFloat(getComputedStyle(element).paddingLeft),
         )
-        expect(paddingLeft).toBeGreaterThanOrEqual(44)
+        expect(paddingLeft).toBeGreaterThanOrEqual(minimum)
     }
 })

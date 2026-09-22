@@ -76,10 +76,13 @@ describe('project-level input defaults', () => {
                     value=""
                     onChange={noopChange}
                 />
+                <TextInput value="" onChange={noopChange} />
+                <Textarea value="" onChange={noopChange} />
             </>,
         )
 
         expect(markup.match(/padding-left:44px/g)).toHaveLength(2)
+        expect(markup.match(/padding-left:16px/g)).toHaveLength(2)
     })
 
     test('renders native controls with their native semantics', () => {
