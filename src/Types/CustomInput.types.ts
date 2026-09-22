@@ -6,6 +6,7 @@ import type {
 
 export type CustomInputType =
     | 'text'
+    | 'search'
     | 'number'
     | 'phone'
     | 'email'
@@ -13,6 +14,7 @@ export type CustomInputType =
     | 'password'
     | 'quantity'
     | 'time'
+    | 'native-time'
     | 'textarea'
 
 type CustomInputElement = HTMLInputElement | HTMLTextAreaElement

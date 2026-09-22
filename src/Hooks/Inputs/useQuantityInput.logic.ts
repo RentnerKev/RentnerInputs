@@ -1,6 +1,6 @@
 import type { Ref } from 'react'
 import type { QuantityInputProps } from '../../Types/QuantityInput.types.js'
-import { resolveInputMessages } from '../../Config/messages.js'
+import { useInputMessages } from '../../InputProvider.js'
 import {
     acceptsQuantity,
     validateNumber,
@@ -11,7 +11,7 @@ export default function useQuantityInputLogic(
     props: QuantityInputProps,
     forwardedRef?: Ref<HTMLInputElement>,
 ) {
-    const messages = resolveInputMessages(props.locale, props.messages)
+    const messages = useInputMessages(props.locale, props.messages)
     const field = useInputFieldLogic<HTMLInputElement>({
         ...props,
         validate: (value) =>

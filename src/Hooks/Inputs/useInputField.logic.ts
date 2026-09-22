@@ -14,6 +14,8 @@ import {
     type InputMessages,
 } from '../../Config/messages.js'
 import type { InputValidator } from '../../Utils/inputValidation.utils.js'
+import { useInputDefaults } from '../../InputProvider.js'
+import type { InputValidationMode } from '../../InputProvider.js'
 
 type InputElement = HTMLInputElement | HTMLTextAreaElement
 
@@ -38,6 +40,7 @@ export interface UseInputFieldLogicOptions<Element extends InputElement> {
     error?: string | null
     disabled?: boolean
     readOnly?: boolean
+    validationMode?: InputValidationMode
 }
 
 function assignRef<Element>(
@@ -69,9 +72,16 @@ export function useInputFieldLogic<Element extends InputElement>({
     error: externalError,
     disabled = false,
     readOnly = false,
+    validationMode,
 }: UseInputFieldLogicOptions<Element>) {
+    const defaults = useInputDefaults()
+    const resolvedValidationMode =
+        validationMode ?? defaults.validationMode ?? 'built-in'
     const safeValue = value === null || value === undefined ? '' : String(value)
-    const resolvedMessages = resolveInputMessages(locale, messages)
+    const resolvedMessages = resolveInputMessages(locale ?? defaults.locale, {
+        ...defaults.messages,
+        ...messages,
+    })
     const [isTouched, setIsTouched] = useState(false)
     const [isFocused, setIsFocused] = useState(false)
     const [nativeError, setNativeError] = useState<string | null>(null)
@@ -80,6 +90,7 @@ export function useInputFieldLogic<Element extends InputElement>({
     const valueChangedByInputRef = useRef(false)
 
     function validateValue(nextValue: string) {
+        if (resolvedValidationMode === 'external') return null
         if (disabled || readOnly) return null
         if (required && !nextValue) return resolvedMessages.required
         if (minLength && nextValue && nextValue.length < minLength) {
@@ -90,7 +101,9 @@ export function useInputFieldLogic<Element extends InputElement>({
 
     const validationError = validateValue(safeValue)
     const internalError =
-        disabled || readOnly ? null : (validationError ?? nativeError)
+        disabled || readOnly || resolvedValidationMode === 'external'
+            ? null
+            : (validationError ?? nativeError)
     const currentError =
         externalError !== undefined ? externalError : internalError
     const hasError =
@@ -166,7 +179,12 @@ export function useInputFieldLogic<Element extends InputElement>({
         if (disabled || readOnly) return
         const nextValue = event.currentTarget.value
         if (maxLength && nextValue.length > maxLength) return
-        if (acceptsValue && !acceptsValue(nextValue)) return
+        if (
+            resolvedValidationMode === 'built-in' &&
+            acceptsValue &&
+            !acceptsValue(nextValue)
+        )
+            return
 
         setNativeError(null)
         if (validateValue(nextValue)) setIsTouched(true)
@@ -176,6 +194,10 @@ export function useInputFieldLogic<Element extends InputElement>({
 
     function handleInvalid(event: InvalidEvent<Element>) {
         if (disabled || readOnly) return
+        if (resolvedValidationMode === 'external') {
+            onInvalid?.(event)
+            return
+        }
         event.preventDefault()
         setIsTouched(true)
         setNativeError(

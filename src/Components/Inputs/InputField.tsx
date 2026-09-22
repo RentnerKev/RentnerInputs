@@ -2,7 +2,7 @@ import { AlertCircle } from 'lucide-react'
 import { CustomTooltip } from '@rentnerkev/tooltips'
 import { useId, type InputHTMLAttributes, type ReactNode } from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
-import { resolveInputMessages } from '../../Config/messages.js'
+import { useInputDefaults, useInputMessages } from '../../InputProvider.js'
 import { mergeAriaDescribedBy } from '../../Utils/fieldA11y.utils.js'
 import type {
     BaseInputProps,
@@ -45,7 +45,8 @@ export function InputField({
     minLength,
     locale,
     messages,
-    className = 'w-full py-3 rounded-xl',
+    validationMode: _validationMode,
+    className,
     disabled,
     'aria-describedby': ariaDescribedBy,
     'aria-errormessage': ariaErrorMessage,
@@ -54,8 +55,17 @@ export function InputField({
     'aria-required': ariaRequired,
     ...nativeProps
 }: InputFieldProps) {
-    void [_value, _onChange, _onFocus, _onBlur, _onInvalid, _triggerRef, error]
-    const resolvedMessages = resolveInputMessages(locale, messages)
+    void [
+        _value,
+        _onChange,
+        _onFocus,
+        _onBlur,
+        _onInvalid,
+        _triggerRef,
+        _validationMode,
+    ]
+    const defaults = useInputDefaults()
+    const resolvedMessages = useInputMessages(locale, messages)
     const generatedId = useId()
     const fieldId = nativeProps.id ?? generatedId
     const labelId = `${fieldId}-label`
@@ -76,9 +86,15 @@ export function InputField({
         ariaLabelledBy,
         hasLabel ? labelId : undefined,
     )
-    const design = { ...DESIGN_CONFIG, ...customDesign }
+    const design = {
+        ...DESIGN_CONFIG,
+        ...defaults.customDesign,
+        ...customDesign,
+    }
+    const fieldClasses =
+        className ?? defaults.classNames?.input ?? 'w-full py-3 rounded-xl'
     const hasLeftIcon = Boolean(icon || logic.state.hasError)
-    const fieldClassName = `peer block ${hasLeftIcon ? 'pl-11' : 'pl-4'} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-[background-color,border-color,box-shadow,color] ${className} ${design.bg} border ${design.text} ${design.placeholder} ${
+    const fieldClassName = `peer block ${hasLeftIcon ? 'pl-11' : 'pl-4'} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-[background-color,border-color,box-shadow,color] ${fieldClasses} ${design.bg} border ${design.text} ${design.placeholder} ${
         logic.state.hasError
             ? `${design.errorBorder} focus:ring-2 ${design.errorRing}`
             : `${design.border} focus:ring-2 ${design.focusRing} ${design.focusBorder}`

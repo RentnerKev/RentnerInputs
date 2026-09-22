@@ -41,6 +41,17 @@ describe('input locale messages', () => {
         )
     })
 
+    test('provides Spanish and French messages including locale variants', () => {
+        expect(resolveInputMessages('es-ES').showPassword).toBe(
+            'Mostrar contraseña',
+        )
+        expect(resolveInputMessages('fr-FR').hidePassword).toBe(
+            'Masquer le mot de passe',
+        )
+        expect(resolveInputIntlLocale('es')).toBe('es-ES')
+        expect(resolveInputIntlLocale('fr')).toBe('fr-FR')
+    })
+
     test('merges partial overrides without losing locale defaults', () => {
         const messages = resolveInputMessages('en', {
             required: 'Please fill out this field',

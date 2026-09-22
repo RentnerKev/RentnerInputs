@@ -2,6 +2,7 @@ import { AlertCircle } from 'lucide-react'
 import { CustomTooltip } from '@rentnerkev/tooltips'
 import { forwardRef, useId } from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
+import { useInputDefaults } from '../../InputProvider.js'
 import { mergeAriaDescribedBy } from '../../Utils/fieldA11y.utils.js'
 import useTextareaLogic from '../../Hooks/Inputs/useTextarea.logic.js'
 import type { TextareaProps } from '../../Types/Textarea.types.js'
@@ -25,8 +26,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             showLength,
             maxLength,
             minLength,
-            className = 'w-full py-3 rounded-xl',
+            className,
             disabled,
+            validationMode,
             triggerRef,
             required: nativeRequired,
             'aria-describedby': ariaDescribedBy,
@@ -59,6 +61,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             minLength,
             className,
             disabled,
+            validationMode,
             triggerRef,
             required: nativeRequired,
             rows,
@@ -85,9 +88,18 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             ariaLabelledBy,
             hasLabel ? `${fieldId}-label` : undefined,
         )
-        const design = { ...DESIGN_CONFIG, ...customDesign }
+        const defaults = useInputDefaults()
+        const design = {
+            ...DESIGN_CONFIG,
+            ...defaults.customDesign,
+            ...customDesign,
+        }
+        const fieldClasses =
+            className ??
+            defaults.classNames?.textarea ??
+            'w-full py-3 rounded-xl'
         const hasLeftIcon = Boolean(icon || logic.state.hasError)
-        const fieldClassName = `peer block min-h-28 resize-y ${hasLeftIcon ? 'pl-11' : 'pl-4'} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-[background-color,border-color,box-shadow,color] ${className} ${design.bg} border ${design.text} ${design.placeholder} ${
+        const fieldClassName = `peer block min-h-28 resize-y ${hasLeftIcon ? 'pl-11' : 'pl-4'} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-[background-color,border-color,box-shadow,color] ${fieldClasses} ${design.bg} border ${design.text} ${design.placeholder} ${
             logic.state.hasError
                 ? `${design.errorBorder} focus:ring-2 ${design.errorRing}`
                 : `${design.border} focus:ring-2 ${design.focusRing} ${design.focusBorder}`

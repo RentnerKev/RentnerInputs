@@ -1,9 +1,7 @@
 import type { Ref } from 'react'
 import type { MoneyInputProps } from '../../Types/MoneyInput.types.js'
-import {
-    resolveInputIntlLocale,
-    resolveInputMessages,
-} from '../../Config/messages.js'
+import { resolveInputIntlLocale } from '../../Config/messages.js'
+import { useInputDefaults, useInputMessages } from '../../InputProvider.js'
 import {
     acceptsMoney,
     validateMoney,
@@ -14,7 +12,8 @@ export default function useMoneyInputLogic(
     props: MoneyInputProps,
     forwardedRef?: Ref<HTMLInputElement>,
 ) {
-    const messages = resolveInputMessages(props.locale, props.messages)
+    const defaults = useInputDefaults()
+    const messages = useInputMessages(props.locale, props.messages)
     const field = useInputFieldLogic<HTMLInputElement>({
         ...props,
         validate: (value) => validateMoney(value, messages),
@@ -30,10 +29,13 @@ export default function useMoneyInputLogic(
         )
         displayValue = Number.isNaN(numericValue)
             ? `${displayValue} ${props.currency ?? 'EUR'}`
-            : new Intl.NumberFormat(resolveInputIntlLocale(props.locale), {
-                  style: 'currency',
-                  currency: props.currency ?? 'EUR',
-              }).format(numericValue)
+            : new Intl.NumberFormat(
+                  resolveInputIntlLocale(props.locale ?? defaults.locale),
+                  {
+                      style: 'currency',
+                      currency: props.currency ?? 'EUR',
+                  },
+              ).format(numericValue)
     }
 
     return {

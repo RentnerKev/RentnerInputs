@@ -30,9 +30,47 @@ Each field type has a dedicated component, logic hook, and props type:
 - `QuantityInput`
 - `TimeInput`
 - `Textarea`
+- `SearchInput` and `NativeTimeInput` (native search and time controls)
+- `CheckboxInput`, `RadioInput`, `RangeInput`, and `FileInput` (native semantics)
 
 `CustomInput` remains available as a backward-compatible entry point and
-selects the concrete component through its `type` prop.
+selects the concrete component through its `type` prop. It also accepts
+`type="search"` and `type="native-time"`.
+
+## Project-wide defaults
+
+Wrap the app once with `InputProvider` to set locale, messages, visual classes,
+and validation behavior centrally. Nested providers inherit settings and can
+override only the relevant values, such as the authenticated user's locale.
+
+```tsx
+import { InputProvider } from '@rentnerkev/inputs'
+
+;<InputProvider
+    locale="en"
+    validationMode="external"
+    customDesign={{
+        bg: 'bg-app-field',
+        border: 'border-app-border',
+        text: 'text-app-ink',
+        focusBorder: 'focus:border-app-accent',
+    }}
+    classNames={{
+        input: 'h-12 w-full rounded-xl text-sm',
+        textarea: 'w-full rounded-xl text-sm',
+        checkbox: 'size-4 accent-app-accent',
+    }}
+>
+    <YourApp />
+</InputProvider>
+```
+
+`validationMode="external"` leaves validation messages to a form library while
+preserving native attributes, events, and explicit `error` or `aria-invalid`
+props. The default `"built-in"` mode retains the package's own validation.
+Each field can override the provider's locale, messages, design, classes, or
+validation mode as needed. The package includes German, English, Spanish, and
+French messages; other locales continue to fall back to German.
 
 ## Quick start
 
@@ -211,6 +249,10 @@ the password-strength classes.
 When no `id` is provided, the component creates a stable ID so its label and
 field remain accessible.
 
+The native checkbox, radio, range, and file controls forward all native input
+attributes and refs. They are available when a field should retain browser
+behavior, including unchecked radio values and uncontrolled file selection.
+
 ## Tailwind CSS
 
 Import the package entry after Tailwind CSS in your main stylesheet:
@@ -232,6 +274,12 @@ component entry points are also available:
 
 - `@rentnerkev/inputs/input`
 - `@rentnerkev/inputs/text-input`
+- `@rentnerkev/inputs/search-input`
+- `@rentnerkev/inputs/native-time-input`
+- `@rentnerkev/inputs/checkbox-input`
+- `@rentnerkev/inputs/radio-input`
+- `@rentnerkev/inputs/range-input`
+- `@rentnerkev/inputs/file-input`
 - `@rentnerkev/inputs/number-input`
 - `@rentnerkev/inputs/phone-input`
 - `@rentnerkev/inputs/email-input`

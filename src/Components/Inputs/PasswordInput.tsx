@@ -1,7 +1,7 @@
 import { Eye, EyeOff } from 'lucide-react'
 import { forwardRef } from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
-import { resolveInputMessages } from '../../Config/messages.js'
+import { useInputDefaults, useInputMessages } from '../../InputProvider.js'
 import usePasswordInputLogic from '../../Hooks/Inputs/usePasswordInput.logic.js'
 import type { PasswordInputProps } from '../../Types/PasswordInput.types.js'
 import { InputField } from './InputField.js'
@@ -12,15 +12,23 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         ref,
     ) {
         void _type
-        const messages = resolveInputMessages(props.locale, props.messages)
+        const defaults = useInputDefaults()
+        const messages = useInputMessages(props.locale, props.messages)
         const originalProps = { ...props, showPasswordStrength }
         const logic = usePasswordInputLogic(originalProps, ref)
-        const design = { ...DESIGN_CONFIG, ...props.customDesign }
+        const design = {
+            ...DESIGN_CONFIG,
+            ...defaults.customDesign,
+            ...props.customDesign,
+        }
         const rightControl = (
             <button
                 type="button"
                 onClick={logic.handler.togglePassword}
+                onMouseDown={(event) => event.preventDefault()}
                 disabled={props.disabled}
+                aria-controls={props.id}
+                aria-pressed={logic.state.showPassword}
                 aria-label={
                     logic.state.showPassword
                         ? messages.hidePassword

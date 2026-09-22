@@ -6,6 +6,7 @@ import type {
     TextareaHTMLAttributes,
 } from 'react'
 import type { InputLocale, InputMessages } from '../Config/messages.js'
+import type { InputValidationMode } from '../InputProvider.js'
 
 export interface CustomDesign {
     bg?: string
@@ -41,6 +42,7 @@ export interface InputVisualProps {
     locale?: InputLocale
     messages?: Partial<InputMessages>
     triggerRef?: Ref<HTMLInputElement | HTMLTextAreaElement>
+    validationMode?: InputValidationMode
 }
 
 type ReplacedInputAttributes = 'value' | 'defaultValue' | 'onChange' | 'type'

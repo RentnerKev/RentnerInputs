@@ -1,4 +1,4 @@
-export type InputLocale = 'de' | 'en' | (string & {})
+export type InputLocale = 'de' | 'en' | 'es' | 'fr' | (string & {})
 
 export interface InputMessages {
     required: string
@@ -25,7 +25,10 @@ export interface InputMessages {
     minutePlaceholder: string
 }
 
-export const inputMessageCatalog: Record<'de' | 'en', InputMessages> = {
+export const inputMessageCatalog: Record<
+    'de' | 'en' | 'es' | 'fr',
+    InputMessages
+> = {
     de: {
         required: 'Dieses Feld ist erforderlich',
         minLength: (minLength) =>
@@ -76,6 +79,56 @@ export const inputMessageCatalog: Record<'de' | 'en', InputMessages> = {
         minuteSelect: 'Select minute',
         minutePlaceholder: 'Minute',
     },
+    es: {
+        required: 'Este campo es obligatorio',
+        minLength: (minLength) =>
+            `Se requieren al menos ${minLength} caracteres`,
+        invalidInput: 'Entrada no válida',
+        invalidEmail: 'Dirección de correo no válida',
+        invalidPhone: 'Número de teléfono no válido',
+        onlyNumbers: 'Solo se permiten números',
+        minValue: (minValue) => `El valor debe ser al menos ${minValue}`,
+        maxValue: (maxValue) => `El valor debe ser como máximo ${maxValue}`,
+        onlyMoneyCharacters: 'Solo números, puntos y comas',
+        passwordStrength: 'Seguridad de la contraseña',
+        passwordStrengthEmpty: 'Vacía',
+        passwordStrengthVeryWeak: 'Muy débil',
+        passwordStrengthWeak: 'Débil',
+        passwordStrengthOkay: 'Aceptable',
+        passwordStrengthStrong: 'Fuerte',
+        passwordStrengthVeryStrong: 'Muy fuerte',
+        showPassword: 'Mostrar contraseña',
+        hidePassword: 'Ocultar contraseña',
+        hourSelect: 'Seleccionar hora',
+        hourPlaceholder: 'Hora',
+        minuteSelect: 'Seleccionar minuto',
+        minutePlaceholder: 'Minuto',
+    },
+    fr: {
+        required: 'Ce champ est obligatoire',
+        minLength: (minLength) =>
+            `Au moins ${minLength} caractères sont requis`,
+        invalidInput: 'Saisie non valide',
+        invalidEmail: 'Adresse e-mail non valide',
+        invalidPhone: 'Numéro de téléphone non valide',
+        onlyNumbers: 'Chiffres uniquement',
+        minValue: (minValue) => `La valeur doit être au moins ${minValue}`,
+        maxValue: (maxValue) => `La valeur doit être au plus ${maxValue}`,
+        onlyMoneyCharacters: 'Chiffres, points et virgules uniquement',
+        passwordStrength: 'Force du mot de passe',
+        passwordStrengthEmpty: 'Vide',
+        passwordStrengthVeryWeak: 'Très faible',
+        passwordStrengthWeak: 'Faible',
+        passwordStrengthOkay: 'Correct',
+        passwordStrengthStrong: 'Fort',
+        passwordStrengthVeryStrong: 'Très fort',
+        showPassword: 'Afficher le mot de passe',
+        hidePassword: 'Masquer le mot de passe',
+        hourSelect: 'Choisir une heure',
+        hourPlaceholder: 'Heure',
+        minuteSelect: 'Choisir une minute',
+        minutePlaceholder: 'Minute',
+    },
 }
 
 export function resolveInputMessages(
@@ -83,9 +136,10 @@ export function resolveInputMessages(
     messages?: Partial<InputMessages>,
 ): InputMessages {
     const normalizedLocale = locale.toLowerCase().replace('_', '-')
+    const language = normalizedLocale.split('-')[0]
     const messageLocale =
-        normalizedLocale === 'en' || normalizedLocale.startsWith('en-')
-            ? 'en'
+        language === 'en' || language === 'es' || language === 'fr'
+            ? language
             : 'de'
 
     return {
@@ -97,5 +151,7 @@ export function resolveInputMessages(
 export function resolveInputIntlLocale(locale: InputLocale = 'de') {
     if (locale === 'de') return 'de-DE'
     if (locale === 'en') return 'en-US'
+    if (locale === 'es') return 'es-ES'
+    if (locale === 'fr') return 'fr-FR'
     return locale
 }

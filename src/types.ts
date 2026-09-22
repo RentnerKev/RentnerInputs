@@ -11,6 +11,19 @@ export type { QuantityInputProps } from './Types/QuantityInput.types.js'
 export type { TextareaProps } from './Types/Textarea.types.js'
 export type { TextInputProps } from './Types/TextInput.types.js'
 export type { TimeInputProps } from './Types/TimeInput.types.js'
+export type { SearchInputProps } from './Components/Inputs/SearchInput.js'
+export type { NativeTimeInputProps } from './Components/Inputs/NativeTimeInput.js'
+export type {
+    CheckboxInputProps,
+    RadioInputProps,
+    RangeInputProps,
+    FileInputProps,
+} from './Components/Inputs/PrimitiveInputs.js'
+export type {
+    InputClassNames,
+    InputProviderProps,
+    InputValidationMode,
+} from './InputProvider.js'
 export type {
     BaseInputProps,
     BaseTextareaProps,

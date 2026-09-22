@@ -2,7 +2,7 @@ import { AlertCircle, ChevronDown, Clock } from 'lucide-react'
 import { CustomTooltip } from '@rentnerkev/tooltips'
 import { forwardRef, useId, type AriaAttributes, type Ref } from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
-import { resolveInputMessages } from '../../Config/messages.js'
+import { useInputDefaults, useInputMessages } from '../../InputProvider.js'
 import {
     mergeAriaDescribedBy,
     partitionAriaProps,
@@ -109,8 +109,9 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             error,
             locale,
             messages,
-            className = 'w-full py-3 rounded-xl',
+            className,
             disabled,
+            validationMode,
             triggerRef,
             required: nativeRequired,
             showLength: _showLength,
@@ -128,7 +129,8 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
         void [_type, _showLength]
         const { ariaProps: additionalAria, otherProps: inputProps } =
             partitionAriaProps(props)
-        const resolvedMessages = resolveInputMessages(locale, messages)
+        const defaults = useInputDefaults()
+        const resolvedMessages = useInputMessages(locale, messages)
         const logic = useTimeInputLogic(
             {
                 ...inputProps,
@@ -140,6 +142,7 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
                 messages,
                 className,
                 disabled,
+                validationMode,
                 triggerRef,
                 required: nativeRequired,
                 minuteStep,
@@ -186,9 +189,15 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             'aria-readonly': readOnly || undefined,
             'aria-disabled': disabled || undefined,
         } satisfies AriaAttributes
-        const design = { ...DESIGN_CONFIG, ...customDesign }
+        const design = {
+            ...DESIGN_CONFIG,
+            ...defaults.customDesign,
+            ...customDesign,
+        }
+        const fieldClasses =
+            className ?? defaults.classNames?.input ?? 'w-full py-3 rounded-xl'
         const hasLeftIcon = Boolean(icon || logic.state.hasError)
-        const fieldClassName = `peer flex min-h-14 items-center gap-3 ${hasLeftIcon ? 'pl-11' : 'pl-4'} pr-4 transition-[background-color,border-color,box-shadow,color] ${className} ${design.bg} border ${design.text} ${
+        const fieldClassName = `peer flex min-h-14 items-center gap-3 ${hasLeftIcon ? 'pl-11' : 'pl-4'} pr-4 transition-[background-color,border-color,box-shadow,color] ${fieldClasses} ${design.bg} border ${design.text} ${
             logic.state.hasError
                 ? `${design.errorBorder} ring-2 ${design.errorRing.replace('focus:', '')}`
                 : design.border

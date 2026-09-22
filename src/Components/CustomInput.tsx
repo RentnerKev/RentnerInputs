@@ -10,6 +10,8 @@ import type { QuantityInputProps } from '../Types/QuantityInput.types.js'
 import type { TextareaProps } from '../Types/Textarea.types.js'
 import type { TextInputProps } from '../Types/TextInput.types.js'
 import type { TimeInputProps } from '../Types/TimeInput.types.js'
+import type { SearchInputProps } from './Inputs/SearchInput.js'
+import type { NativeTimeInputProps } from './Inputs/NativeTimeInput.js'
 import { EmailInput } from './Inputs/EmailInput.js'
 import { MoneyInput } from './Inputs/MoneyInput.js'
 import { NumberInput } from './Inputs/NumberInput.js'
@@ -18,6 +20,8 @@ import { PhoneInput } from './Inputs/PhoneInput.js'
 import { QuantityInput } from './Inputs/QuantityInput.js'
 import { Textarea } from './Inputs/Textarea.js'
 import { TextInput } from './Inputs/TextInput.js'
+import { SearchInput } from './Inputs/SearchInput.js'
+import { NativeTimeInput } from './Inputs/NativeTimeInput.js'
 import { TimeInput } from './Inputs/TimeInput.js'
 
 type CustomInputElement = HTMLInputElement | HTMLTextAreaElement
@@ -25,6 +29,20 @@ type CustomInputElement = HTMLInputElement | HTMLTextAreaElement
 export const CustomInput = forwardRef<CustomInputElement, CustomInputProps>(
     function CustomInput(props, ref) {
         switch (props.type) {
+            case 'search':
+                return (
+                    <SearchInput
+                        {...(props as SearchInputProps)}
+                        ref={ref as Ref<HTMLInputElement>}
+                    />
+                )
+            case 'native-time':
+                return (
+                    <NativeTimeInput
+                        {...(props as NativeTimeInputProps)}
+                        ref={ref as Ref<HTMLInputElement>}
+                    />
+                )
             case 'email':
                 return (
                     <EmailInput

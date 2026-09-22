@@ -1,6 +1,6 @@
 {
     "name": "@rentnerkev/inputs",
-    "version": "2.0.1",
+    "version": "2.1.0",
     "description": "Controlled React input components with validation, icons, length counters, and Tailwind design hooks.",
     "author": "RentnerKev",
     "license": "MIT",
@@ -77,6 +77,30 @@
         "./text-input": {
             "import": "./dist/Components/Inputs/TextInput.js",
             "types": "./dist/Components/Inputs/TextInput.d.ts"
+        },
+        "./search-input": {
+            "import": "./dist/Components/Inputs/SearchInput.js",
+            "types": "./dist/Components/Inputs/SearchInput.d.ts"
+        },
+        "./native-time-input": {
+            "import": "./dist/Components/Inputs/NativeTimeInput.js",
+            "types": "./dist/Components/Inputs/NativeTimeInput.d.ts"
+        },
+        "./checkbox-input": {
+            "import": "./dist/Components/Inputs/PrimitiveInputs.js",
+            "types": "./dist/Components/Inputs/PrimitiveInputs.d.ts"
+        },
+        "./radio-input": {
+            "import": "./dist/Components/Inputs/PrimitiveInputs.js",
+            "types": "./dist/Components/Inputs/PrimitiveInputs.d.ts"
+        },
+        "./range-input": {
+            "import": "./dist/Components/Inputs/PrimitiveInputs.js",
+            "types": "./dist/Components/Inputs/PrimitiveInputs.d.ts"
+        },
+        "./file-input": {
+            "import": "./dist/Components/Inputs/PrimitiveInputs.js",
+            "types": "./dist/Components/Inputs/PrimitiveInputs.d.ts"
         },
         "./number-input": {
             "import": "./dist/Components/Inputs/NumberInput.js",
