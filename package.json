@@ -45,8 +45,8 @@
         "@radix-ui/react-tooltip": "^1.2.16"
     },
     "peerDependencies": {
-        "react": "^19.2.8",
-        "react-dom": "^19.2.8"
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0"
     },
     "devDependencies": {
         "@types/react": "^19.3.0",
@@ -114,7 +114,8 @@
         "./messages": {
             "import": "./dist/Config/messages.js",
             "types": "./dist/Config/messages.d.ts"
-        }
+        },
+        "./package.json": "./package.json"
     },
     "packageManager": "bun@1.4.2"
 }
