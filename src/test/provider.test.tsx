@@ -41,6 +41,8 @@ describe('project-level input defaults', () => {
         expect(markup).toContain('aria-label="Mostrar contraseña"')
         expect(markup).toContain('aria-controls="password"')
         expect(markup).toContain('aria-pressed="false"')
+        expect(markup).toContain('padding-right:56px')
+        expect(markup).toContain('group min-w-0 w-full')
         expect(markup).not.toContain('Este campo es obligatorio')
     })
 

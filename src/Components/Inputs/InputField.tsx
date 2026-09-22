@@ -109,7 +109,7 @@ export function InputField({
                 : design.passwordStrengthStrong
 
     return (
-        <div className="group w-full">
+        <div className="group min-w-0 w-full">
             {hasLabel && (
                 <label
                     id={labelId}
@@ -173,7 +173,7 @@ export function InputField({
                     }
                     style={{
                         ...nativeProps.style,
-                        paddingRight: `${logic.state.dynamicPaddingRight}px`,
+                        paddingRight: `${Math.max(logic.state.dynamicPaddingRight, rightControl ? 56 : 16)}px`,
                     }}
                     className={`${fieldClassName} [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
                 />

@@ -106,7 +106,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`
 
         return (
-            <div className="group w-full">
+            <div className="group min-w-0 w-full">
                 {hasLabel && (
                     <label
                         id={`${fieldId}-label`}
