@@ -1,6 +1,6 @@
 {
     "name": "@rentnerkev/inputs",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Controlled React input components with validation, icons, length counters, and Tailwind design hooks.",
     "author": "RentnerKev",
     "license": "MIT",
@@ -21,12 +21,13 @@
         "pack:check": "bun pm pack --dry-run",
         "playground:dev": "bun --cwd playground dev",
         "playground:build": "bun --cwd playground build",
+        "e2e": "playwright test",
         "lint": "oxlint .",
         "lint:fix": "oxlint --fix .",
         "format": "oxfmt .",
         "format:check": "oxfmt --check .",
         "test": "bun test",
-        "verify": "bun run typecheck && bun run lint && bun run format:check && bun run test && bun run build && bun run pack:check"
+        "verify": "bun run typecheck && bun run lint && bun run format:check && bun run test && bun run build && bun run pack:check && bun run e2e"
     },
     "repository": {
         "type": "git",
@@ -41,25 +42,27 @@
         "registry": "https://registry.npmjs.org"
     },
     "dependencies": {
-        "lucide-react": "^1.47.0",
-        "@radix-ui/react-tooltip": "^1.2.16"
+        "@rentnerkev/tooltips": "^2.0.0",
+        "lucide-react": "^1.47.0"
     },
     "peerDependencies": {
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
     },
     "devDependencies": {
+        "@axe-core/playwright": "^4.13.0",
+        "@playwright/test": "^1.63.0",
+        "@tailwindcss/vite": "^4.3.3",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.2.4",
+        "@vitejs/plugin-react": "^6.1.1",
+        "oxfmt": "^0.68.0",
+        "oxlint": "^1.83.0",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",
-        "@tailwindcss/vite": "^4.3.3",
-        "@vitejs/plugin-react": "^6.1.1",
         "tailwindcss": "^4.3.3",
         "typescript": "^7.0.2",
-        "vite": "^8.3.0",
-        "oxfmt": "^0.68.0",
-        "oxlint": "^1.83.0"
+        "vite": "^8.3.0"
     },
     "exports": {
         ".": {

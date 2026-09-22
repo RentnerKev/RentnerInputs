@@ -1,5 +1,5 @@
 import { AlertCircle, ChevronDown, Clock } from 'lucide-react'
-import { CustomTooltip } from '../../Internal/Tooltip.js'
+import { CustomTooltip } from '@rentnerkev/tooltips'
 import { forwardRef, useId, type AriaAttributes, type Ref } from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
 import { resolveInputMessages } from '../../Config/messages.js'
@@ -57,9 +57,9 @@ function TimeDropdown({
                 }
                 disabled={disabled}
                 onClick={onToggle}
-                className="flex h-11 w-full cursor-pointer items-center justify-between rounded-lg border border-border-dark bg-background-dark/60 px-3 text-left text-sm font-semibold text-white transition-colors hover:border-secondary-text/70 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-11 w-full cursor-pointer items-center justify-between rounded-lg border border-border-dark bg-background-dark/60 px-3 text-left text-sm font-semibold text-white transition-colors hover:border-secondary-text/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50"
             >
-                <span className={value ? 'text-white' : 'text-gray-600'}>
+                <span className={value ? 'text-white' : 'text-gray-400'}>
                     {value || placeholder}
                 </span>
                 <ChevronDown
@@ -82,7 +82,7 @@ function TimeDropdown({
                                 aria-selected={option === value}
                                 disabled={disabled || readOnly}
                                 onClick={() => onSelect(option)}
-                                className={`flex w-full cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none ${
+                                className={`flex w-full cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
                                     option === value
                                         ? 'bg-primary text-background-dark'
                                         : 'text-secondary-text hover:bg-border-dark hover:text-white'
@@ -188,7 +188,7 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
         } satisfies AriaAttributes
         const design = { ...DESIGN_CONFIG, ...customDesign }
         const hasLeftIcon = Boolean(icon || logic.state.hasError)
-        const fieldClassName = `peer flex min-h-14 items-center gap-3 ${hasLeftIcon ? 'pl-11' : 'pl-4'} pr-4 transition-all ${className} ${design.bg} border ${design.text} ${
+        const fieldClassName = `peer flex min-h-14 items-center gap-3 ${hasLeftIcon ? 'pl-11' : 'pl-4'} pr-4 transition-[background-color,border-color,box-shadow,color] ${className} ${design.bg} border ${design.text} ${
             logic.state.hasError
                 ? `${design.errorBorder} ring-2 ${design.errorRing.replace('focus:', '')}`
                 : design.border
@@ -243,11 +243,17 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
                             error === undefined ? nativeRequired : undefined
                         }
                         aria-hidden="true"
+                        aria-required={fieldRequired}
                         tabIndex={-1}
                         className="pointer-events-none absolute h-px w-px opacity-0"
                     />
 
-                    <div className={fieldClassName} role="group" {...fieldAria}>
+                    <div
+                        className={fieldClassName}
+                        role="group"
+                        aria-labelledby={labelledBy}
+                        aria-describedby={describedBy}
+                    >
                         <TimeDropdown
                             id={fieldId}
                             buttonRef={logic.ref.trigger}
@@ -262,7 +268,10 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
                             }
                             disabled={disabled}
                             readOnly={readOnly}
-                            fieldAria={fieldAria}
+                            fieldAria={{
+                                ...fieldAria,
+                                'aria-required': undefined,
+                            }}
                             onToggle={logic.handler.toggleHourDropdown}
                             onSelect={logic.handler.selectHour}
                         />
@@ -281,6 +290,10 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
                             }
                             disabled={disabled}
                             readOnly={readOnly}
+                            fieldAria={{
+                                ...fieldAria,
+                                'aria-required': undefined,
+                            }}
                             onToggle={logic.handler.toggleMinuteDropdown}
                             onSelect={logic.handler.selectMinute}
                         />
@@ -299,6 +312,7 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
                 {hasVisibleError && (
                     <p
                         id={errorId}
+                        aria-live="polite"
                         className={`mt-1 text-xs ${design.errorText}`}
                     >
                         {logic.state.error}

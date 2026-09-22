@@ -1,5 +1,5 @@
 import { AlertCircle } from 'lucide-react'
-import { CustomTooltip } from '../../Internal/Tooltip.js'
+import { CustomTooltip } from '@rentnerkev/tooltips'
 import { forwardRef, useId } from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
 import { mergeAriaDescribedBy } from '../../Utils/fieldA11y.utils.js'
@@ -87,7 +87,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         )
         const design = { ...DESIGN_CONFIG, ...customDesign }
         const hasLeftIcon = Boolean(icon || logic.state.hasError)
-        const fieldClassName = `peer block min-h-28 resize-y ${hasLeftIcon ? 'pl-11' : 'pl-4'} focus:outline-none transition-all ${className} ${design.bg} border ${design.text} ${design.placeholder} ${
+        const fieldClassName = `peer block min-h-28 resize-y ${hasLeftIcon ? 'pl-11' : 'pl-4'} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-[background-color,border-color,box-shadow,color] ${className} ${design.bg} border ${design.text} ${design.placeholder} ${
             logic.state.hasError
                 ? `${design.errorBorder} focus:ring-2 ${design.errorRing}`
                 : `${design.border} focus:ring-2 ${design.focusRing} ${design.focusBorder}`
@@ -167,7 +167,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
                     {(logic.state.effectiveShowLength || showLength) && (
                         <div
-                            className={`pointer-events-none absolute bottom-0 right-0 z-10 rounded-br-xl rounded-tl-xl border p-1 text-[10px] font-medium uppercase tracking-wider transition-all ${design.counterBg} ${
+                            className={`pointer-events-none absolute bottom-0 right-0 z-10 rounded-br-xl rounded-tl-xl border p-1 text-[10px] font-medium uppercase tracking-wider transition-[background-color,border-color,color] ${design.counterBg} ${
                                 logic.state.hasError
                                     ? `${design.errorBorder} ${design.errorText} peer-focus:${design.errorBorder}`
                                     : `${design.border} ${design.counterText} ${design.counterBorderFocus}`
@@ -190,6 +190,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                 {hasVisibleError && (
                     <p
                         id={errorId}
+                        aria-live="polite"
                         className={`mt-1 text-xs ${design.errorText}`}
                     >
                         {logic.state.error}

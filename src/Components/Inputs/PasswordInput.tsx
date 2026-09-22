@@ -26,7 +26,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
                         ? messages.hidePassword
                         : messages.showPassword
                 }
-                className={`absolute inset-y-0 right-4 z-30 flex cursor-pointer items-center transition-colors focus:outline-none ${design.iconColor} ${design.iconFocus}`}
+                className={`absolute inset-y-0 right-4 z-30 flex cursor-pointer items-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-input-dark ${design.iconColor} ${design.iconFocus}`}
             >
                 {logic.state.showPassword ? (
                     <EyeOff className="h-5 w-5" />

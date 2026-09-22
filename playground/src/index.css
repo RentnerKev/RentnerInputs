@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+html {
+    color-scheme: dark;
+}
+
 @source "../../src/**/*.{ts,tsx}";
 @source "../../dist/index.js";
 
@@ -81,5 +85,21 @@
     }
     100% {
         transform: translate(-50%, -50%) rotate(360deg) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+
+    .glow-effect {
+        animation: none;
+        transition: none;
     }
 }
