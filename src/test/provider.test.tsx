@@ -11,6 +11,7 @@ import {
 } from '../Components/Inputs/PrimitiveInputs.js'
 import { SearchInput } from '../Components/Inputs/SearchInput.js'
 import { NativeTimeInput } from '../Components/Inputs/NativeTimeInput.js'
+import { Textarea } from '../Components/Inputs/Textarea.js'
 
 const noopChange = () => undefined
 
@@ -60,6 +61,25 @@ describe('project-level input defaults', () => {
 
         expect(markup).toContain('bg-project-field')
         expect(markup).toContain('aria-label="Afficher le mot de passe"')
+    })
+
+    test('reserves text space for input and textarea icons independent of utility CSS', () => {
+        const markup = renderToStaticMarkup(
+            <>
+                <SearchInput
+                    icon={<span>Search</span>}
+                    value=""
+                    onChange={noopChange}
+                />
+                <Textarea
+                    icon={<span>Note</span>}
+                    value=""
+                    onChange={noopChange}
+                />
+            </>,
+        )
+
+        expect(markup.match(/padding-left:44px/g)).toHaveLength(2)
     })
 
     test('renders native controls with their native semantics', () => {

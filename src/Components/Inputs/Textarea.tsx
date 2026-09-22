@@ -171,6 +171,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                                   : ariaRequired
                         }
                         style={{
+                            ...(hasLeftIcon ? { paddingLeft: 44 } : {}),
                             ...nativeProps.style,
                             paddingRight: `${logic.state.dynamicPaddingRight}px`,
                         }}

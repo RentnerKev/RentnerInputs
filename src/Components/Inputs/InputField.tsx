@@ -172,6 +172,7 @@ export function InputField({
                               : ariaRequired
                     }
                     style={{
+                        ...(hasLeftIcon ? { paddingLeft: 44 } : {}),
                         ...nativeProps.style,
                         paddingRight: `${Math.max(logic.state.dynamicPaddingRight, rightControl ? 56 : 16)}px`,
                     }}

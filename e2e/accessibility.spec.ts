@@ -40,3 +40,17 @@ test('supports keyboard password toggling and reduced motion', async ({
         'none',
     )
 })
+
+test('keeps text clear of leading icons in inputs and textareas', async ({
+    page,
+}) => {
+    await page.goto('/')
+
+    for (const label of ['Text', 'Nachricht']) {
+        const field = page.getByLabel(label, { exact: true })
+        const paddingLeft = await field.evaluate((element) =>
+            Number.parseFloat(getComputedStyle(element).paddingLeft),
+        )
+        expect(paddingLeft).toBeGreaterThanOrEqual(44)
+    }
+})
