@@ -21,7 +21,8 @@ type InputElement = HTMLInputElement | HTMLTextAreaElement
 
 export interface UseInputFieldLogicOptions<Element extends InputElement> {
     value: string
-    onChange: ChangeEventHandler<Element>
+    onChange?: ChangeEventHandler<Element>
+    onValueChange?: (value: string) => void
     onFocus?: FocusEventHandler<Element>
     onBlur?: FocusEventHandler<Element>
     onInvalid?: FormEventHandler<Element>
@@ -54,6 +55,7 @@ function assignRef<Element>(
 export function useInputFieldLogic<Element extends InputElement>({
     value,
     onChange,
+    onValueChange,
     onFocus,
     onBlur,
     onInvalid,
@@ -189,7 +191,8 @@ export function useInputFieldLogic<Element extends InputElement>({
         setNativeError(null)
         if (validateValue(nextValue)) setIsTouched(true)
         valueChangedByInputRef.current = true
-        onChange(event)
+        onChange?.(event)
+        onValueChange?.(nextValue)
     }
 
     function handleInvalid(event: InvalidEvent<Element>) {

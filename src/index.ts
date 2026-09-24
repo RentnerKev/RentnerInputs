@@ -25,7 +25,10 @@ export {
 } from './Config/messages.js'
 export type {
     CustomDesign,
+    CustomInputComponentProps,
     CustomInputProps,
+    CustomInputTextProps,
+    CustomInputValueProps,
     CustomInputType,
     EmailInputProps,
     MoneyInputProps,
@@ -36,8 +39,12 @@ export type {
     PasswordInputProps,
     PhoneInputProps,
     QuantityInputProps,
+    TextareaComponentProps,
     TextareaProps,
+    TextareaValueProps,
+    TextInputComponentProps,
     TextInputProps,
+    TextInputValueProps,
     TimeInputProps,
 } from './types.js'
 export type { InputLocale, InputMessages } from './types.js'

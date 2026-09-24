@@ -36,3 +36,19 @@ export interface CustomInputProps
     showPasswordStrength?: boolean
     minuteStep?: number
 }
+
+export interface CustomInputTextProps extends Omit<CustomInputProps, 'type'> {
+    type?: 'text' | 'textarea'
+    onValueChange?: (value: string) => void
+}
+
+export type CustomInputValueProps = Omit<CustomInputTextProps, 'onChange'> & {
+    type?: 'text' | 'textarea'
+    onChange?: never
+    onValueChange: (value: string) => void
+}
+
+export type CustomInputComponentProps =
+    | CustomInputProps
+    | CustomInputTextProps
+    | CustomInputValueProps

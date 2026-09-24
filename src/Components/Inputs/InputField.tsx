@@ -1,6 +1,11 @@
 import { AlertCircle } from 'lucide-react'
 import { CustomTooltip } from '@rentnerkev/tooltips'
-import { useId, type InputHTMLAttributes, type ReactNode } from 'react'
+import {
+    useId,
+    type ChangeEventHandler,
+    type InputHTMLAttributes,
+    type ReactNode,
+} from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
 import { useInputDefaults, useInputMessages } from '../../InputProvider.js'
 import { mergeAriaDescribedBy } from '../../Utils/fieldA11y.utils.js'
@@ -12,9 +17,11 @@ import type { useInputFieldLogic } from '../../Hooks/Inputs/useInputField.logic.
 
 type InputFieldLogic = ReturnType<typeof useInputFieldLogic<HTMLInputElement>>
 
-interface InputFieldProps extends BaseInputProps {
+interface InputFieldProps extends Omit<BaseInputProps, 'onChange'> {
     logic: InputFieldLogic
     inputType: InputHTMLAttributes<HTMLInputElement>['type']
+    onChange?: ChangeEventHandler<HTMLInputElement>
+    onValueChange?: (value: string) => void
     displayValue?: string
     rightControl?: ReactNode
     passwordStrength?: PasswordStrength
@@ -30,6 +37,7 @@ export function InputField({
     showPasswordStrength,
     value: _value,
     onChange: _onChange,
+    onValueChange: _onValueChange,
     onFocus: _onFocus,
     onBlur: _onBlur,
     onInvalid: _onInvalid,
@@ -58,6 +66,7 @@ export function InputField({
     void [
         _value,
         _onChange,
+        _onValueChange,
         _onFocus,
         _onBlur,
         _onInvalid,

@@ -1,9 +1,9 @@
 import type { Ref } from 'react'
-import type { TextareaProps } from '../../Types/Textarea.types.js'
+import type { TextareaComponentProps } from '../../Types/Textarea.types.js'
 import { useInputFieldLogic } from './useInputField.logic.js'
 
 export default function useTextareaLogic(
-    props: TextareaProps,
+    props: TextareaComponentProps,
     forwardedRef?: Ref<HTMLTextAreaElement>,
 ) {
     return useInputFieldLogic<HTMLTextAreaElement>({

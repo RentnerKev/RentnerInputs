@@ -62,7 +62,7 @@ export function App() {
                     <CustomInput
                         label="Text"
                         value={username}
-                        onChange={(event) => setUsername(event.target.value)}
+                        onValueChange={setUsername}
                         placeholder="Benutzername (Text)"
                         required
                         showLength={true}
@@ -116,7 +116,7 @@ export function App() {
                     <CustomInput
                         label="Nachricht"
                         value={message}
-                        onChange={(event) => setMessage(event.target.value)}
+                        onValueChange={setMessage}
                         placeholder="Nachricht (Textarea)"
                         required
                         showLength={true}
