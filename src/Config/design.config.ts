@@ -10,6 +10,7 @@ export const DESIGN_CONFIG = {
     focusBorder: 'focus:border-primary',
     errorBorder: 'border-red-500',
     errorRing: 'focus:ring-red-500/50',
+    errorRingBase: 'ring-red-500/50',
     errorText: 'text-red-400',
     iconColor: 'text-gray-500',
     iconFocus: 'group-focus-within:text-primary',
