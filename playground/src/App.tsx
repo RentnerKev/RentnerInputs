@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { CustomInput } from '../../src'
+import { CustomInput, OtpInput } from '../../src'
 import {
     MailIcon,
     Hash,
@@ -21,6 +21,7 @@ export function App() {
     const [password, setPassword] = useState('')
     const [message, setMessage] = useState('')
     const [appointmentTime, setAppointmentTime] = useState('')
+    const [otpDigits, setOtpDigits] = useState<Array<string>>(Array(6).fill(''))
 
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault()
@@ -161,9 +162,16 @@ export function App() {
                         showLength={true}
                         maxLength={2}
                         minValue={5}
-                        maxValue={50}
+                        max={50}
                         type="number"
                         icon={<Hash className="h-5 w-5" />}
+                    />
+
+                    <OtpInput
+                        name="otp"
+                        label="Bestätigungscode"
+                        value={otpDigits}
+                        onValueChange={setOtpDigits}
                     />
 
                     <CustomInput

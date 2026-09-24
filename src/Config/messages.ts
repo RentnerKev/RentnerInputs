@@ -23,6 +23,9 @@ export interface InputMessages {
     hourPlaceholder: string
     minuteSelect: string
     minutePlaceholder: string
+    otpCode: string
+    otpDigit: (position: number, count: number) => string
+    otpIncomplete: (count: number) => string
 }
 
 export const inputMessageCatalog: Record<
@@ -53,6 +56,9 @@ export const inputMessageCatalog: Record<
         hourPlaceholder: 'Stunde',
         minuteSelect: 'Minute auswählen',
         minutePlaceholder: 'Minute',
+        otpCode: 'Bestätigungscode',
+        otpDigit: (position, count) => `Ziffer ${position} von ${count}`,
+        otpIncomplete: (count) => `Bitte ${count} Ziffern eingeben`,
     },
     en: {
         required: 'This field is required',
@@ -78,6 +84,9 @@ export const inputMessageCatalog: Record<
         hourPlaceholder: 'Hour',
         minuteSelect: 'Select minute',
         minutePlaceholder: 'Minute',
+        otpCode: 'Verification code',
+        otpDigit: (position, count) => `Digit ${position} of ${count}`,
+        otpIncomplete: (count) => `Enter ${count} digits`,
     },
     es: {
         required: 'Este campo es obligatorio',
@@ -103,6 +112,9 @@ export const inputMessageCatalog: Record<
         hourPlaceholder: 'Hora',
         minuteSelect: 'Seleccionar minuto',
         minutePlaceholder: 'Minuto',
+        otpCode: 'Código de verificación',
+        otpDigit: (position, count) => `Dígito ${position} de ${count}`,
+        otpIncomplete: (count) => `Introduce ${count} dígitos`,
     },
     fr: {
         required: 'Ce champ est obligatoire',
@@ -128,6 +140,9 @@ export const inputMessageCatalog: Record<
         hourPlaceholder: 'Heure',
         minuteSelect: 'Choisir une minute',
         minutePlaceholder: 'Minute',
+        otpCode: 'Code de vérification',
+        otpDigit: (position, count) => `Chiffre ${position} sur ${count}`,
+        otpIncomplete: (count) => `Saisissez ${count} chiffres`,
     },
 }
 

@@ -15,7 +15,7 @@ const readme = readFileSync(new URL('../../README.md', import.meta.url), 'utf8')
 
 describe('published package contract', () => {
     test('keeps the shared React and test contracts', () => {
-        expect(packageJson.version).toBe('2.1.3')
+        expect(packageJson.version).toBe('2.1.4')
         expect(packageJson.peerDependencies.react).toBe('^19.0.0')
         expect(packageJson.peerDependencies['react-dom']).toBe('^19.0.0')
         expect(packageJson.scripts.test).toBe('bun test')
@@ -34,6 +34,7 @@ describe('published package contract', () => {
             './range-input',
             './file-input',
             './number-input',
+            './otp-input',
             './phone-input',
             './email-input',
             './money-input',

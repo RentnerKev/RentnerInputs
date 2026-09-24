@@ -25,6 +25,7 @@ Each field type has a dedicated component, logic hook, and props type:
 - `EmailInput`
 - `PhoneInput`
 - `NumberInput`
+- `OtpInput` (digit and one-time-code fields)
 - `MoneyInput`
 - `PasswordInput`
 - `QuantityInput`
@@ -187,6 +188,8 @@ example, does not replace the package's focus handling.
 Use native `maxLength` and `minLength` props for character constraints.
 `showLength` adds the visible counter.
 
+For `NumberInput`, `min` and `max` control both the native attributes and built-in validation. `minValue` and `maxValue` remain supported as aliases. If both forms are supplied, the native `min` or `max` value takes precedence.
+
 Consumer IDs, the description ID, and the visible error ID are merged into
 `aria-describedby`. An invalid native submit focuses the visible field.
 `disabled` removes the field from internal validation. `readOnly` prevents
@@ -200,11 +203,38 @@ button ref is available through `CustomInput` when `type="time"`.
 
 | Component       | Additional props                                                            |
 | --------------- | --------------------------------------------------------------------------- |
-| `NumberInput`   | `minValue`, `maxValue`                                                      |
+| `NumberInput`   | `min`, `max`; `minValue`, `maxValue` aliases                                |
+| `OtpInput`      | `length` (default `6`), `onComplete`, `inputClassName`                      |
 | `MoneyInput`    | `currency` (default `EUR`), `locale` (`'de'`, `'en'`, or an Intl locale)    |
 | `PasswordInput` | `showPasswordStrength`                                                      |
 | `QuantityInput` | `minValue`, `maxValue`, `suffix` (default `x`)                              |
 | `Textarea`      | Native textarea props such as `rows` and `wrap`; resize through `className` |
+
+### One-time codes
+
+`OtpInput` keeps each digit in a controlled array, so editing one position preserves the others. It supports typing, arrow keys, Backspace, pasting a complete or partial code, and browser one-time-code autofill. `onComplete` receives the joined code when all positions are filled. With `name`, the joined value is submitted as one form field.
+
+```tsx
+import { useState } from 'react'
+import { OtpInput } from '@rentnerkev/inputs'
+
+function LoginCode() {
+    const [digits, setDigits] = useState<Array<string>>(Array(6).fill(''))
+
+    return (
+        <OtpInput
+            name="code"
+            label="Bestätigungscode"
+            value={digits}
+            onValueChange={setDigits}
+            onComplete={(code) => console.log(code)}
+            required
+        />
+    )
+}
+```
+
+The first digit can be focused through `ref` or `triggerRef`. Use `className` for the outer field and `inputClassName` or `InputProvider`'s `classNames.otp` for the digit fields.
 
 ## Localization and messages
 
@@ -281,6 +311,7 @@ component entry points are also available:
 - `@rentnerkev/inputs/range-input`
 - `@rentnerkev/inputs/file-input`
 - `@rentnerkev/inputs/number-input`
+- `@rentnerkev/inputs/otp-input`
 - `@rentnerkev/inputs/phone-input`
 - `@rentnerkev/inputs/email-input`
 - `@rentnerkev/inputs/money-input`

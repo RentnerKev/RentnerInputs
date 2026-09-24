@@ -13,6 +13,7 @@ export interface InputClassNames {
     radio?: string
     range?: string
     file?: string
+    otp?: string
 }
 
 export type InputValidationMode = 'built-in' | 'external'

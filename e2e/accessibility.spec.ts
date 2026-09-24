@@ -58,3 +58,50 @@ test('keeps text clear of leading icons in inputs and textareas', async ({
         expect(paddingLeft).toBeGreaterThanOrEqual(minimum)
     }
 })
+
+test('supports OTP typing, paste, correction, and number bounds', async ({
+    page,
+}) => {
+    await page.goto('/')
+    const firstDigit = page.getByRole('textbox', { name: 'Ziffer 1 von 6' })
+    await firstDigit.fill('1')
+    await expect(
+        page.getByRole('textbox', { name: 'Ziffer 2 von 6' }),
+    ).toBeFocused()
+    await page.keyboard.type('2')
+    await expect(
+        page.getByRole('textbox', { name: 'Ziffer 3 von 6' }),
+    ).toBeFocused()
+    await page.getByRole('textbox', { name: 'Ziffer 3 von 6' }).fill('3')
+    await page.getByRole('textbox', { name: 'Ziffer 4 von 6' }).fill('4')
+    await page.getByRole('textbox', { name: 'Ziffer 5 von 6' }).fill('5')
+    await page.getByRole('textbox', { name: 'Ziffer 6 von 6' }).fill('6')
+    await expect(page.locator('input[name="otp"]')).toHaveValue('123456')
+
+    await page.getByRole('textbox', { name: 'Ziffer 3 von 6' }).fill('')
+    await expect(page.locator('input[name="otp"]')).toHaveValue('12456')
+    await page.getByRole('textbox', { name: 'Ziffer 3 von 6' }).fill('9')
+    await expect(page.locator('input[name="otp"]')).toHaveValue('129456')
+
+    await firstDigit.evaluate((element: HTMLInputElement) => {
+        element.focus()
+        const clipboardData = new DataTransfer()
+        clipboardData.setData('text', '84 27 19')
+        element.dispatchEvent(
+            new ClipboardEvent('paste', { bubbles: true, clipboardData }),
+        )
+    })
+    await expect(page.locator('input[name="otp"]')).toHaveValue('842719')
+
+    const numberInput = page.getByRole('spinbutton', {
+        name: 'Begrenzter Betrag',
+    })
+    await expect(numberInput).toHaveAttribute('min', '5')
+    await expect(numberInput).toHaveAttribute('max', '50')
+    await numberInput.fill('4')
+    await expect(numberInput).toHaveAttribute('aria-invalid', 'true')
+    await numberInput.fill('5')
+    await expect(numberInput).not.toHaveAttribute('aria-invalid', 'true')
+    await numberInput.fill('51')
+    await expect(numberInput).toHaveValue('5')
+})
