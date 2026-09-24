@@ -313,9 +313,11 @@ The typed catalog is available from the root entry and
 ```
 
 `CustomDesign` supports `bg`, `border`, `text`, `labelText`, `placeholder`,
-`focusRing`, `focusBorder`, `errorBorder`, `errorRing`, `errorText`,
+`focusRing`, `focusBorder`, `errorBorder`, `errorRing`, `errorRingBase`, `errorText`,
 `iconColor`, `iconFocus`, `counterBg`, `counterText`, `counterBorderFocus`, and
 the password-strength classes.
+`errorRing` styles a focused invalid input; `errorRingBase` styles the outer
+`TimeInput` ring while its required error is visible.
 
 When no `id` is provided, the component creates a stable ID so its label and
 field remain accessible.

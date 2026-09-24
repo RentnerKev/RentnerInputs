@@ -199,7 +199,7 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
         const hasLeftIcon = Boolean(icon || logic.state.hasError)
         const fieldClassName = `peer flex min-h-14 items-center gap-3 ${hasLeftIcon ? 'pl-11' : 'pl-4'} pr-4 transition-[background-color,border-color,box-shadow,color] ${fieldClasses} ${design.bg} border ${design.text} ${
             logic.state.hasError
-                ? `${design.errorBorder} ring-2 ${design.errorRing.replace('focus:', '')}`
+                ? `${design.errorBorder} ring-2 ${design.errorRingBase}`
                 : design.border
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`
 

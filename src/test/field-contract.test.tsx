@@ -121,6 +121,20 @@ describe('shared input field contract', () => {
         expect(markup).toContain('required=""')
     })
 
+    test('lets TimeInput override the always-visible error ring', () => {
+        const markup = renderToStaticMarkup(
+            createElement(TimeInput, {
+                value: '',
+                onChange: noopChange,
+                error: 'Zeit fehlt',
+                customDesign: { errorRingBase: 'ring-violet-500/60' },
+            }),
+        )
+
+        expect(markup).toContain('ring-2 ring-violet-500/60')
+        expect(markup).not.toContain('ring-2 ring-red-500/50')
+    })
+
     test('keeps native required off a time input when error is null', () => {
         const markup = renderToStaticMarkup(
             createElement(TimeInput, {
