@@ -1,5 +1,5 @@
 import type { Ref } from 'react'
-import type { MoneyInputProps } from '../../Types/MoneyInput.types.js'
+import type { MoneyInputComponentProps } from '../../Types/MoneyInput.types.js'
 import { resolveInputIntlLocale } from '../../Config/messages.js'
 import { useInputDefaults, useInputMessages } from '../../InputProvider.js'
 import {
@@ -10,7 +10,7 @@ import { parseMoneyValue } from '../../Utils/money.utils.js'
 import { useInputFieldLogic } from './useInputField.logic.js'
 
 export default function useMoneyInputLogic(
-    props: MoneyInputProps,
+    props: MoneyInputComponentProps,
     forwardedRef?: Ref<HTMLInputElement>,
 ) {
     const defaults = useInputDefaults()

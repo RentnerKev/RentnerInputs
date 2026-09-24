@@ -8,7 +8,7 @@ import {
     partitionAriaProps,
 } from '../../Utils/fieldA11y.utils.js'
 import useTimeInputLogic from '../../Hooks/Inputs/useTimeInput.logic.js'
-import type { TimeInputProps } from '../../Types/TimeInput.types.js'
+import type { TimeInputComponentProps } from '../../Types/TimeInput.types.js'
 
 interface TimeDropdownProps {
     label: string
@@ -98,7 +98,7 @@ function TimeDropdown({
     )
 }
 
-export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
+export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
     function TimeInput(
         {
             type: _type,
@@ -113,6 +113,7 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             disabled,
             validationMode,
             triggerRef,
+            onValueChange: _onValueChange,
             required: nativeRequired,
             showLength: _showLength,
             minuteStep,
@@ -144,9 +145,10 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
                 disabled,
                 validationMode,
                 triggerRef,
+                onValueChange: _onValueChange,
                 required: nativeRequired,
                 minuteStep,
-            },
+            } as TimeInputComponentProps,
             ref,
         )
         const generatedId = useId()

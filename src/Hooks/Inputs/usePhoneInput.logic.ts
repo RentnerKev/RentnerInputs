@@ -1,11 +1,11 @@
 import type { Ref } from 'react'
-import type { PhoneInputProps } from '../../Types/PhoneInput.types.js'
+import type { PhoneInputComponentProps } from '../../Types/PhoneInput.types.js'
 import { useInputMessages } from '../../InputProvider.js'
 import { validatePhone } from '../../Utils/inputValidation.utils.js'
 import { useInputFieldLogic } from './useInputField.logic.js'
 
 export default function usePhoneInputLogic(
-    props: PhoneInputProps,
+    props: PhoneInputComponentProps,
     forwardedRef?: Ref<HTMLInputElement>,
 ) {
     const messages = useInputMessages(props.locale, props.messages)

@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import type { Ref } from 'react'
 import { useInputMessages } from '../../InputProvider.js'
-import type { PasswordInputProps } from '../../Types/PasswordInput.types.js'
+import type { PasswordInputComponentProps } from '../../Types/PasswordInput.types.js'
 import { getPasswordStrength } from '../../Utils/passwordStrength.utils.js'
 import { useInputFieldLogic } from './useInputField.logic.js'
 
 export default function usePasswordInputLogic(
-    props: PasswordInputProps,
+    props: PasswordInputComponentProps,
     forwardedRef?: Ref<HTMLInputElement>,
 ) {
     const [showPassword, setShowPassword] = useState(false)

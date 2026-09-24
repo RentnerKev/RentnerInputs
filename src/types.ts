@@ -5,17 +5,41 @@ export type {
     CustomInputValueProps,
     CustomInputType,
 } from './Types/CustomInput.types.js'
-export type { EmailInputProps } from './Types/EmailInput.types.js'
-export type { MoneyInputProps } from './Types/MoneyInput.types.js'
-export type { NumberInputProps } from './Types/NumberInput.types.js'
+export type {
+    EmailInputComponentProps,
+    EmailInputProps,
+    EmailInputValueProps,
+} from './Types/EmailInput.types.js'
+export type {
+    MoneyInputComponentProps,
+    MoneyInputProps,
+    MoneyInputValueProps,
+} from './Types/MoneyInput.types.js'
+export type {
+    NumberInputComponentProps,
+    NumberInputProps,
+    NumberInputValueProps,
+} from './Types/NumberInput.types.js'
 export type {
     OtpFeedbackClassNames,
     OtpInputProps,
     OtpInputStatus,
 } from './Types/OtpInput.types.js'
-export type { PasswordInputProps } from './Types/PasswordInput.types.js'
-export type { PhoneInputProps } from './Types/PhoneInput.types.js'
-export type { QuantityInputProps } from './Types/QuantityInput.types.js'
+export type {
+    PasswordInputComponentProps,
+    PasswordInputProps,
+    PasswordInputValueProps,
+} from './Types/PasswordInput.types.js'
+export type {
+    PhoneInputComponentProps,
+    PhoneInputProps,
+    PhoneInputValueProps,
+} from './Types/PhoneInput.types.js'
+export type {
+    QuantityInputComponentProps,
+    QuantityInputProps,
+    QuantityInputValueProps,
+} from './Types/QuantityInput.types.js'
 export type {
     TextareaComponentProps,
     TextareaProps,
@@ -26,9 +50,21 @@ export type {
     TextInputProps,
     TextInputValueProps,
 } from './Types/TextInput.types.js'
-export type { TimeInputProps } from './Types/TimeInput.types.js'
-export type { SearchInputProps } from './Components/Inputs/SearchInput.js'
-export type { NativeTimeInputProps } from './Components/Inputs/NativeTimeInput.js'
+export type {
+    TimeInputComponentProps,
+    TimeInputProps,
+    TimeInputValueProps,
+} from './Types/TimeInput.types.js'
+export type {
+    SearchInputComponentProps,
+    SearchInputProps,
+    SearchInputValueProps,
+} from './Components/Inputs/SearchInput.js'
+export type {
+    NativeTimeInputComponentProps,
+    NativeTimeInputProps,
+    NativeTimeInputValueProps,
+} from './Components/Inputs/NativeTimeInput.js'
 export type {
     CheckboxInputProps,
     RadioInputProps,

@@ -1,17 +1,17 @@
 import { forwardRef } from 'react'
 import type { Ref } from 'react'
 import type { CustomInputComponentProps } from '../Types/CustomInput.types.js'
-import type { EmailInputProps } from '../Types/EmailInput.types.js'
-import type { MoneyInputProps } from '../Types/MoneyInput.types.js'
-import type { NumberInputProps } from '../Types/NumberInput.types.js'
-import type { PasswordInputProps } from '../Types/PasswordInput.types.js'
-import type { PhoneInputProps } from '../Types/PhoneInput.types.js'
-import type { QuantityInputProps } from '../Types/QuantityInput.types.js'
+import type { EmailInputComponentProps } from '../Types/EmailInput.types.js'
+import type { MoneyInputComponentProps } from '../Types/MoneyInput.types.js'
+import type { NumberInputComponentProps } from '../Types/NumberInput.types.js'
+import type { PasswordInputComponentProps } from '../Types/PasswordInput.types.js'
+import type { PhoneInputComponentProps } from '../Types/PhoneInput.types.js'
+import type { QuantityInputComponentProps } from '../Types/QuantityInput.types.js'
 import type { TextareaComponentProps } from '../Types/Textarea.types.js'
 import type { TextInputComponentProps } from '../Types/TextInput.types.js'
-import type { TimeInputProps } from '../Types/TimeInput.types.js'
-import type { SearchInputProps } from './Inputs/SearchInput.js'
-import type { NativeTimeInputProps } from './Inputs/NativeTimeInput.js'
+import type { TimeInputComponentProps } from '../Types/TimeInput.types.js'
+import type { SearchInputComponentProps } from './Inputs/SearchInput.js'
+import type { NativeTimeInputComponentProps } from './Inputs/NativeTimeInput.js'
 import { EmailInput } from './Inputs/EmailInput.js'
 import { MoneyInput } from './Inputs/MoneyInput.js'
 import { NumberInput } from './Inputs/NumberInput.js'
@@ -34,63 +34,63 @@ export const CustomInput = forwardRef<
         case 'search':
             return (
                 <SearchInput
-                    {...(props as SearchInputProps)}
+                    {...(props as SearchInputComponentProps)}
                     ref={ref as Ref<HTMLInputElement>}
                 />
             )
         case 'native-time':
             return (
                 <NativeTimeInput
-                    {...(props as NativeTimeInputProps)}
+                    {...(props as NativeTimeInputComponentProps)}
                     ref={ref as Ref<HTMLInputElement>}
                 />
             )
         case 'email':
             return (
                 <EmailInput
-                    {...(props as EmailInputProps)}
+                    {...(props as EmailInputComponentProps)}
                     ref={ref as Ref<HTMLInputElement>}
                 />
             )
         case 'phone':
             return (
                 <PhoneInput
-                    {...(props as PhoneInputProps)}
+                    {...(props as PhoneInputComponentProps)}
                     ref={ref as Ref<HTMLInputElement>}
                 />
             )
         case 'number':
             return (
                 <NumberInput
-                    {...(props as NumberInputProps)}
+                    {...(props as NumberInputComponentProps)}
                     ref={ref as Ref<HTMLInputElement>}
                 />
             )
         case 'money':
             return (
                 <MoneyInput
-                    {...(props as MoneyInputProps)}
+                    {...(props as MoneyInputComponentProps)}
                     ref={ref as Ref<HTMLInputElement>}
                 />
             )
         case 'password':
             return (
                 <PasswordInput
-                    {...(props as PasswordInputProps)}
+                    {...(props as PasswordInputComponentProps)}
                     ref={ref as Ref<HTMLInputElement>}
                 />
             )
         case 'quantity':
             return (
                 <QuantityInput
-                    {...(props as QuantityInputProps)}
+                    {...(props as QuantityInputComponentProps)}
                     ref={ref as Ref<HTMLInputElement>}
                 />
             )
         case 'time':
             return (
                 <TimeInput
-                    {...(props as TimeInputProps)}
+                    {...(props as TimeInputComponentProps)}
                     ref={ref as Ref<HTMLInputElement>}
                 />
             )

@@ -80,7 +80,7 @@ export function App() {
                     <CustomInput
                         label="E-Mail-Adresse"
                         value={email}
-                        onChange={(event) => setEmail(event.target.value)}
+                        onValueChange={setEmail}
                         placeholder="E-Mail Adresse"
                         required
                         showLength={true}
@@ -92,7 +92,7 @@ export function App() {
                     <CustomInput
                         label="Passwort"
                         value={password}
-                        onChange={(event) => setPassword(event.target.value)}
+                        onValueChange={setPassword}
                         placeholder="Passwort"
                         required
                         showLength={true}
@@ -106,7 +106,7 @@ export function App() {
                     <CustomInput
                         label="Telefonnummer"
                         value={phone}
-                        onChange={(event) => setPhone(event.target.value)}
+                        onValueChange={setPhone}
                         placeholder="Telefonnummer"
                         showLength={true}
                         maxLength={200}
@@ -131,9 +131,7 @@ export function App() {
                     <CustomInput
                         label="Uhrzeit"
                         value={appointmentTime}
-                        onChange={(event) =>
-                            setAppointmentTime(event.target.value)
-                        }
+                        onValueChange={setAppointmentTime}
                         placeholder="Uhrzeit"
                         required
                         type="time"
@@ -145,7 +143,7 @@ export function App() {
                     <CustomInput
                         label="Betrag"
                         value={amount}
-                        onChange={(event) => setAmount(event.target.value)}
+                        onValueChange={setAmount}
                         placeholder="Betrag (Zahl)"
                         required
                         showLength={true}
@@ -157,9 +155,7 @@ export function App() {
                     <CustomInput
                         label="Begrenzter Betrag"
                         value={limitedAmount}
-                        onChange={(event) =>
-                            setLimitedAmount(event.target.value)
-                        }
+                        onValueChange={setLimitedAmount}
                         placeholder="Limit-Test (min. 5, max. 50)"
                         required
                         showLength={true}
@@ -211,7 +207,7 @@ export function App() {
                     <CustomInput
                         label="Geldbetrag"
                         value={money}
-                        onChange={(event) => setMoney(event.target.value)}
+                        onValueChange={setMoney}
                         placeholder="Umsatz (Geld)"
                         required
                         type="money"

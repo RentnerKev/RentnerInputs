@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { ChangeEventHandler, Ref } from 'react'
-import type { TimeInputProps } from '../../Types/TimeInput.types.js'
+import type { Ref } from 'react'
+import type { TimeInputComponentProps } from '../../Types/TimeInput.types.js'
 import { useInputFieldLogic } from './useInputField.logic.js'
 
 function assignRef<Element>(
@@ -22,7 +22,7 @@ function getTimePart(value: string, index: number) {
 }
 
 export default function useTimeInputLogic(
-    props: TimeInputProps,
+    props: TimeInputComponentProps,
     forwardedRef?: Ref<HTMLInputElement>,
 ) {
     const [isHourDropdownOpen, setIsHourDropdownOpen] = useState(false)
@@ -132,8 +132,7 @@ export default function useTimeInputLogic(
             selectMinute,
             toggleHourDropdown,
             toggleMinuteDropdown,
-            handleNativeChange:
-                props.onChange as ChangeEventHandler<HTMLInputElement>,
+            handleNativeChange: field.handler.handleInputChange,
         },
         setter: {
             ...field.setter,

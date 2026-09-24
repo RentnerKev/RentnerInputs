@@ -145,7 +145,7 @@ import { CustomInput } from '@rentnerkev/inputs'
 ;<CustomInput
     type="password"
     value={password}
-    onChange={(event) => setPassword(event.target.value)}
+    onValueChange={setPassword}
     placeholder="Password"
     autoComplete="current-password"
     showPasswordStrength
@@ -154,7 +154,7 @@ import { CustomInput } from '@rentnerkev/inputs'
 ;<CustomInput
     type="quantity"
     value={quantity}
-    onChange={(event) => setQuantity(event.target.value)}
+    onValueChange={setQuantity}
     placeholder="Quantity"
     minValue={1}
     maxValue={999}
@@ -189,9 +189,11 @@ The concrete input components support the usual
 Internal and consumer event handlers are composed. A custom `onFocus`, for
 example, does not replace the package's focus handling.
 
-`TextInput` and `Textarea` also support `onValueChange`, which receives the
-next string value directly. Use it with a state setter when you do not need the
-native change event:
+Every controlled string field supports `onValueChange`, which receives the next
+accepted string value directly. This includes `TextInput`, `Textarea`,
+`EmailInput`, `PasswordInput`, `MoneyInput`, `PhoneInput`, `NumberInput`,
+`QuantityInput`, `SearchInput`, `NativeTimeInput`, and `TimeInput`. Use it with
+a state setter when you do not need the native change event:
 
 ```tsx
 <TextInput value={name} onValueChange={setName} />
@@ -200,27 +202,30 @@ native change event:
 
 `onChange` remains available for native event access. When both callbacks are
 provided, internal validation runs first, then `onChange` receives the native
-event and `onValueChange` receives the accepted string.
+event and `onValueChange` receives the accepted string. A controlled field needs
+either `onChange`, `onValueChange`, or both, damit kein Callback stillschweigend
+ohne Wirkung bleibt.
 
 ## Shared field contract
 
-| Prop            | Type                                           | Default                  | Description                                                            |
-| --------------- | ---------------------------------------------- | ------------------------ | ---------------------------------------------------------------------- |
-| `value`         | `string`                                       | Required                 | Controlled field value.                                                |
-| `onChange`      | `ChangeEventHandler`                           | –                        | Receives the native event after internal input handling.               |
-| `onValueChange` | `(value: string) => void`                      | –                        | Receives the accepted string value directly on `TextInput`/`Textarea`. |
-| `label`         | `ReactNode`                                    | –                        | Accessible label above the field.                                      |
-| `description`   | `ReactNode`                                    | –                        | Help text with a stable ARIA relationship.                             |
-| `error`         | `string \| null`                               | –                        | External error; overrides internal errors, while `null` clears them.   |
-| `icon`          | `ReactNode`                                    | –                        | Icon displayed on the left.                                            |
-| `triggerRef`    | `Ref<HTMLInputElement \| HTMLTextAreaElement>` | –                        | Alias ref in addition to the standard `ref`.                           |
-| `showLength`    | `boolean`                                      | `false`                  | Displays the current character count.                                  |
-| `customDesign`  | `CustomDesign`                                 | –                        | Overrides individual design classes.                                   |
-| `locale`        | `InputLocale`                                  | `'de'`                   | Message language or Intl locale string.                                |
-| `messages`      | `Partial<InputMessages>`                       | –                        | Overrides selected localized messages.                                 |
-| `className`     | `string`                                       | `w-full py-3 rounded-xl` | Classes for the actual input element.                                  |
+| Prop            | Type                                           | Default                  | Description                                                          |
+| --------------- | ---------------------------------------------- | ------------------------ | -------------------------------------------------------------------- |
+| `value`         | `string`                                       | Required                 | Controlled field value.                                              |
+| `onChange`      | `ChangeEventHandler`                           | –                        | Receives the native event after internal input handling.             |
+| `onValueChange` | `(value: string) => void`                      | –                        | Receives the accepted string value directly on every string field.   |
+| `label`         | `ReactNode`                                    | –                        | Accessible label above the field.                                    |
+| `description`   | `ReactNode`                                    | –                        | Help text with a stable ARIA relationship.                           |
+| `error`         | `string \| null`                               | –                        | External error; overrides internal errors, while `null` clears them. |
+| `icon`          | `ReactNode`                                    | –                        | Icon displayed on the left.                                          |
+| `triggerRef`    | `Ref<HTMLInputElement \| HTMLTextAreaElement>` | –                        | Alias ref in addition to the standard `ref`.                         |
+| `showLength`    | `boolean`                                      | `false`                  | Displays the current character count.                                |
+| `customDesign`  | `CustomDesign`                                 | –                        | Overrides individual design classes.                                 |
+| `locale`        | `InputLocale`                                  | `'de'`                   | Message language or Intl locale string.                              |
+| `messages`      | `Partial<InputMessages>`                       | –                        | Overrides selected localized messages.                               |
+| `className`     | `string`                                       | `w-full py-3 rounded-xl` | Classes for the actual input element.                                |
 
-For `TextInput` and `Textarea`, provide `onChange`, `onValueChange`, or both.
+For every string field, provide `onChange`, `onValueChange`, or both. `OtpInput`
+keeps its array-valued `onValueChange` contract for digit arrays.
 
 Use native `maxLength` and `minLength` props for character constraints.
 `showLength` adds the visible counter.
