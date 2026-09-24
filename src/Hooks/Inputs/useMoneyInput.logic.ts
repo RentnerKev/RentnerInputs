@@ -6,6 +6,7 @@ import {
     acceptsMoney,
     validateMoney,
 } from '../../Utils/inputValidation.utils.js'
+import { parseMoneyValue } from '../../Utils/money.utils.js'
 import { useInputFieldLogic } from './useInputField.logic.js'
 
 export default function useMoneyInputLogic(
@@ -14,6 +15,7 @@ export default function useMoneyInputLogic(
 ) {
     const defaults = useInputDefaults()
     const messages = useInputMessages(props.locale, props.messages)
+    const locale = props.locale ?? defaults.locale
     const field = useInputFieldLogic<HTMLInputElement>({
         ...props,
         validate: (value) => validateMoney(value, messages),
@@ -24,18 +26,14 @@ export default function useMoneyInputLogic(
     let displayValue = field.state.safeValue
 
     if (!field.state.isFocused && displayValue) {
-        const numericValue = Number.parseFloat(
-            displayValue.replace(/\./g, '').replace(',', '.'),
-        )
-        displayValue = Number.isNaN(numericValue)
-            ? `${displayValue} ${props.currency ?? 'EUR'}`
-            : new Intl.NumberFormat(
-                  resolveInputIntlLocale(props.locale ?? defaults.locale),
-                  {
+        const numericValue = parseMoneyValue(displayValue, locale)
+        displayValue =
+            numericValue === undefined
+                ? `${displayValue} ${props.currency ?? 'EUR'}`
+                : new Intl.NumberFormat(resolveInputIntlLocale(locale), {
                       style: 'currency',
                       currency: props.currency ?? 'EUR',
-                  },
-              ).format(numericValue)
+                  }).format(numericValue)
     }
 
     return {

@@ -3,6 +3,19 @@
 Controlled React input components with labels, validation, icons, length
 counters, localization, and customizable Tailwind styling.
 
+## Requirements
+
+Use React 19 with React DOM 19, an ESM-capable build, and Tailwind CSS 4 for
+the documented styling. Import this package's `tailwind.css` entry into your
+Tailwind stylesheet. It uses `@source` for published classes and `@theme` for
+global tokens such as `--color-primary`. Check for token name collisions with
+your app and override them in a later `@theme` block if needed.
+
+In a React Server Components app, import and render interactive inputs from a
+module beginning with `'use client'`; define their state and callbacks there.
+See the [Tailwind directives](https://tailwindcss.com/docs/functions-and-directives)
+and [React client boundary](https://react.dev/reference/rsc/use-client) guides.
+
 ## Installation
 
 With npm:
@@ -209,6 +222,11 @@ button ref is available through `CustomInput` when `type="time"`.
 | `PasswordInput` | `showPasswordStrength`                                                      |
 | `QuantityInput` | `minValue`, `maxValue`, `suffix` (default `x`)                              |
 | `Textarea`      | Native textarea props such as `rows` and `wrap`; resize through `className` |
+
+`MoneyInput` interprets decimal and grouping separators using its `locale` (or
+the surrounding `InputProvider` locale). For example, use `"1234.56"` with
+`locale="en"` and `"1234,56"` with `locale="de"`. The controlled value remains
+the editable string; currency formatting appears when the field is unfocused.
 
 ### One-time codes
 
