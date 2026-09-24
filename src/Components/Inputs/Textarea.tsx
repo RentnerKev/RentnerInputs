@@ -5,14 +5,15 @@ import { DESIGN_CONFIG } from '../../Config/design.config.js'
 import { useInputDefaults } from '../../InputProvider.js'
 import { mergeAriaDescribedBy } from '../../Utils/fieldA11y.utils.js'
 import useTextareaLogic from '../../Hooks/Inputs/useTextarea.logic.js'
-import type { TextareaProps } from '../../Types/Textarea.types.js'
+import type { TextareaComponentProps } from '../../Types/Textarea.types.js'
 
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-    function Textarea(
-        {
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaComponentProps>(
+    function Textarea(props, ref) {
+        const {
             type: _type,
             value: _value,
             onChange: _onChange,
+            onValueChange: _onValueChange,
             onFocus: _onFocus,
             onBlur: _onBlur,
             onInvalid: _onInvalid,
@@ -21,15 +22,15 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             error,
             icon,
             customDesign,
-            locale,
-            messages,
+            locale: _locale,
+            messages: _messages,
             showLength,
             maxLength,
             minLength,
             className,
             disabled,
-            validationMode,
-            triggerRef,
+            validationMode: _validationMode,
+            triggerRef: _triggerRef,
             required: nativeRequired,
             'aria-describedby': ariaDescribedBy,
             'aria-errormessage': ariaErrorMessage,
@@ -38,34 +39,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             'aria-required': ariaRequired,
             rows = 4,
             ...nativeProps
-        },
-        ref,
-    ) {
-        void _type
-        const props = {
-            ...nativeProps,
-            value: _value,
-            onChange: _onChange,
-            onFocus: _onFocus,
-            onBlur: _onBlur,
-            onInvalid: _onInvalid,
-            label,
-            description,
-            error,
-            icon,
-            customDesign,
-            locale,
-            messages,
-            showLength,
-            maxLength,
-            minLength,
-            className,
-            disabled,
-            validationMode,
-            triggerRef,
-            required: nativeRequired,
-            rows,
-        } satisfies TextareaProps
+        } = props
+        void [_type, _locale, _messages, _validationMode, _triggerRef]
         const logic = useTextareaLogic(props, ref)
         const generatedId = useId()
         const fieldId = nativeProps.id ?? generatedId

@@ -8,6 +8,7 @@ import { TimeInput } from '../Components/Inputs/TimeInput.js'
 import { mergeAriaDescribedBy } from '../Utils/fieldA11y.utils.js'
 
 const noopChange = () => undefined
+const noopValueChange = (_value: string) => undefined
 
 describe('shared input field contract', () => {
     test('merges consumer, description, and visible error descriptions', () => {
@@ -56,6 +57,28 @@ describe('shared input field contract', () => {
         expect(markup).not.toContain('id="notes-error"')
         expect(markup).not.toContain('aria-invalid="true"')
         expect(markup).not.toContain('Dieses Feld ist erforderlich')
+    })
+
+    test('accepts a direct value setter for text fields', () => {
+        const inputMarkup = renderToStaticMarkup(
+            createElement(TextInput, {
+                id: 'name',
+                value: '',
+                onValueChange: noopValueChange,
+            }),
+        )
+        const textareaMarkup = renderToStaticMarkup(
+            createElement(Textarea, {
+                id: 'notes',
+                value: '',
+                onValueChange: noopValueChange,
+            }),
+        )
+
+        expect(inputMarkup).toContain('id="name"')
+        expect(textareaMarkup).toContain('id="notes"')
+        expect(inputMarkup).not.toContain('onValueChange')
+        expect(textareaMarkup).not.toContain('onValueChange')
     })
 
     test('applies the same contract to CustomInput and TimeInput', () => {

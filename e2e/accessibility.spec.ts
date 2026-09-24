@@ -59,6 +59,22 @@ test('keeps text clear of leading icons in inputs and textareas', async ({
     }
 })
 
+test('supports direct value callbacks through CustomInput', async ({
+    page,
+}) => {
+    await page.goto('/')
+
+    const text = page.getByLabel('Text', { exact: true })
+    const textarea = page.getByLabel('Nachricht', { exact: true })
+    await text.fill('Kev')
+    await textarea.fill('Eine Nachricht')
+
+    await page.getByRole('button', { name: 'Falsch' }).click()
+
+    await expect(text).toHaveValue('Kev')
+    await expect(textarea).toHaveValue('Eine Nachricht')
+})
+
 test('supports OTP typing, paste, correction, and number bounds', async ({
     page,
 }) => {
