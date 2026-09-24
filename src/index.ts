@@ -9,6 +9,7 @@ export {
 export { EmailInput } from './Components/Inputs/EmailInput.js'
 export { MoneyInput } from './Components/Inputs/MoneyInput.js'
 export { NumberInput } from './Components/Inputs/NumberInput.js'
+export { OtpInput } from './Components/Inputs/OtpInput.js'
 export { PasswordInput } from './Components/Inputs/PasswordInput.js'
 export { PhoneInput } from './Components/Inputs/PhoneInput.js'
 export { QuantityInput } from './Components/Inputs/QuantityInput.js'
@@ -29,6 +30,7 @@ export type {
     EmailInputProps,
     MoneyInputProps,
     NumberInputProps,
+    OtpInputProps,
     PasswordInputProps,
     PhoneInputProps,
     QuantityInputProps,
