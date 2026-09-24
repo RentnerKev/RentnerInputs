@@ -5,7 +5,11 @@ export type {
 export type { EmailInputProps } from './Types/EmailInput.types.js'
 export type { MoneyInputProps } from './Types/MoneyInput.types.js'
 export type { NumberInputProps } from './Types/NumberInput.types.js'
-export type { OtpInputProps } from './Types/OtpInput.types.js'
+export type {
+    OtpFeedbackClassNames,
+    OtpInputProps,
+    OtpInputStatus,
+} from './Types/OtpInput.types.js'
 export type { PasswordInputProps } from './Types/PasswordInput.types.js'
 export type { PhoneInputProps } from './Types/PhoneInput.types.js'
 export type { QuantityInputProps } from './Types/QuantityInput.types.js'

@@ -105,3 +105,42 @@ test('supports OTP typing, paste, correction, and number bounds', async ({
     await numberInput.fill('51')
     await expect(numberInput).toHaveValue('5')
 })
+
+test('animates OTP verification feedback and announces both outcomes', async ({
+    page,
+}) => {
+    await page.goto('/')
+    const firstDigit = page.getByRole('textbox', { name: 'Ziffer 1 von 6' })
+    await firstDigit.fill('123456')
+    const group = page.getByRole('group', { name: 'Bestätigungscode' })
+    await expect(group).toHaveAttribute('data-otp-status', 'idle')
+    await expect(page.locator('[data-otp-progress] > span')).toHaveCount(6)
+
+    await page.getByRole('button', { name: 'Falsch' }).click()
+    await expect(group).toHaveAttribute('data-otp-status', 'error')
+    await expect(group).toHaveAttribute('aria-invalid', 'true')
+    await expect(
+        page.getByText('Der Bestätigungscode ist falsch'),
+    ).toBeVisible()
+    await expect(group).toHaveCSS('animation-name', 'otp-shake')
+
+    await page.getByRole('button', { name: 'Bestätigt' }).click()
+    await expect(group).toHaveAttribute('data-otp-status', 'success')
+    await expect(page.getByRole('status')).toContainText('Code bestätigt')
+    await expect(firstDigit).toHaveCSS('animation-name', 'otp-confirm')
+
+    await firstDigit.fill('9')
+    await expect(group).toHaveAttribute('data-otp-status', 'idle')
+})
+
+test('removes OTP motion when reduced motion is requested', async ({
+    page,
+}) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Falsch' }).click()
+
+    const group = page.getByRole('group', { name: 'Bestätigungscode' })
+    await expect(group).toHaveAttribute('data-otp-status', 'error')
+    await expect(group).toHaveCSS('animation-name', 'none')
+})

@@ -3,6 +3,23 @@ import type { InputLocale, InputMessages } from '../Config/messages.js'
 import type { CustomDesign } from './InputShared.types.js'
 import type { InputValidationMode } from '../InputProvider.js'
 
+export type OtpInputStatus = 'idle' | 'error' | 'success'
+
+export interface OtpFeedbackClassNames {
+    focus?: string
+    filled?: string
+    error?: string
+    success?: string
+    progressTrack?: string
+    progressFilled?: string
+    progressError?: string
+    progressSuccess?: string
+    errorAnimation?: string
+    successAnimation?: string
+    errorMessage?: string
+    successMessage?: string
+}
+
 export interface OtpInputProps {
     id?: string
     name?: string
@@ -13,6 +30,10 @@ export interface OtpInputProps {
     label?: ReactNode
     description?: ReactNode
     error?: string | null
+    status?: OtpInputStatus
+    animated?: boolean
+    showProgress?: boolean
+    feedbackClassNames?: OtpFeedbackClassNames
     required?: boolean
     disabled?: boolean
     readOnly?: boolean

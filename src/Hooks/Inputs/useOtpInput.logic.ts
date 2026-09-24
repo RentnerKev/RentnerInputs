@@ -18,6 +18,7 @@ type OtpLogicOptions = Pick<
     | 'disabled'
     | 'readOnly'
     | 'error'
+    | 'status'
     | 'locale'
     | 'messages'
     | 'validationMode'
@@ -32,6 +33,7 @@ export default function useOtpInputLogic({
     disabled = false,
     readOnly = false,
     error: externalError,
+    status = 'idle',
     locale,
     messages: providedMessages,
     validationMode,
@@ -56,9 +58,21 @@ export default function useOtpInputLogic({
             ? messages.otpIncomplete(digitCount)
             : null
     const resolvedError =
-        externalError !== undefined ? externalError : internalError
+        externalError != null
+            ? externalError
+            : status === 'error'
+              ? messages.otpInvalid
+              : externalError === null
+                ? null
+                : internalError
     const hasError =
-        Boolean(resolvedError) && (externalError !== undefined || isTouched)
+        Boolean(resolvedError) &&
+        (externalError !== undefined || status === 'error' || isTouched)
+    const visualStatus = hasError
+        ? 'error'
+        : status === 'success' && digits.every(Boolean)
+          ? 'success'
+          : 'idle'
 
     useEffect(() => {
         validationInputRef.current?.setCustomValidity(
@@ -153,7 +167,15 @@ export default function useOtpInputLogic({
 
     return {
         ref: { setDigitRef, validationInput: validationInputRef },
-        state: { digits, code, digitCount, messages, resolvedError, hasError },
+        state: {
+            digits,
+            code,
+            digitCount,
+            messages,
+            resolvedError,
+            hasError,
+            visualStatus,
+        },
         handler: {
             handleDigitChange,
             handleDigitKeyDown,
