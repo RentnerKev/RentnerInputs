@@ -18,6 +18,7 @@ export interface CustomDesign {
     focusBorder?: string
     errorBorder?: string
     errorRing?: string
+    errorRingBase?: string
     errorText?: string
     iconColor?: string
     iconFocus?: string
