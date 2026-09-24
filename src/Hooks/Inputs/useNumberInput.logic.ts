@@ -1,11 +1,11 @@
 import type { Ref } from 'react'
-import type { NumberInputProps } from '../../Types/NumberInput.types.js'
+import type { NumberInputComponentProps } from '../../Types/NumberInput.types.js'
 import { useInputMessages } from '../../InputProvider.js'
 import { validateNumber } from '../../Utils/inputValidation.utils.js'
 import { useInputFieldLogic } from './useInputField.logic.js'
 
 export default function useNumberInputLogic(
-    props: NumberInputProps,
+    props: NumberInputComponentProps,
     forwardedRef?: Ref<HTMLInputElement>,
 ) {
     const messages = useInputMessages(props.locale, props.messages)

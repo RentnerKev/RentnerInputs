@@ -75,6 +75,47 @@ test('supports direct value callbacks through CustomInput', async ({
     await expect(textarea).toHaveValue('Eine Nachricht')
 })
 
+test('supports direct value callbacks across specialized string fields', async ({
+    page,
+}) => {
+    await page.goto('/')
+
+    await page
+        .getByLabel('E-Mail-Adresse', { exact: true })
+        .fill('kev@example.com')
+    await page.getByLabel('Passwort', { exact: true }).fill('sicheres-passwort')
+    await page.getByLabel('Telefonnummer', { exact: true }).fill('+49123456789')
+    await page.getByLabel('Betrag', { exact: true }).fill('12')
+    await page.getByLabel('Geldbetrag', { exact: true }).fill('1234.56')
+
+    await expect(
+        page.getByLabel('E-Mail-Adresse', { exact: true }),
+    ).toHaveValue('kev@example.com')
+    await expect(page.getByLabel('Passwort', { exact: true })).toHaveValue(
+        'sicheres-passwort',
+    )
+    await expect(page.getByLabel('Telefonnummer', { exact: true })).toHaveValue(
+        '+49123456789',
+    )
+    await expect(page.getByLabel('Betrag', { exact: true })).toHaveValue('12')
+    await expect(page.getByLabel('Geldbetrag', { exact: true })).toHaveValue(
+        '1234.56',
+    )
+
+    await page.getByRole('button', { name: 'Uhrzeit' }).first().click()
+    await page.getByRole('option', { name: '09', exact: true }).click()
+    await page.getByRole('button', { name: 'Uhrzeit' }).nth(1).click()
+    await page.getByRole('option', { name: '30', exact: true }).click()
+
+    await expect(page.locator('input[type="time"]')).toHaveValue('09:30')
+    await expect(page.getByRole('group', { name: 'Uhrzeit' })).toContainText(
+        '09',
+    )
+    await expect(page.getByRole('group', { name: 'Uhrzeit' })).toContainText(
+        '30',
+    )
+})
+
 test('supports OTP typing, paste, correction, and number bounds', async ({
     page,
 }) => {

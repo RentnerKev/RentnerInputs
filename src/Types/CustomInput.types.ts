@@ -27,6 +27,7 @@ export interface CustomInputProps
         NumericValueProps {
     value: string
     onChange: ChangeEventHandler<CustomInputElement>
+    onValueChange?: (value: string) => void
     type?: CustomInputType
     triggerRef?: InputVisualProps['triggerRef'] | Ref<HTMLButtonElement>
     rows?: number
@@ -42,8 +43,8 @@ export interface CustomInputTextProps extends Omit<CustomInputProps, 'type'> {
     onValueChange?: (value: string) => void
 }
 
-export type CustomInputValueProps = Omit<CustomInputTextProps, 'onChange'> & {
-    type?: 'text' | 'textarea'
+export type CustomInputValueProps = Omit<CustomInputProps, 'onChange'> & {
+    type?: CustomInputType
     onChange?: never
     onValueChange: (value: string) => void
 }

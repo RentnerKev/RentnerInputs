@@ -5,11 +5,24 @@ import { InputField } from './InputField.js'
 
 export interface NativeTimeInputProps extends BaseInputProps {
     type?: 'time'
+    onValueChange?: (value: string) => void
 }
+
+export type NativeTimeInputValueProps = Omit<
+    NativeTimeInputProps,
+    'onChange'
+> & {
+    onChange?: never
+    onValueChange: (value: string) => void
+}
+
+export type NativeTimeInputComponentProps =
+    | NativeTimeInputProps
+    | NativeTimeInputValueProps
 
 export const NativeTimeInput = forwardRef<
     HTMLInputElement,
-    NativeTimeInputProps
+    NativeTimeInputComponentProps
 >(function NativeTimeInput({ type: _type, ...props }, ref) {
     void _type
     const logic = useInputFieldLogic<HTMLInputElement>({

@@ -1,5 +1,5 @@
 import type { Ref } from 'react'
-import type { QuantityInputProps } from '../../Types/QuantityInput.types.js'
+import type { QuantityInputComponentProps } from '../../Types/QuantityInput.types.js'
 import { useInputMessages } from '../../InputProvider.js'
 import {
     acceptsQuantity,
@@ -8,7 +8,7 @@ import {
 import { useInputFieldLogic } from './useInputField.logic.js'
 
 export default function useQuantityInputLogic(
-    props: QuantityInputProps,
+    props: QuantityInputComponentProps,
     forwardedRef?: Ref<HTMLInputElement>,
 ) {
     const messages = useInputMessages(props.locale, props.messages)
