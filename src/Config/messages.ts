@@ -26,11 +26,13 @@ export interface InputMessages {
     otpCode: string
     otpDigit: (position: number, count: number) => string
     otpIncomplete: (count: number) => string
+    otpInvalid?: string
+    otpVerified?: string
 }
 
 export const inputMessageCatalog: Record<
     'de' | 'en' | 'es' | 'fr',
-    InputMessages
+    Required<InputMessages>
 > = {
     de: {
         required: 'Dieses Feld ist erforderlich',
@@ -59,6 +61,8 @@ export const inputMessageCatalog: Record<
         otpCode: 'Bestätigungscode',
         otpDigit: (position, count) => `Ziffer ${position} von ${count}`,
         otpIncomplete: (count) => `Bitte ${count} Ziffern eingeben`,
+        otpInvalid: 'Der Bestätigungscode ist falsch',
+        otpVerified: 'Code bestätigt',
     },
     en: {
         required: 'This field is required',
@@ -87,6 +91,8 @@ export const inputMessageCatalog: Record<
         otpCode: 'Verification code',
         otpDigit: (position, count) => `Digit ${position} of ${count}`,
         otpIncomplete: (count) => `Enter ${count} digits`,
+        otpInvalid: 'The verification code is incorrect',
+        otpVerified: 'Code verified',
     },
     es: {
         required: 'Este campo es obligatorio',
@@ -115,6 +121,8 @@ export const inputMessageCatalog: Record<
         otpCode: 'Código de verificación',
         otpDigit: (position, count) => `Dígito ${position} de ${count}`,
         otpIncomplete: (count) => `Introduce ${count} dígitos`,
+        otpInvalid: 'El código de verificación es incorrecto',
+        otpVerified: 'Código verificado',
     },
     fr: {
         required: 'Ce champ est obligatoire',
@@ -143,13 +151,15 @@ export const inputMessageCatalog: Record<
         otpCode: 'Code de vérification',
         otpDigit: (position, count) => `Chiffre ${position} sur ${count}`,
         otpIncomplete: (count) => `Saisissez ${count} chiffres`,
+        otpInvalid: 'Le code de vérification est incorrect',
+        otpVerified: 'Code vérifié',
     },
 }
 
 export function resolveInputMessages(
     locale: InputLocale = 'de',
     messages?: Partial<InputMessages>,
-): InputMessages {
+): Required<InputMessages> {
     const normalizedLocale = locale.toLowerCase().replace('_', '-')
     const language = normalizedLocale.split('-')[0]
     const messageLocale =
@@ -157,9 +167,12 @@ export function resolveInputMessages(
             ? language
             : 'de'
 
+    const catalog = inputMessageCatalog[messageLocale]
     return {
-        ...inputMessageCatalog[messageLocale],
+        ...catalog,
         ...messages,
+        otpInvalid: messages?.otpInvalid ?? catalog.otpInvalid,
+        otpVerified: messages?.otpVerified ?? catalog.otpVerified,
     }
 }
 

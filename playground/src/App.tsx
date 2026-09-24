@@ -22,6 +22,9 @@ export function App() {
     const [message, setMessage] = useState('')
     const [appointmentTime, setAppointmentTime] = useState('')
     const [otpDigits, setOtpDigits] = useState<Array<string>>(Array(6).fill(''))
+    const [otpStatus, setOtpStatus] = useState<'idle' | 'error' | 'success'>(
+        'idle',
+    )
 
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault()
@@ -167,12 +170,43 @@ export function App() {
                         icon={<Hash className="h-5 w-5" />}
                     />
 
-                    <OtpInput
-                        name="otp"
-                        label="Bestätigungscode"
-                        value={otpDigits}
-                        onValueChange={setOtpDigits}
-                    />
+                    <div className="space-y-3">
+                        <OtpInput
+                            name="otp"
+                            label="Bestätigungscode"
+                            description="Die Ziffern zeigen deinen Fortschritt. Teste die Rückmeldung unten."
+                            value={otpDigits}
+                            onValueChange={(nextDigits) => {
+                                setOtpDigits(nextDigits)
+                                setOtpStatus('idle')
+                            }}
+                            status={otpStatus}
+                        />
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setOtpStatus('error')}
+                                className="rounded-lg border border-red-500/40 px-3 py-1.5 text-xs text-red-300 transition-colors hover:bg-red-500/10"
+                            >
+                                Falsch
+                            </button>
+                            <button
+                                type="button"
+                                disabled={otpDigits.some((digit) => !digit)}
+                                onClick={() => setOtpStatus('success')}
+                                className="rounded-lg border border-emerald-400/40 px-3 py-1.5 text-xs text-emerald-300 transition-colors hover:bg-emerald-400/10 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                Bestätigt
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setOtpStatus('idle')}
+                                className="rounded-lg border border-border-dark px-3 py-1.5 text-xs text-secondary-text transition-colors hover:bg-white/5"
+                            >
+                                Zurücksetzen
+                            </button>
+                        </div>
+                    </div>
 
                     <CustomInput
                         label="Geldbetrag"

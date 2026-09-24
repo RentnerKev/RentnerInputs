@@ -214,14 +214,14 @@ button ref is available through `CustomInput` when `type="time"`.
 
 ## Component-specific props
 
-| Component       | Additional props                                                            |
-| --------------- | --------------------------------------------------------------------------- |
-| `NumberInput`   | `min`, `max`; `minValue`, `maxValue` aliases                                |
-| `OtpInput`      | `length` (default `6`), `onComplete`, `inputClassName`                      |
-| `MoneyInput`    | `currency` (default `EUR`), `locale` (`'de'`, `'en'`, or an Intl locale)    |
-| `PasswordInput` | `showPasswordStrength`                                                      |
-| `QuantityInput` | `minValue`, `maxValue`, `suffix` (default `x`)                              |
-| `Textarea`      | Native textarea props such as `rows` and `wrap`; resize through `className` |
+| Component       | Additional props                                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `NumberInput`   | `min`, `max`; `minValue`, `maxValue` aliases                                                                       |
+| `OtpInput`      | `length` (default `6`), `onComplete`, `status`, `animated`, `showProgress`, `feedbackClassNames`, `inputClassName` |
+| `MoneyInput`    | `currency` (default `EUR`), `locale` (`'de'`, `'en'`, or an Intl locale)                                           |
+| `PasswordInput` | `showPasswordStrength`                                                                                             |
+| `QuantityInput` | `minValue`, `maxValue`, `suffix` (default `x`)                                                                     |
+| `Textarea`      | Native textarea props such as `rows` and `wrap`; resize through `className`                                        |
 
 `MoneyInput` interprets decimal and grouping separators using its `locale` (or
 the surrounding `InputProvider` locale). For example, use `"1234.56"` with
@@ -233,26 +233,49 @@ the editable string; currency formatting appears when the field is unfocused.
 `OtpInput` keeps each digit in a controlled array, so editing one position preserves the others. It supports typing, arrow keys, Backspace, pasting a complete or partial code, and browser one-time-code autofill. `onComplete` receives the joined code when all positions are filled. With `name`, the joined value is submitted as one form field.
 
 ```tsx
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { OtpInput } from '@rentnerkev/inputs'
 
-function LoginCode() {
+function LoginCode({
+    checkCode,
+}: {
+    checkCode: (code: string) => Promise<boolean>
+}) {
     const [digits, setDigits] = useState<Array<string>>(Array(6).fill(''))
+    const [status, setStatus] = useState<'idle' | 'error' | 'success'>('idle')
+    const currentCode = useRef('')
+
+    async function verify(code: string) {
+        setStatus('idle')
+        const valid = await checkCode(code)
+        if (currentCode.current === code) {
+            setStatus(valid ? 'success' : 'error')
+        }
+    }
 
     return (
         <OtpInput
             name="code"
             label="Bestätigungscode"
             value={digits}
-            onValueChange={setDigits}
-            onComplete={(code) => console.log(code)}
+            onValueChange={(nextDigits) => {
+                currentCode.current = nextDigits.join('')
+                setDigits(nextDigits)
+                setStatus('idle')
+            }}
+            onComplete={verify}
+            status={status}
             required
         />
     )
 }
 ```
 
-The first digit can be focused through `ref` or `triggerRef`. Use `className` for the outer field and `inputClassName` or `InputProvider`'s `classNames.otp` for the digit fields.
+`status="error"` briefly shakes the digits and shows a localized error; `status="success"` turns a complete code green and announces confirmation. Completion alone never marks a code as valid. Editing the code should reset the status to `"idle"`. The progress rail and focus lift are enabled by default. Set `animated={false}` to remove motion or `showProgress={false}` to hide the rail. Motion also respects `prefers-reduced-motion`.
+
+`feedbackClassNames` replaces the default Tailwind classes for `focus`, `filled`, `error`, `success`, `progressTrack`, `progressFilled`, `progressError`, `progressSuccess`, `errorAnimation`, `successAnimation`, `errorMessage`, and `successMessage`. For example, `feedbackClassNames={{ success: 'border-lime-400 bg-lime-400/10 text-lime-200 focus:ring-lime-400/50', successAnimation: 'motion-safe:animate-pulse', successMessage: 'text-lime-300' }}` changes the confirmation style. Use the `messages` prop or `InputProvider` to override `otpInvalid` and `otpVerified`. Import `@rentnerkev/inputs/tailwind.css` to include the default animation utilities.
+
+The first digit can be focused through `ref` or `triggerRef`. Use `className` for the outer field and `inputClassName` or `InputProvider`'s `classNames.otp` for all digit fields.
 
 ## Localization and messages
 
