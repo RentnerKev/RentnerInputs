@@ -34,7 +34,7 @@
         "type": "git",
         "url": "git+https://github.com/RentnerKev/RentnerInputs.git"
     },
-    "homepage": "https://github.com/RentnerKev/RentnerInputs#readme",
+    "homepage": "https://packages.rentner.dev/packages/inputs",
     "bugs": {
         "url": "https://github.com/RentnerKev/RentnerInputs/issues"
     },
