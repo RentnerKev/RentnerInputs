@@ -250,12 +250,28 @@ button ref is available through `CustomInput` when `type="time"`.
 | `MoneyInput`    | `currency` (default `EUR`), `locale` (`'de'`, `'en'`, or an Intl locale)                                           |
 | `PasswordInput` | `showPasswordStrength`                                                                                             |
 | `QuantityInput` | `minValue`, `maxValue`, `suffix` (default `x`)                                                                     |
+| `TimeInput`     | `minuteStep` (integer from `1` through `60`; other values use `1`)                                                 |
 | `Textarea`      | Native textarea props such as `rows` and `wrap`; resize through `className`                                        |
 
 `MoneyInput` interprets decimal and grouping separators using its `locale` (or
 the surrounding `InputProvider` locale). For example, use `"1234.56"` with
-`locale="en"` and `"1234,56"` with `locale="de"`. The controlled value remains
-the editable string; currency formatting appears when the field is unfocused.
+`locale="en"` and `"1234,56"` with `locale="de"`. The controlled value and
+`onValueChange` callback use that unformatted decimal string. When the field is
+unfocused, the visible value is formatted as currency and preserves every
+fractional digit from the controlled string (while adding the currency's
+usual minimum fraction digits when needed). If `name` is set, native form
+submission uses the unformatted controlled decimal string, not the formatted
+display.
+The visible text input has no `name`; use the component's `name` prop instead
+of `event.currentTarget.name` in native change handlers.
+
+`TimeInput` gives its hour and minute buttons separate accessible names based
+on the field label and localized part name. Open a list with Enter or Space;
+use Up and Down Arrow to move through options, Home and End to jump to the
+first or last option, Page Up and Page Down to move by ten options, Enter or
+Space to select, and Escape to close the list and return focus to its button.
+Minute options use an integer `minuteStep` from `1` through `60`; a missing or
+invalid step falls back to `1`.
 
 ### One-time codes
 

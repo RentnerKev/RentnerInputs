@@ -206,9 +206,12 @@ export function App() {
 
                     <CustomInput
                         label="Geldbetrag"
+                        name="money"
                         value={money}
                         onValueChange={setMoney}
                         placeholder="Umsatz (Geld)"
+                        locale="en"
+                        currency="USD"
                         required
                         type="money"
                         icon={<Banknote className="h-5 w-5" />}

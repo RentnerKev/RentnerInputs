@@ -1,6 +1,14 @@
 import { AlertCircle, ChevronDown, Clock } from 'lucide-react'
 import { CustomTooltip } from '@rentnerkev/tooltips'
-import { forwardRef, useId, type AriaAttributes, type Ref } from 'react'
+import {
+    forwardRef,
+    useEffect,
+    useId,
+    useRef,
+    type AriaAttributes,
+    type KeyboardEvent as ReactKeyboardEvent,
+    type Ref,
+} from 'react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
 import { useInputDefaults, useInputMessages } from '../../InputProvider.js'
 import {
@@ -39,6 +47,86 @@ function TimeDropdown({
     onToggle,
     onSelect,
 }: TimeDropdownProps) {
+    const listboxRef = useRef<HTMLDivElement | null>(null)
+
+    function focusTrigger() {
+        const trigger = listboxRef.current
+            ?.closest('div.relative')
+            ?.querySelector<HTMLButtonElement>(
+                'button[aria-haspopup="listbox"]',
+            )
+        trigger?.focus()
+    }
+
+    useEffect(() => {
+        if (!isOpen) return
+
+        const optionElements =
+            listboxRef.current?.querySelectorAll<HTMLButtonElement>(
+                '[role="option"]',
+            )
+        const selectedOption = Array.from(optionElements ?? []).find(
+            (_, index) => options[index] === value,
+        )
+        const firstOption = optionElements?.[0]
+        const initialOption = selectedOption ?? firstOption
+        if (initialOption) initialOption.focus()
+    }, [isOpen, listboxRef, options, value])
+
+    function focusOptionAt(index: number) {
+        const optionElements =
+            listboxRef.current?.querySelectorAll<HTMLButtonElement>(
+                '[role="option"]',
+            )
+        optionElements?.[index]?.focus()
+    }
+
+    function handleOptionKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
+        if (event.key === 'Escape') {
+            event.preventDefault()
+            onToggle()
+            focusTrigger()
+            return
+        }
+
+        const optionElements =
+            listboxRef.current?.querySelectorAll<HTMLButtonElement>(
+                '[role="option"]',
+            )
+        if (!optionElements?.length) return
+
+        const activeIndex = Array.from(optionElements).findIndex(
+            (option) => option === document.activeElement,
+        )
+        const selectedIndex = Array.from(optionElements).findIndex(
+            (option) => option.getAttribute('aria-selected') === 'true',
+        )
+        const currentIndex =
+            activeIndex >= 0 ? activeIndex : Math.max(selectedIndex, 0)
+        let nextIndex: number | undefined
+
+        if (event.key === 'ArrowDown') {
+            nextIndex = (currentIndex + 1) % optionElements.length
+        } else if (event.key === 'ArrowUp') {
+            nextIndex =
+                (currentIndex - 1 + optionElements.length) %
+                optionElements.length
+        } else if (event.key === 'Home') {
+            nextIndex = 0
+        } else if (event.key === 'End') {
+            nextIndex = optionElements.length - 1
+        } else if (event.key === 'PageDown') {
+            nextIndex = Math.min(currentIndex + 10, optionElements.length - 1)
+        } else if (event.key === 'PageUp') {
+            nextIndex = Math.max(currentIndex - 10, 0)
+        }
+
+        if (nextIndex !== undefined) {
+            event.preventDefault()
+            focusOptionAt(nextIndex)
+        }
+    }
+
     return (
         <div className="relative flex-1">
             <button
@@ -56,6 +144,12 @@ function TimeDropdown({
                     fieldAria?.['aria-readonly'] ?? (readOnly || undefined)
                 }
                 disabled={disabled}
+                onKeyDown={(event) => {
+                    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                        event.preventDefault()
+                        if (!isOpen) onToggle()
+                    }
+                }}
                 onClick={onToggle}
                 className="flex h-11 w-full cursor-pointer items-center justify-between rounded-lg border border-border-dark bg-background-dark/60 px-3 text-left text-sm font-semibold text-white transition-colors hover:border-secondary-text/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -70,18 +164,28 @@ function TimeDropdown({
             {isOpen && (
                 <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-30 max-h-52 overflow-y-auto rounded-lg border border-secondary-text/50 bg-input-dark p-1 shadow-xl shadow-black/30">
                     <div
+                        ref={listboxRef}
                         role="listbox"
                         aria-label={label}
+                        onKeyDown={handleOptionKeyDown}
                         className="space-y-1"
                     >
-                        {options.map((option) => (
+                        {options.map((option, index) => (
                             <button
                                 key={option}
                                 type="button"
                                 role="option"
                                 aria-selected={option === value}
+                                tabIndex={
+                                    option === value || (!value && index === 0)
+                                        ? 0
+                                        : -1
+                                }
                                 disabled={disabled || readOnly}
-                                onClick={() => onSelect(option)}
+                                onClick={() => {
+                                    onSelect(option)
+                                    focusTrigger()
+                                }}
                                 className={`flex w-full cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
                                     option === value
                                         ? 'bg-primary text-background-dark'
@@ -173,6 +277,42 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
             ariaLabelledBy,
             hasLabel ? labelId : undefined,
         )
+        const hourPartLabelId = `${fieldId}-hour-part-label`
+        const minutePartLabelId = `${fieldId}-minute-part-label`
+        const hourPartAria = labelledBy
+            ? {
+                  'aria-label': undefined,
+                  'aria-labelledby': mergeAriaDescribedBy(
+                      labelledBy,
+                      hourPartLabelId,
+                  ),
+              }
+            : ariaLabel
+              ? {
+                    'aria-label': `${ariaLabel} ${resolvedMessages.hourSelect}`,
+                    'aria-labelledby': undefined,
+                }
+              : {
+                    'aria-label': resolvedMessages.hourSelect,
+                    'aria-labelledby': undefined,
+                }
+        const minutePartAria = labelledBy
+            ? {
+                  'aria-label': undefined,
+                  'aria-labelledby': mergeAriaDescribedBy(
+                      labelledBy,
+                      minutePartLabelId,
+                  ),
+              }
+            : ariaLabel
+              ? {
+                    'aria-label': `${ariaLabel} ${resolvedMessages.minuteSelect}`,
+                    'aria-labelledby': undefined,
+                }
+              : {
+                    'aria-label': resolvedMessages.minuteSelect,
+                    'aria-labelledby': undefined,
+                }
         const readOnly = inputProps.readOnly
         const fieldInvalid = logic.state.hasError || ariaInvalid || undefined
         const fieldRequired = disabled
@@ -265,6 +405,12 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                         aria-labelledby={labelledBy}
                         aria-describedby={describedBy}
                     >
+                        <span id={hourPartLabelId} className="sr-only">
+                            {resolvedMessages.hourSelect}
+                        </span>
+                        <span id={minutePartLabelId} className="sr-only">
+                            {resolvedMessages.minuteSelect}
+                        </span>
                         <TimeDropdown
                             id={fieldId}
                             buttonRef={logic.ref.trigger}
@@ -281,6 +427,7 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                             readOnly={readOnly}
                             fieldAria={{
                                 ...fieldAria,
+                                ...hourPartAria,
                                 'aria-required': undefined,
                             }}
                             onToggle={logic.handler.toggleHourDropdown}
@@ -303,6 +450,7 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                             readOnly={readOnly}
                             fieldAria={{
                                 ...fieldAria,
+                                ...minutePartAria,
                                 'aria-required': undefined,
                             }}
                             onToggle={logic.handler.toggleMinuteDropdown}

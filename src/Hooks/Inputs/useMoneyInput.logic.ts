@@ -1,12 +1,11 @@
 import type { Ref } from 'react'
 import type { MoneyInputComponentProps } from '../../Types/MoneyInput.types.js'
-import { resolveInputIntlLocale } from '../../Config/messages.js'
 import { useInputDefaults, useInputMessages } from '../../InputProvider.js'
 import {
     acceptsMoney,
     validateMoney,
 } from '../../Utils/inputValidation.utils.js'
-import { parseMoneyValue } from '../../Utils/money.utils.js'
+import { formatMoneyValue } from '../../Utils/money.utils.js'
 import { useInputFieldLogic } from './useInputField.logic.js'
 
 export default function useMoneyInputLogic(
@@ -26,14 +25,9 @@ export default function useMoneyInputLogic(
     let displayValue = field.state.safeValue
 
     if (!field.state.isFocused && displayValue) {
-        const numericValue = parseMoneyValue(displayValue, locale)
         displayValue =
-            numericValue === undefined
-                ? `${displayValue} ${props.currency ?? 'EUR'}`
-                : new Intl.NumberFormat(resolveInputIntlLocale(locale), {
-                      style: 'currency',
-                      currency: props.currency ?? 'EUR',
-                  }).format(numericValue)
+            formatMoneyValue(displayValue, props.currency ?? 'EUR', locale) ??
+            `${displayValue} ${props.currency ?? 'EUR'}`
     }
 
     return {

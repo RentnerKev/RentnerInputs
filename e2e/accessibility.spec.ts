@@ -46,17 +46,24 @@ test('keeps text clear of leading icons in inputs and textareas', async ({
 }) => {
     await page.goto('/')
 
-    for (const [label, minimum] of [
+    const iconFieldChecks = [
         ['Text', 44],
         ['Nachricht', 44],
         ['Telefonnummer', 16],
-    ] as const) {
-        const field = page.getByLabel(label, { exact: true })
-        const paddingLeft = await field.evaluate((element) =>
-            Number.parseFloat(getComputedStyle(element).paddingLeft),
-        )
-        expect(paddingLeft).toBeGreaterThanOrEqual(minimum)
-    }
+    ] as const
+    const paddings = await Promise.all(
+        iconFieldChecks.map(([label]) =>
+            page
+                .getByLabel(label, { exact: true })
+                .evaluate((element) =>
+                    Number.parseFloat(getComputedStyle(element).paddingLeft),
+                ),
+        ),
+    )
+
+    iconFieldChecks.forEach(([, minimum], index) => {
+        expect(paddings[index]).toBeGreaterThanOrEqual(minimum)
+    })
 })
 
 test('supports direct value callbacks through CustomInput', async ({
@@ -114,6 +121,84 @@ test('supports direct value callbacks across specialized string fields', async (
     await expect(page.getByRole('group', { name: 'Uhrzeit' })).toContainText(
         '30',
     )
+})
+
+test('supports distinct time controls and listbox keyboard navigation', async ({
+    page,
+}) => {
+    await page.goto('/')
+
+    const hourTrigger = page.getByRole('button', {
+        name: 'Uhrzeit Stunde auswählen',
+    })
+    const minuteTrigger = page.getByRole('button', {
+        name: 'Uhrzeit Minute auswählen',
+    })
+    await expect(hourTrigger).toHaveCount(1)
+    await expect(minuteTrigger).toHaveCount(1)
+
+    await hourTrigger.focus()
+    await page.keyboard.press('ArrowDown')
+    const hourOptions = page.getByRole('option')
+    await expect(hourOptions.first()).toBeFocused()
+    await page.keyboard.press('ArrowDown')
+    await expect(
+        page.getByRole('option', { name: '01', exact: true }),
+    ).toBeFocused()
+    await page.keyboard.press('ArrowUp')
+    await expect(
+        page.getByRole('option', { name: '00', exact: true }),
+    ).toBeFocused()
+    await page.keyboard.press('End')
+    await expect(
+        page.getByRole('option', { name: '23', exact: true }),
+    ).toBeFocused()
+    await page.keyboard.press('Home')
+    await expect(
+        page.getByRole('option', { name: '00', exact: true }),
+    ).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(page.locator('input[type="time"]')).toHaveValue('00:00')
+    await expect(hourTrigger).toBeFocused()
+
+    await minuteTrigger.focus()
+    await page.keyboard.press('Enter')
+    await expect(
+        page.getByRole('option', { name: '00', exact: true }),
+    ).toBeFocused()
+    await page.keyboard.press('ArrowDown')
+    await expect(
+        page.getByRole('option', { name: '05', exact: true }),
+    ).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(page.locator('input[type="time"]')).toHaveValue('00:05')
+    await expect(minuteTrigger).toBeFocused()
+
+    await minuteTrigger.click()
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('listbox')).toHaveCount(0)
+    await expect(minuteTrigger).toBeFocused()
+
+    const results = await new AxeBuilder({ page }).analyze()
+    expect(results.violations).toEqual([])
+})
+
+test('preserves money precision in the display and native form value', async ({
+    page,
+}) => {
+    await page.goto('/')
+
+    const money = page.getByLabel('Geldbetrag', { exact: true })
+    await money.fill('1.239')
+    await expect(money).toHaveValue('1.239')
+
+    await page.getByRole('button', { name: 'Uhrzeit Stunde auswählen' }).focus()
+    await expect(money).toHaveValue('$1.239')
+
+    const formValue = await money.evaluate((input: HTMLInputElement) =>
+        new FormData(input.form ?? undefined).get('money'),
+    )
+    expect(formValue).toBe('1.239')
 })
 
 test('supports OTP typing, paste, correction, and number bounds', async ({

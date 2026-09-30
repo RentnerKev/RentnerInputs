@@ -1,6 +1,6 @@
 {
     "name": "@rentnerkev/inputs",
-    "version": "2.4.0",
+    "version": "2.4.1",
     "description": "Controlled React input components with validation, icons, length counters, and Tailwind design hooks.",
     "author": "RentnerKev",
     "license": "MIT",
@@ -20,6 +20,7 @@
         "typecheck:api": "tsc --noEmit --project type-tests/tsconfig.json",
         "prepare": "bun run build",
         "pack:check": "bun pm pack --dry-run",
+        "pack:consumer": "node scripts/verify-package.mjs",
         "playground:dev": "bun --cwd playground dev",
         "playground:build": "bun --cwd playground build",
         "e2e": "playwright test",
@@ -28,7 +29,7 @@
         "format": "oxfmt .",
         "format:check": "oxfmt --check .",
         "test": "bun test",
-        "verify": "bun run typecheck && bun run typecheck:api && bun run lint && bun run format:check && bun run test && bun run build && bun run pack:check && bun run e2e"
+        "verify": "bun run typecheck && bun run typecheck:api && bun run lint && bun run format:check && bun run test && bun run build && bun run pack:check && bun run pack:consumer && bun run e2e"
     },
     "repository": {
         "type": "git",

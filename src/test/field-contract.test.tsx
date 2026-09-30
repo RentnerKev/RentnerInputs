@@ -120,7 +120,10 @@ describe('shared input field contract', () => {
         )
         expect(timeMarkup).toContain('aria-errormessage="time-error"')
         expect(timeMarkup).toMatch(
-            /<button(?=[^>]*id="time")(?=[^>]*aria-labelledby="time-label")(?=[^>]*aria-describedby="time-help time-description time-error")(?=[^>]*aria-errormessage="time-error")(?=[^>]*aria-invalid="true")(?=[^>]*aria-controls="time-options")(?=[^>]*aria-roledescription="time selector")[^>]*>/,
+            /<button(?=[^>]*id="time")(?=[^>]*aria-labelledby="time-label time-hour-part-label")(?=[^>]*aria-describedby="time-help time-description time-error")(?=[^>]*aria-errormessage="time-error")(?=[^>]*aria-invalid="true")(?=[^>]*aria-controls="time-options")(?=[^>]*aria-roledescription="time selector")[^>]*>/,
+        )
+        expect(timeMarkup).toContain(
+            'aria-labelledby="time-label time-minute-part-label"',
         )
         expect(timeMarkup.match(/aria-controls="time-options"/g)).toHaveLength(
             2,
