@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type {
     ClipboardEvent,
     FocusEvent,
@@ -80,9 +80,12 @@ export default function useOtpInputLogic({
         )
     }, [disabled, readOnly, resolvedError])
 
-    function setDigitRef(index: number, element: HTMLInputElement | null) {
-        inputRefs.current[index] = element
-    }
+    const setDigitRef = useCallback(
+        (index: number, element: HTMLInputElement | null) => {
+            inputRefs.current[index] = element
+        },
+        [],
+    )
 
     function commitValue(nextDigits: Array<string>, focusIndex: number) {
         if (nextDigits.some((digit, index) => digit !== digits[index])) {

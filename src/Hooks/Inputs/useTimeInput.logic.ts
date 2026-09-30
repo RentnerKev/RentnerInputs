@@ -3,14 +3,7 @@ import type { Ref } from 'react'
 import type { TimeInputComponentProps } from '../../Types/TimeInput.types.js'
 import { useInputMessages } from '../../InputProvider.js'
 import { useInputFieldLogic } from './useInputField.logic.js'
-
-function assignRef<Element>(
-    ref: Ref<Element> | undefined,
-    value: Element | null,
-) {
-    if (typeof ref === 'function') ref(value)
-    else if (ref) ref.current = value
-}
+import { useComposedRefs } from '../useComposedRefs.js'
 
 function formatTimePart(value: number) {
     return String(value).padStart(2, '0')
@@ -177,6 +170,8 @@ export default function useTimeInputLogic(
     const triggerRef = useRef<HTMLButtonElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     const { triggerRef: forwardedTriggerRef, ...fieldProps } = props
+    const setHiddenInputRef = useComposedRefs(hiddenInputRef, forwardedRef)
+    const setTriggerRef = useComposedRefs(triggerRef, forwardedTriggerRef)
     const messages = useInputMessages(props.locale, props.messages)
     const timeConstraints = useMemo(
         () => ({
@@ -215,16 +210,6 @@ export default function useTimeInputLogic(
         ? selectedHour
         : (hours[0] ?? '')
     const minutes = timeOptions.minutesByHour[availableHour] ?? []
-
-    function setHiddenInputRef(element: HTMLInputElement | null) {
-        hiddenInputRef.current = element
-        assignRef(forwardedRef, element)
-    }
-
-    function setTriggerRef(element: HTMLButtonElement | null) {
-        triggerRef.current = element
-        assignRef(forwardedTriggerRef, element)
-    }
 
     useEffect(() => {
         const input = hiddenInputRef.current

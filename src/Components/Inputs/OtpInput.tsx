@@ -1,19 +1,11 @@
-import { forwardRef, useId } from 'react'
-import type { Ref } from 'react'
+import { forwardRef, useCallback, useId } from 'react'
 import { CircleAlert, CircleCheck } from 'lucide-react'
 import { DESIGN_CONFIG } from '../../Config/design.config.js'
 import useOtpInputLogic from '../../Hooks/Inputs/useOtpInput.logic.js'
 import { useInputDefaults } from '../../InputProvider.js'
 import type { OtpInputProps } from '../../Types/OtpInput.types.js'
 import { mergeAriaDescribedBy } from '../../Utils/fieldA11y.utils.js'
-
-function assignRef(
-    ref: Ref<HTMLInputElement> | undefined,
-    value: HTMLInputElement | null,
-) {
-    if (typeof ref === 'function') ref(value)
-    else if (ref) ref.current = value
-}
+import { useComposedRefs } from '../../Hooks/useComposedRefs.js'
 
 export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
     function OtpInput(props, ref) {
@@ -76,6 +68,11 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
             visualStatus,
         } = logic.state
         const { validationInput, setDigitRef } = logic.ref
+        const setFirstDigitRef = useCallback(
+            (element: HTMLInputElement | null) => setDigitRef(0, element),
+            [setDigitRef],
+        )
+        const firstDigitRef = useComposedRefs(setFirstDigitRef, ref, triggerRef)
         const {
             handleInvalid,
             handleGroupBlur,
@@ -188,14 +185,11 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
                         <input
                             key={index}
                             id={`${groupId}-digit-${index + 1}`}
-                            ref={(element) => {
-                                setDigitRef(index, element)
-                                if (index === 0) {
-                                    assignRef(ref, element)
-                                    if (triggerRef !== ref)
-                                        assignRef(triggerRef, element)
-                                }
-                            }}
+                            ref={
+                                index === 0
+                                    ? firstDigitRef
+                                    : (element) => setDigitRef(index, element)
+                            }
                             type="text"
                             inputMode="numeric"
                             autoComplete={index === 0 ? 'one-time-code' : 'off'}

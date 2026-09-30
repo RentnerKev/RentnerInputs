@@ -16,6 +16,7 @@ import {
 import type { InputValidator } from '../../Utils/inputValidation.utils.js'
 import { useInputDefaults } from '../../InputProvider.js'
 import type { InputValidationMode } from '../../InputProvider.js'
+import { useComposedRefs } from '../useComposedRefs.js'
 
 type InputElement = HTMLInputElement | HTMLTextAreaElement
 
@@ -73,14 +74,6 @@ export interface UseInputFieldLogicOptions<Element extends InputElement> {
     validationMode?: InputValidationMode
 }
 
-function assignRef<Element>(
-    ref: Ref<Element> | undefined,
-    value: Element | null,
-) {
-    if (typeof ref === 'function') ref(value)
-    else if (ref) ref.current = value
-}
-
 export function useInputFieldLogic<Element extends InputElement>({
     value,
     onChange,
@@ -120,6 +113,7 @@ export function useInputFieldLogic<Element extends InputElement>({
     const lastValueRef = useRef(safeValue)
     const valueChangedByInputRef = useRef<string | null>(null)
     const nativeErrorSnapshotRef = useRef<NativeErrorSnapshot | null>(null)
+    const setFieldRef = useComposedRefs(inputRef, forwardedRef, triggerRef)
     const validationOwnerRef = useRef({
         externalError,
         validationMode: resolvedValidationMode,
@@ -297,14 +291,6 @@ export function useInputFieldLogic<Element extends InputElement>({
         resolvedValidationMode,
         validationError,
     ])
-
-    function setFieldRef(element: Element | null) {
-        inputRef.current = element
-        assignRef(forwardedRef, element)
-        if (forwardedRef !== triggerRef) {
-            assignRef(triggerRef, element)
-        }
-    }
 
     function focusField() {
         const focusElement = focusTarget?.() ?? inputRef.current
