@@ -86,6 +86,13 @@ Each field can override the provider's locale, messages, design, classes, or
 validation mode as needed. The package includes German, English, Spanish, and
 French messages; other locales continue to fall back to German.
 
+For `OtpInput`, external validation keeps the hidden native `required`
+constraint but leaves the incomplete-code message to the caller. A form
+validation handler should read that invalid state and pass an `error` message
+back to `OtpInput`; the OTP props do not expose an input-level `onInvalid`
+callback. A form-level `onInvalidCapture` handler can connect native constraint
+failures to the form library's error state.
+
 ## Quick start
 
 ```tsx
@@ -287,6 +294,15 @@ invalid step falls back to `1`. Native time `min`, `max`, and `step` constraints
 also filter the choices, with `step` measured in seconds as it is for a native
 `<input type="time">`. Browsers that expose `type="time"` as a text input get
 the same range and step checks through custom validity.
+
+`minuteStep` builds a grid from minute `00` within each hour, then native
+constraints filter that grid. The two grids can have no shared choices. For
+example, `minuteStep={15}`, `min="09:10"`, and `step={900}` make native-valid
+times `09:10`, `09:25`, `09:40`, and `09:55`, while the minute-step grid offers
+`09:00`, `09:15`, `09:30`, and `09:45`; the selector is therefore empty. Use
+`minuteStep={1}` to expose every minute allowed by the native constraints, or
+choose an origin that aligns both grids, such as `min="09:00"` with
+`minuteStep={15}` and `step={900}`.
 
 ### One-time codes
 
