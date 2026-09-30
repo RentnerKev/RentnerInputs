@@ -44,7 +44,7 @@ export const inputMessageCatalog: Record<
         onlyNumbers: 'Nur Zahlen erlaubt',
         minValue: (minValue) => `Der Wert muss mindestens ${minValue} sein`,
         maxValue: (maxValue) => `Der Wert darf maximal ${maxValue} sein`,
-        onlyMoneyCharacters: 'Nur Zahlen, Punkt und Komma erlaubt',
+        onlyMoneyCharacters: 'Ungültiges Zahlenformat',
         passwordStrength: 'Passwortstärke',
         passwordStrengthEmpty: 'Noch leer',
         passwordStrengthVeryWeak: 'Sehr schwach',
@@ -74,7 +74,7 @@ export const inputMessageCatalog: Record<
         onlyNumbers: 'Numbers only',
         minValue: (minValue) => `The value must be at least ${minValue}`,
         maxValue: (maxValue) => `The value must be at most ${maxValue}`,
-        onlyMoneyCharacters: 'Numbers, periods, and commas only',
+        onlyMoneyCharacters: 'Invalid amount format',
         passwordStrength: 'Password strength',
         passwordStrengthEmpty: 'Empty',
         passwordStrengthVeryWeak: 'Very weak',
@@ -104,7 +104,7 @@ export const inputMessageCatalog: Record<
         onlyNumbers: 'Solo se permiten números',
         minValue: (minValue) => `El valor debe ser al menos ${minValue}`,
         maxValue: (maxValue) => `El valor debe ser como máximo ${maxValue}`,
-        onlyMoneyCharacters: 'Solo números, puntos y comas',
+        onlyMoneyCharacters: 'Formato de importe no válido',
         passwordStrength: 'Seguridad de la contraseña',
         passwordStrengthEmpty: 'Vacía',
         passwordStrengthVeryWeak: 'Muy débil',
@@ -134,7 +134,7 @@ export const inputMessageCatalog: Record<
         onlyNumbers: 'Chiffres uniquement',
         minValue: (minValue) => `La valeur doit être au moins ${minValue}`,
         maxValue: (maxValue) => `La valeur doit être au plus ${maxValue}`,
-        onlyMoneyCharacters: 'Chiffres, points et virgules uniquement',
+        onlyMoneyCharacters: 'Format du montant non valide',
         passwordStrength: 'Force du mot de passe',
         passwordStrengthEmpty: 'Vide',
         passwordStrengthVeryWeak: 'Très faible',
@@ -181,5 +181,5 @@ export function resolveInputIntlLocale(locale: InputLocale = 'de') {
     if (locale === 'en') return 'en-US'
     if (locale === 'es') return 'es-ES'
     if (locale === 'fr') return 'fr-FR'
-    return locale
+    return locale.replace(/_/g, '-')
 }

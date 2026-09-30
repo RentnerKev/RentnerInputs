@@ -179,8 +179,52 @@ test('supports distinct time controls and listbox keyboard navigation', async ({
     await expect(page.getByRole('listbox')).toHaveCount(0)
     await expect(minuteTrigger).toBeFocused()
 
+    await hourTrigger.click()
+    await expect(page.getByRole('listbox')).toBeVisible()
+    await page.keyboard.press('Tab')
+    await expect(page.getByRole('listbox')).toHaveCount(0)
+    await expect(minuteTrigger).toBeFocused()
+
     const results = await new AxeBuilder({ page }).analyze()
     expect(results.violations).toEqual([])
+})
+
+test('clears a native validation message when a constraint changes', async ({
+    page,
+}) => {
+    await page.goto('/')
+
+    const amount = page.getByRole('spinbutton', {
+        name: 'Betrag',
+        exact: true,
+    })
+    await amount.evaluate((input: HTMLInputElement) => {
+        input.min = '0'
+        input.step = '2'
+    })
+    await amount.fill('3')
+    expect(
+        await amount.evaluate(
+            (input: HTMLInputElement) => input.validity.stepMismatch,
+        ),
+    ).toBe(true)
+    expect(
+        await amount.evaluate((input: HTMLInputElement) =>
+            input.checkValidity(),
+        ),
+    ).toBe(false)
+    await expect(amount).toHaveAttribute('aria-invalid', 'true')
+
+    await amount.evaluate((input: HTMLInputElement) => {
+        input.step = '1'
+    })
+    await page.getByLabel('Text', { exact: true }).fill('Kevin')
+    await expect(amount).not.toHaveAttribute('aria-invalid', 'true')
+    await expect
+        .poll(() =>
+            amount.evaluate((input: HTMLInputElement) => input.checkValidity()),
+        )
+        .toBe(true)
 })
 
 test('preserves money precision in the display and native form value', async ({
@@ -229,9 +273,14 @@ test('supports OTP typing, paste, correction, and number bounds', async ({
         element.focus()
         const clipboardData = new DataTransfer()
         clipboardData.setData('text', '84 27 19')
-        element.dispatchEvent(
-            new ClipboardEvent('paste', { bubbles: true, clipboardData }),
-        )
+        const paste = new ClipboardEvent('paste', {
+            bubbles: true,
+            cancelable: true,
+            clipboardData,
+        })
+        // Firefox does not retain constructor-provided clipboard data.
+        Object.defineProperty(paste, 'clipboardData', { value: clipboardData })
+        element.dispatchEvent(paste)
     })
     await expect(page.locator('input[name="otp"]')).toHaveValue('842719')
 

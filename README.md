@@ -208,21 +208,21 @@ ohne Wirkung bleibt.
 
 ## Shared field contract
 
-| Prop            | Type                                           | Default                  | Description                                                          |
-| --------------- | ---------------------------------------------- | ------------------------ | -------------------------------------------------------------------- |
-| `value`         | `string`                                       | Required                 | Controlled field value.                                              |
-| `onChange`      | `ChangeEventHandler`                           | –                        | Receives the native event after internal input handling.             |
-| `onValueChange` | `(value: string) => void`                      | –                        | Receives the accepted string value directly on every string field.   |
-| `label`         | `ReactNode`                                    | –                        | Accessible label above the field.                                    |
-| `description`   | `ReactNode`                                    | –                        | Help text with a stable ARIA relationship.                           |
-| `error`         | `string \| null`                               | –                        | External error; overrides internal errors, while `null` clears them. |
-| `icon`          | `ReactNode`                                    | –                        | Icon displayed on the left.                                          |
-| `triggerRef`    | `Ref<HTMLInputElement \| HTMLTextAreaElement>` | –                        | Alias ref in addition to the standard `ref`.                         |
-| `showLength`    | `boolean`                                      | `false`                  | Displays the current character count.                                |
-| `customDesign`  | `CustomDesign`                                 | –                        | Overrides individual design classes.                                 |
-| `locale`        | `InputLocale`                                  | `'de'`                   | Message language or Intl locale string.                              |
-| `messages`      | `Partial<InputMessages>`                       | –                        | Overrides selected localized messages.                               |
-| `className`     | `string`                                       | `w-full py-3 rounded-xl` | Classes for the actual input element.                                |
+| Prop            | Type                                           | Default                  | Description                                                                                                    |
+| --------------- | ---------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `value`         | `string`                                       | Required                 | Controlled field value.                                                                                        |
+| `onChange`      | `ChangeEventHandler`                           | –                        | Receives the native event after internal input handling.                                                       |
+| `onValueChange` | `(value: string) => void`                      | –                        | Receives the accepted string value directly on every string field.                                             |
+| `label`         | `ReactNode`                                    | –                        | Accessible label above the field.                                                                              |
+| `description`   | `ReactNode`                                    | –                        | Help text with a stable ARIA relationship.                                                                     |
+| `error`         | `string \| null`                               | –                        | External error; overrides internal errors. `null` suppresses built-in errors and native `required` validation. |
+| `icon`          | `ReactNode`                                    | –                        | Icon displayed on the left.                                                                                    |
+| `triggerRef`    | `Ref<HTMLInputElement \| HTMLTextAreaElement>` | –                        | Alias ref in addition to the standard `ref`.                                                                   |
+| `showLength`    | `boolean`                                      | `false`                  | Displays the current character count.                                                                          |
+| `customDesign`  | `CustomDesign`                                 | –                        | Overrides individual design classes.                                                                           |
+| `locale`        | `InputLocale`                                  | `'de'`                   | Message language or Intl locale string.                                                                        |
+| `messages`      | `Partial<InputMessages>`                       | –                        | Overrides selected localized messages.                                                                         |
+| `className`     | `string`                                       | `w-full py-3 rounded-xl` | Classes for the actual input element.                                                                          |
 
 For every string field, provide `onChange`, `onValueChange`, or both. `OtpInput`
 keeps its array-valued `onValueChange` contract for digit arrays.
@@ -237,6 +237,11 @@ Consumer IDs, the description ID, and the visible error ID are merged into
 `disabled` removes the field from internal validation. `readOnly` prevents
 changes and internal constraint validation while retaining its value and native
 attributes.
+
+Pass `error={null}` to clear displayed and built-in errors. The component also
+omits its native `required` attribute in this mode; other native constraints
+remain and can still block submission. Use `validationMode="external"` when a
+form library owns the messages but should retain native constraints.
 
 For `TimeInput`, `triggerRef` points to the visible hour trigger. The same
 button ref is available through `CustomInput` when `type="time"`.
@@ -253,9 +258,12 @@ button ref is available through `CustomInput` when `type="time"`.
 | `TimeInput`     | `minuteStep` (integer from `1` through `60`; other values use `1`)                                                 |
 | `Textarea`      | Native textarea props such as `rows` and `wrap`; resize through `className`                                        |
 
-`MoneyInput` interprets decimal and grouping separators using its `locale` (or
-the surrounding `InputProvider` locale). For example, use `"1234.56"` with
-`locale="en"` and `"1234,56"` with `locale="de"`. The controlled value and
+`MoneyInput` interprets decimal and grouping separators and digits using its
+`locale` (or the surrounding `InputProvider` locale), and checks grouped values
+against that locale's grouping pattern. For example, use `"1234.56"` with
+`locale="en"` and `"1234,56"` with `locale="de"`. A decimal separator without
+digits remains editable while typing; unfinished or malformed grouping does
+not pass validation. The controlled value and
 `onValueChange` callback use that unformatted decimal string. When the field is
 unfocused, the visible value is formatted as currency and preserves every
 fractional digit from the controlled string (while adding the currency's
@@ -265,13 +273,20 @@ display.
 The visible text input has no `name`; use the component's `name` prop instead
 of `event.currentTarget.name` in native change handlers.
 
+`QuantityInput` follows the same form-value rule: `name` submits the raw
+controlled quantity even when the blurred display includes a suffix such as
+`"5kg"`. Its visible text input has no `name`.
+
 `TimeInput` gives its hour and minute buttons separate accessible names based
 on the field label and localized part name. Open a list with Enter or Space;
 use Up and Down Arrow to move through options, Home and End to jump to the
 first or last option, Page Up and Page Down to move by ten options, Enter or
 Space to select, and Escape to close the list and return focus to its button.
 Minute options use an integer `minuteStep` from `1` through `60`; a missing or
-invalid step falls back to `1`.
+invalid step falls back to `1`. Native time `min`, `max`, and `step` constraints
+also filter the choices, with `step` measured in seconds as it is for a native
+`<input type="time">`. Browsers that expose `type="time"` as a text input get
+the same range and step checks through custom validity.
 
 ### One-time codes
 
@@ -326,8 +341,9 @@ The first digit can be focused through `ref` or `triggerRef`. Use `className` fo
 
 German remains the default for backward compatibility. Set `locale="en"` for
 the complete English validation and ARIA messages. Existing Intl locale strings
-such as `en-GB` remain available to `MoneyInput`; `en-` and `en_` variants use
-the English message catalog.
+such as `en-GB` and `en_GB` remain available to `MoneyInput`; hyphen and
+underscore locale separators are normalized for Intl formatting. `en-` and
+`en_` variants use the English message catalog.
 
 ```tsx
 <EmailInput

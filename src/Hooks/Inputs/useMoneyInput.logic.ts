@@ -14,11 +14,11 @@ export default function useMoneyInputLogic(
 ) {
     const defaults = useInputDefaults()
     const messages = useInputMessages(props.locale, props.messages)
-    const locale = props.locale ?? defaults.locale
+    const locale = props.locale ?? defaults.locale ?? 'de'
     const field = useInputFieldLogic<HTMLInputElement>({
         ...props,
-        validate: (value) => validateMoney(value, messages),
-        acceptsValue: acceptsMoney,
+        validate: (value) => validateMoney(value, messages, locale),
+        acceptsValue: (value) => acceptsMoney(value, locale),
         selectZeroOnFocus: true,
         forwardedRef,
     })

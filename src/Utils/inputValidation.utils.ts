@@ -1,5 +1,9 @@
 import { inputMessageCatalog } from '../Config/messages.js'
-import type { InputMessages } from '../Config/messages.js'
+import type { InputLocale, InputMessages } from '../Config/messages.js'
+import {
+    acceptsMoney as acceptsLocalizedMoney,
+    isCompleteMoneyValue,
+} from './money.utils.js'
 
 export type InputValidator = (value: string) => string | null
 
@@ -40,14 +44,17 @@ export function validateNumber(
 export function validateMoney(
     value: string,
     messages: InputMessages = inputMessageCatalog.de,
+    locale: InputLocale = 'de',
 ) {
-    return value && !/^[0-9.,]*$/.test(value)
+    return value &&
+        (!acceptsLocalizedMoney(value, locale) ||
+            !isCompleteMoneyValue(value, locale))
         ? messages.onlyMoneyCharacters
         : null
 }
 
-export function acceptsMoney(value: string) {
-    return value === '' || /^[0-9.,]*$/.test(value)
+export function acceptsMoney(value: string, locale: InputLocale = 'de') {
+    return acceptsLocalizedMoney(value, locale)
 }
 
 export function acceptsQuantity(value: string) {

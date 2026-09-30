@@ -6,6 +6,7 @@ import {
     useId,
     useRef,
     type AriaAttributes,
+    type FocusEvent,
     type KeyboardEvent as ReactKeyboardEvent,
     type Ref,
 } from 'react'
@@ -30,6 +31,7 @@ interface TimeDropdownProps {
     buttonRef?: Ref<HTMLButtonElement>
     fieldAria?: AriaAttributes
     onToggle: () => void
+    onClose: () => void
     onSelect: (value: string) => void
 }
 
@@ -45,6 +47,7 @@ function TimeDropdown({
     buttonRef,
     fieldAria,
     onToggle,
+    onClose,
     onSelect,
 }: TimeDropdownProps) {
     const listboxRef = useRef<HTMLDivElement | null>(null)
@@ -84,7 +87,7 @@ function TimeDropdown({
     function handleOptionKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
         if (event.key === 'Escape') {
             event.preventDefault()
-            onToggle()
+            onClose()
             focusTrigger()
             return
         }
@@ -127,8 +130,18 @@ function TimeDropdown({
         }
     }
 
+    function handleBlur(event: FocusEvent<HTMLDivElement>) {
+        const nextTarget = event.relatedTarget
+        if (
+            !(nextTarget instanceof Node) ||
+            !event.currentTarget.contains(nextTarget)
+        ) {
+            onClose()
+        }
+    }
+
     return (
-        <div className="relative flex-1">
+        <div className="relative flex-1" onBlur={handleBlur}>
             <button
                 ref={buttonRef}
                 id={id}
@@ -431,6 +444,9 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                                 'aria-required': undefined,
                             }}
                             onToggle={logic.handler.toggleHourDropdown}
+                            onClose={() =>
+                                logic.setter.setIsHourDropdownOpen(false)
+                            }
                             onSelect={logic.handler.selectHour}
                         />
                         <span className="text-lg font-semibold text-primary">
@@ -454,6 +470,9 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                                 'aria-required': undefined,
                             }}
                             onToggle={logic.handler.toggleMinuteDropdown}
+                            onClose={() =>
+                                logic.setter.setIsMinuteDropdownOpen(false)
+                            }
                             onSelect={logic.handler.selectMinute}
                         />
                     </div>

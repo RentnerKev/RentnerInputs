@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MoneyInput } from '../Components/Inputs/MoneyInput.js'
 import { InputProvider } from '../InputProvider.js'
+import { acceptsMoney, validateMoney } from '../Utils/inputValidation.utils.js'
 import { formatMoneyValue, parseMoneyValue } from '../Utils/money.utils.js'
 
 describe('money input locale parsing', () => {
@@ -12,6 +13,55 @@ describe('money input locale parsing', () => {
         expect(parseMoneyValue('1.234,56', 'de')).toBe(1234.56)
         expect(parseMoneyValue('1.2.3', 'en')).toBeUndefined()
         expect(parseMoneyValue('1,23', 'en')).toBeUndefined()
+    })
+
+    test('validates grouping structure while allowing edit prefixes', () => {
+        expect(acceptsMoney('1,234.56', 'en')).toBe(true)
+        expect(acceptsMoney('1,23', 'en')).toBe(true)
+        expect(validateMoney('1,23', undefined, 'en')).not.toBeNull()
+        expect(acceptsMoney('12,34,567', 'en')).toBe(false)
+        expect(acceptsMoney('1.23.4', 'de')).toBe(false)
+        expect(acceptsMoney('1,234.', 'en')).toBe(true)
+        expect(validateMoney('1,234.', undefined, 'en')).toBeNull()
+    })
+
+    test('parses localized Arabic digits and separators', () => {
+        const localizedValue = new Intl.NumberFormat('ar-EG', {
+            useGrouping: true,
+            maximumFractionDigits: 2,
+        }).format(1234.56)
+
+        expect(parseMoneyValue(localizedValue, 'ar-EG')).toBe(1234.56)
+        expect(acceptsMoney(localizedValue, 'ar-EG')).toBe(true)
+        expect(formatMoneyValue(localizedValue, 'EGP', 'ar-EG')).toBe(
+            new Intl.NumberFormat('ar-EG', {
+                style: 'currency',
+                currency: 'EGP',
+            }).format(1234.56),
+        )
+    })
+
+    test('accepts locale grouping whitespace and Indian group sizes', () => {
+        const frenchValue = new Intl.NumberFormat('fr-FR', {
+            useGrouping: true,
+            maximumFractionDigits: 2,
+        }).format(1234.56)
+
+        expect(
+            parseMoneyValue(
+                frenchValue.replace(/[\u00a0\u202f]/gu, ' '),
+                'fr-FR',
+            ),
+        ).toBe(1234.56)
+        expect(parseMoneyValue('12,34,567.89', 'en-IN')).toBe(1234567.89)
+        expect(parseMoneyValue('1,234,567.89', 'en-IN')).toBeUndefined()
+    })
+
+    test('detects Spanish grouping separators for large numbers', () => {
+        expect(parseMoneyValue('1.234,56', 'es-ES')).toBe(1234.56)
+        expect(parseMoneyValue('12.345', 'es-ES')).toBe(12345)
+        expect(parseMoneyValue('12.345.678,901', 'es-ES')).toBe(12345678.901)
+        expect(acceptsMoney('12.345.678,901', 'es-ES')).toBe(true)
     })
 
     test('formats an English decimal without multiplying it by 100', () => {
@@ -63,5 +113,18 @@ describe('money input locale parsing', () => {
         )
 
         expect(markup).toContain('value="$1,234.56"')
+    })
+
+    test('normalizes underscore locales before formatting with Intl', () => {
+        expect(
+            renderToStaticMarkup(
+                <MoneyInput
+                    value="1234.56"
+                    onChange={() => undefined}
+                    locale="en_GB"
+                    currency="GBP"
+                />,
+            ),
+        ).toContain('value="£1,234.56"')
     })
 })

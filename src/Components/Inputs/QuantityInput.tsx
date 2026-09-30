@@ -7,21 +7,32 @@ export const QuantityInput = forwardRef<
     HTMLInputElement,
     QuantityInputComponentProps
 >(function QuantityInput(
-    { type: _type, minValue, maxValue, suffix, ...props },
+    { type: _type, minValue, maxValue, suffix, name, ...props },
     ref,
 ) {
     void _type
     const originalProps = { ...props, minValue, maxValue, suffix }
     const logic = useQuantityInputLogic(originalProps, ref)
     return (
-        <InputField
-            {...props}
-            min={props.min ?? minValue}
-            max={props.max ?? maxValue}
-            logic={logic}
-            inputType="text"
-            displayValue={logic.state.displayValue}
-            inputMode={props.inputMode ?? 'numeric'}
-        />
+        <>
+            <InputField
+                {...props}
+                min={props.min ?? minValue}
+                max={props.max ?? maxValue}
+                logic={logic}
+                inputType="text"
+                displayValue={logic.state.displayValue}
+                inputMode={props.inputMode ?? 'numeric'}
+            />
+            {name !== undefined && (
+                <input
+                    type="hidden"
+                    name={name}
+                    form={props.form}
+                    value={logic.state.safeValue}
+                    disabled={props.disabled}
+                />
+            )}
+        </>
     )
 })
