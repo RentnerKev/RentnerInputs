@@ -171,8 +171,12 @@ function TimeDropdown({
                 aria-expanded={isOpen}
                 aria-label={undefined}
                 aria-labelledby={accessibleName}
-                aria-readonly={
-                    fieldAria?.['aria-readonly'] ?? (readOnly || undefined)
+                aria-readonly={undefined}
+                aria-disabled={
+                    disabled ||
+                    readOnly ||
+                    fieldAria?.['aria-disabled'] ||
+                    undefined
                 }
                 disabled={disabled}
                 onKeyDown={(event) => {

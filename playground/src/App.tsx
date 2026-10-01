@@ -12,6 +12,9 @@ import {
 } from 'lucide-react'
 
 export function App() {
+    const readOnlyTime = new URLSearchParams(window.location.search).has(
+        'readonly-time',
+    )
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
     const [amount, setAmount] = useState('')
@@ -20,7 +23,9 @@ export function App() {
     const [money, setMoney] = useState('')
     const [password, setPassword] = useState('')
     const [message, setMessage] = useState('')
-    const [appointmentTime, setAppointmentTime] = useState('')
+    const [appointmentTime, setAppointmentTime] = useState(
+        readOnlyTime ? '09:30' : '',
+    )
     const [otpDigits, setOtpDigits] = useState<Array<string>>(Array(6).fill(''))
     const [otpStatus, setOtpStatus] = useState<'idle' | 'error' | 'success'>(
         'idle',
@@ -130,8 +135,10 @@ export function App() {
 
                     <CustomInput
                         label="Uhrzeit"
+                        name="appointmentTime"
                         value={appointmentTime}
                         onValueChange={setAppointmentTime}
+                        readOnly={readOnlyTime}
                         placeholder="Uhrzeit"
                         required
                         type="time"

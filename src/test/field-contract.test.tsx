@@ -204,7 +204,8 @@ describe('shared input field contract', () => {
         )
 
         expect(markup).toContain('id="readonly-time"')
-        expect(markup).toContain('aria-readonly="true"')
+        expect(markup.match(/aria-disabled="true"/g)).toHaveLength(2)
+        expect(markup).not.toContain('aria-readonly')
         expect(markup).not.toContain(
             'id="readonly-time" type="button" aria-haspopup="listbox" aria-expanded="false" disabled',
         )

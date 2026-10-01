@@ -1,6 +1,47 @@
 import { AxeBuilder } from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
+test('keeps read-only time controls focusable with valid button ARIA', async ({
+    page,
+}) => {
+    await page.goto('/?readonly-time')
+    const hour = page.getByRole('button', {
+        name: /^Uhrzeit Stunde auswählen/,
+    })
+    const minute = page.getByRole('button', {
+        name: /^Uhrzeit Minute auswählen/,
+    })
+    const results = await new AxeBuilder({ page })
+        .include('button[aria-haspopup="listbox"]')
+        .withRules(['aria-allowed-attr'])
+        .analyze()
+    expect(results.violations).toEqual([])
+
+    await expect(hour).toHaveAttribute('aria-disabled', 'true')
+    await expect(minute).toHaveAttribute('aria-disabled', 'true')
+    await expect(hour).not.toHaveAttribute('aria-readonly')
+    await expect(minute).not.toHaveAttribute('aria-readonly')
+    expect(
+        await hour.evaluate((button: HTMLButtonElement) => button.disabled),
+    ).toBe(false)
+    await hour.focus()
+    await expect(hour).toBeFocused()
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Space')
+    await expect(page.getByRole('listbox')).toHaveCount(0)
+    await page.keyboard.press('Tab')
+    await expect(minute).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(page.getByRole('listbox')).toHaveCount(0)
+    const nativeInput = page.locator('input[type="time"]')
+    await expect(nativeInput).toHaveValue('09:30')
+    expect(
+        await nativeInput.evaluate((input: HTMLInputElement) =>
+            new FormData(input.form!).get('appointmentTime'),
+        ),
+    ).toBe('09:30')
+})
+
 test('validates the form and exposes keyboard-accessible controls', async ({
     page,
 }) => {
