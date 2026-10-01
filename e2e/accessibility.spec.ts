@@ -115,6 +115,12 @@ test('supports direct value callbacks across specialized string fields', async (
     await page.getByRole('option', { name: '30', exact: true }).click()
 
     await expect(page.locator('input[type="time"]')).toHaveValue('09:30')
+    await expect(
+        page.getByRole('button', { name: /Uhrzeit Stunde auswählen/ }),
+    ).toHaveAccessibleName('Uhrzeit Stunde auswählen 09')
+    await expect(
+        page.getByRole('button', { name: /Uhrzeit Minute auswählen/ }),
+    ).toHaveAccessibleName('Uhrzeit Minute auswählen 30')
     await expect(page.getByRole('group', { name: 'Uhrzeit' })).toContainText(
         '09',
     )

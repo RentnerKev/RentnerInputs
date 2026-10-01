@@ -26,7 +26,7 @@ describe('time input keyboard and option contracts', () => {
         )
     })
 
-    test('adds the selected part to a consumer-provided aria label', () => {
+    test('adds the selected part to a consumer-provided accessible name', () => {
         const markup = renderToStaticMarkup(
             <TimeInput
                 id="delivery-time"
@@ -36,8 +36,9 @@ describe('time input keyboard and option contracts', () => {
             />,
         )
 
-        expect(markup).toContain('aria-label="Delivery time Stunde auswählen"')
-        expect(markup).toContain('aria-label="Delivery time Minute auswählen"')
+        expect(markup).toContain('>Delivery time Stunde auswählen</span>')
+        expect(markup).toContain('>Delivery time Minute auswählen</span>')
+        expect(markup.match(/aria-labelledby=/g)).toHaveLength(2)
     })
 
     test('uses only integer minute labels when minuteStep is invalid', () => {

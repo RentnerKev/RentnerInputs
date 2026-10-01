@@ -285,7 +285,8 @@ controlled quantity even when the blurred display includes a suffix such as
 `"5kg"`. Its visible text input has no `name`.
 
 `TimeInput` gives its hour and minute buttons separate accessible names based
-on the field label and localized part name. Open a list with Enter or Space;
+on the field label and localized part name, followed by the current value when
+one is selected. Open a list with Enter or Space;
 use Up and Down Arrow to move through options, Home and End to jump to the
 first or last option, Page Up and Page Down to move by ten options, Enter or
 Space to select, and Escape to close the list and return focus to its button.

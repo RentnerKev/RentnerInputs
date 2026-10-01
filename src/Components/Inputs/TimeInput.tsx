@@ -51,6 +51,21 @@ function TimeDropdown({
     onSelect,
 }: TimeDropdownProps) {
     const listboxRef = useRef<HTMLDivElement | null>(null)
+    const generatedLabelId = useId()
+    const valueId = useId()
+    const labelledBy =
+        typeof fieldAria?.['aria-labelledby'] === 'string'
+            ? fieldAria['aria-labelledby']
+            : undefined
+    const fallbackLabel =
+        typeof fieldAria?.['aria-label'] === 'string'
+            ? fieldAria['aria-label']
+            : label
+    const accessibleName = mergeAriaDescribedBy(
+        labelledBy,
+        labelledBy ? undefined : generatedLabelId,
+        value ? valueId : undefined,
+    )
 
     function focusTrigger() {
         const trigger = listboxRef.current
@@ -142,6 +157,11 @@ function TimeDropdown({
 
     return (
         <div className="relative flex-1" onBlur={handleBlur}>
+            {!labelledBy && (
+                <span id={generatedLabelId} className="sr-only">
+                    {fallbackLabel}
+                </span>
+            )}
             <button
                 ref={buttonRef}
                 id={id}
@@ -149,10 +169,8 @@ function TimeDropdown({
                 {...fieldAria}
                 aria-haspopup="listbox"
                 aria-expanded={isOpen}
-                aria-label={
-                    fieldAria?.['aria-label'] ??
-                    (fieldAria?.['aria-labelledby'] ? undefined : label)
-                }
+                aria-label={undefined}
+                aria-labelledby={accessibleName}
                 aria-readonly={
                     fieldAria?.['aria-readonly'] ?? (readOnly || undefined)
                 }
@@ -166,7 +184,10 @@ function TimeDropdown({
                 onClick={onToggle}
                 className="flex h-11 w-full cursor-pointer items-center justify-between rounded-lg border border-border-dark bg-background-dark/60 px-3 text-left text-sm font-semibold text-white transition-colors hover:border-secondary-text/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50"
             >
-                <span className={value ? 'text-white' : 'text-gray-400'}>
+                <span
+                    id={value ? valueId : undefined}
+                    className={value ? 'text-white' : 'text-gray-400'}
+                >
                     {value || placeholder}
                 </span>
                 <ChevronDown
