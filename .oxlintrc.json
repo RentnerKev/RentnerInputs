@@ -12,13 +12,25 @@
         "unicorn",
         "promise",
         "node",
-        "oxc"
+        "oxc",
+        "jsx-a11y"
     ],
     "ignorePatterns": [
         "dist/**",
         "build/**",
         "node_modules/**",
-        "playground/**"
+        "drizzle/**",
+        "**/drizzle/**",
+        ".env",
+        "**/.env",
+        "**/.env.*",
+        "playground/dist/**",
+        "playground/node_modules/**",
+        "test-results/**",
+        "playwright-report/**",
+        "**/routeTree.gen.*",
+        "**/bindings/**",
+        "target/**"
     ],
     "rules": {
         "typescript/no-explicit-any": "warn",
@@ -34,17 +46,5 @@
         "react/jsx-no-useless-fragment": "warn",
         "import/no-cycle": "off",
         "unicorn/filename-case": "off"
-    },
-    "overrides": [
-        {
-            "files": [
-                "src/Components/Inputs/InputField.tsx",
-                "src/Components/Inputs/Textarea.tsx",
-                "src/Components/Inputs/TimeInput.tsx"
-            ],
-            "rules": {
-                "react/refs": "off"
-            }
-        }
-    ]
+    }
 }

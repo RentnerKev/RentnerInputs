@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { RefCallback } from 'react'
 import { createRoot } from 'react-dom/client'
 import { OtpInput, TextInput, TimeInput } from '../../src'
+import { TooltipProvider } from '@rentnerkev/tooltips'
 
 declare global {
     interface Window {
@@ -60,6 +61,15 @@ function RefFixture() {
 
     return (
         <main>
+            <TooltipProvider delayDuration={0}>
+                <TextInput
+                    id="provider-error"
+                    label="Provider error"
+                    value=""
+                    error="Provider tooltip error"
+                    onValueChange={() => undefined}
+                />
+            </TooltipProvider>
             <TextInput
                 id="ref-text"
                 label="Text"

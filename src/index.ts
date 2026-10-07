@@ -1,28 +1,28 @@
-export { CustomInput } from './Components/CustomInput.js'
-export { InputProvider } from './InputProvider.js'
+export { CustomInput } from './shared/Inputs/Components/CustomInput.js'
+export { InputProvider } from './shared/Inputs/Components/InputProvider.js'
 export {
     CheckboxInput,
     FileInput,
     RadioInput,
     RangeInput,
-} from './Components/Inputs/PrimitiveInputs.js'
-export { EmailInput } from './Components/Inputs/EmailInput.js'
-export { MoneyInput } from './Components/Inputs/MoneyInput.js'
-export { NumberInput } from './Components/Inputs/NumberInput.js'
-export { OtpInput } from './Components/Inputs/OtpInput.js'
-export { PasswordInput } from './Components/Inputs/PasswordInput.js'
-export { PhoneInput } from './Components/Inputs/PhoneInput.js'
-export { QuantityInput } from './Components/Inputs/QuantityInput.js'
-export { Textarea } from './Components/Inputs/Textarea.js'
-export { TextInput } from './Components/Inputs/TextInput.js'
-export { SearchInput } from './Components/Inputs/SearchInput.js'
-export { NativeTimeInput } from './Components/Inputs/NativeTimeInput.js'
-export { TimeInput } from './Components/Inputs/TimeInput.js'
+} from './shared/Inputs/Components/Inputs/PrimitiveInputs.js'
+export { EmailInput } from './shared/Inputs/Components/Inputs/EmailInput.js'
+export { MoneyInput } from './shared/Inputs/Components/Inputs/MoneyInput.js'
+export { NumberInput } from './shared/Inputs/Components/Inputs/NumberInput.js'
+export { OtpInput } from './shared/Inputs/Components/Inputs/OtpInput.js'
+export { PasswordInput } from './shared/Inputs/Components/Inputs/PasswordInput.js'
+export { PhoneInput } from './shared/Inputs/Components/Inputs/PhoneInput.js'
+export { QuantityInput } from './shared/Inputs/Components/Inputs/QuantityInput.js'
+export { Textarea } from './shared/Inputs/Components/Inputs/Textarea.js'
+export { TextInput } from './shared/Inputs/Components/Inputs/TextInput.js'
+export { SearchInput } from './shared/Inputs/Components/Inputs/SearchInput.js'
+export { NativeTimeInput } from './shared/Inputs/Components/Inputs/NativeTimeInput.js'
+export { TimeInput } from './shared/Inputs/Components/Inputs/TimeInput.js'
 export {
     inputMessageCatalog,
     resolveInputIntlLocale,
     resolveInputMessages,
-} from './Config/messages.js'
+} from './lib/Inputs/messages.js'
 export type {
     CustomDesign,
     CustomInputComponentProps,
@@ -72,4 +72,4 @@ export type {
     InputClassNames,
     InputProviderProps,
     InputValidationMode,
-} from './InputProvider.js'
+} from './shared/Inputs/Components/InputProvider.js'
