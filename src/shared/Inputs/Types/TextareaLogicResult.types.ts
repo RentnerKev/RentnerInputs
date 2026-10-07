@@ -41,7 +41,7 @@ export type TextareaLogicResult = {
     }
     handler: {
         handleInputChange: (
-            event: import('react').ChangeEvent<HTMLTextAreaElement, Element>,
+            event: import('react').ChangeEvent<HTMLTextAreaElement>,
         ) => void
         handleFocus: (
             event: import('react').FocusEvent<HTMLTextAreaElement, Element>,

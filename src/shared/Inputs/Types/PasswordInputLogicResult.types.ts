@@ -22,7 +22,7 @@ export type PasswordInputLogicResult = {
     }
     handler: {
         handleInputChange: (
-            event: import('react').ChangeEvent<HTMLInputElement, Element>,
+            event: import('react').ChangeEvent<HTMLInputElement>,
         ) => void
         handleFocus: (
             event: import('react').FocusEvent<HTMLInputElement, Element>,

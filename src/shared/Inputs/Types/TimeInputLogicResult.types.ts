@@ -69,7 +69,7 @@ export type TimeInputLogicResult = {
             event: import('react').InvalidEvent<HTMLInputElement>,
         ) => void
         handleNativeChange: (
-            event: import('react').ChangeEvent<HTMLInputElement, Element>,
+            event: import('react').ChangeEvent<HTMLInputElement>,
         ) => void
         selectHour: (hour: string) => void
         selectMinute: (minute: string) => void
