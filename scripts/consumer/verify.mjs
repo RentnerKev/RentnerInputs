@@ -17,6 +17,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { chromium, firefox, webkit, expect } from '@playwright/test'
 import { AxeBuilder } from '@axe-core/playwright'
 import { check } from './checks.mjs'
+import { verifyCss } from './verify-css.mjs'
 
 const packageRoot = process.cwd()
 const manifest = JSON.parse(
@@ -128,7 +129,7 @@ try {
     }
     const entryPoints = Object.keys(manifest.exports)
         .filter(
-            (entry) => entry !== './package.json' && entry !== './tailwind.css',
+            (entry) => entry !== './package.json' && !entry.endsWith('.css'),
         )
         .map(
             (entry) => `${manifest.name}${entry === '.' ? '' : entry.slice(1)}`,
@@ -235,6 +236,7 @@ try {
     `,
     )
     const vite = join(consumerRoot, 'node_modules/vite/bin/vite.js')
+    verifyCss({ consumerRoot, manifest, runNode, vite })
     runNode([
         vite,
         'build',

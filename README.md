@@ -460,3 +460,47 @@ published package contents.
 ## License
 
 MIT
+
+### Scoped CSS entries
+
+The existing `@rentnerkev/inputs/tailwind.css` covers every direct input export.
+For applications using only `CustomInput`, import `@rentnerkev/inputs/input.css`;
+for applications using only `TextInput`, import `@rentnerkev/inputs/text-input.css`.
+These share the original theme/keyframes and include tooltip styles. Their explicit
+Tailwind sources are generated during `bun run build` from reachable emitted own
+modules (including lazy imports); `bun scripts/build-css.mjs --check` verifies them.
+Use the full entry when also rendering other direct controls such as OTP or primitives.
+
+Error tooltips load on the client when a visible error first needs them. The icon,
+error paragraph and ARIA references remain available during SSR, loading, or a
+failed optional chunk. Existing tooltip provider defaults apply after loading.
+This reduces initial JavaScript for bundlers that support code splitting; it does
+not promise a smaller total bundle, and bundlers may keep dynamic imports inline.
+
+## Source architecture
+
+The defining UI lives in `src/shared/Inputs/Components`, with one owning
+`use...Logic` orchestrator per complex component under `Hooks` and explicit
+props/result contracts under `Types`. Focused editing, validation, navigation,
+subscriptions and ref lifecycles remain separate hooks with named inputs.
+Templates consume `state`, `handler`, `setter` and `refs`; UI-free date, formatting
+and validation modules live in `src/lib/Inputs`. `src/config` contains declarative
+design data only.
+
+The root and historical component/subpath files are public npm compatibility
+facades. Internal modules import their defining owner directly. Existing npm
+exports, controlled-value callbacks and React peer ranges remain unchanged.
+Tests live in `src/tests`, mirroring shared and lib owners; package contracts
+stay at the package-test root.
+
+Oxlint includes React, accessibility and playground checks. Local accessibility
+exceptions preserve the existing composite ARIA grid/dialog/segmented controls
+and opt-in native contracts where replacing them with suggested HTML tags would
+change behavior. Focus and accessibility are also checked in Chromium, Firefox
+and WebKit.
+
+The optional error-tooltip failure boundary remains a React class component:
+React error boundaries require that lifecycle API. Its client hydration
+subscription lives in a focused hook; error text and ARIA remain synchronous.
+Scoped CSS is generated from reachable built modules, including compatibility
+facades and lazy imports, and verified in packed-package consumers.

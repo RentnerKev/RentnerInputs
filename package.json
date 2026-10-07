@@ -1,6 +1,6 @@
 {
     "name": "@rentnerkev/inputs",
-    "version": "2.4.5",
+    "version": "2.5.0",
     "description": "Controlled React input components with validation, icons, length counters, and Tailwind design hooks.",
     "author": "RentnerKev",
     "license": "MIT",
@@ -9,14 +9,16 @@
     "type": "module",
     "files": [
         "dist",
-        "tailwind.css"
+        "tailwind.css",
+        "styles"
     ],
     "sideEffects": [
-        "./tailwind.css"
+        "./tailwind.css",
+        "./styles/*.css"
     ],
     "scripts": {
-        "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\" && tsc",
-        "typecheck": "tsc --noEmit",
+        "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\" && tsc && bun scripts/build-css.mjs",
+        "typecheck": "tsc --noEmit && bun run typecheck:automation",
         "typecheck:api": "tsc --noEmit --project type-tests/tsconfig.json",
         "prepare": "bun run build",
         "pack:check": "bun pm pack --dry-run",
@@ -24,12 +26,13 @@
         "playground:dev": "bun --cwd playground dev",
         "playground:build": "bun --cwd playground build",
         "e2e": "playwright test",
-        "lint": "oxlint .",
-        "lint:fix": "oxlint --fix .",
-        "format": "oxfmt .",
-        "format:check": "oxfmt --check .",
+        "lint": "oxlint src scripts type-tests playground/src playwright.config.ts .github/scripts",
+        "lint:fix": "oxlint --fix src scripts type-tests playground/src playwright.config.ts .github/scripts",
+        "format": "oxfmt src scripts type-tests playground README.md package.json tailwind.css styles/theme.css tsconfig.json playwright.config.ts .oxlintrc.json .oxfmtrc.json bunfig.toml .github",
+        "format:check": "oxfmt --check src scripts type-tests playground README.md package.json tailwind.css styles/theme.css tsconfig.json playwright.config.ts .oxlintrc.json .oxfmtrc.json bunfig.toml .github",
         "test": "bun test",
-        "verify": "bun run typecheck && bun run typecheck:api && bun run lint && bun run format:check && bun run test && bun run build && bun run pack:check && bun run pack:consumer && bun run e2e"
+        "verify": "bun run typecheck && bun run typecheck:api && bun run lint && bun run format:check && bun run test && bun run build && bun run pack:check && bun run pack:consumer && bun run e2e",
+        "typecheck:automation": "tsc --noEmit -p .github/scripts/tsconfig.json"
     },
     "repository": {
         "type": "git",
@@ -44,7 +47,7 @@
         "registry": "https://registry.npmjs.org"
     },
     "dependencies": {
-        "@rentnerkev/tooltips": "^2.0.6",
+        "@rentnerkev/tooltips": "^2.0.7",
         "lucide-react": "^1.52.0"
     },
     "peerDependencies": {
@@ -55,6 +58,7 @@
         "@axe-core/playwright": "^4.13.0",
         "@playwright/test": "^1.63.0",
         "@tailwindcss/vite": "^4.3.3",
+        "@types/node": "^24.19.1",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react": "^6.1.2",
@@ -145,10 +149,12 @@
             "types": "./dist/types.d.ts"
         },
         "./messages": {
-            "import": "./dist/Config/messages.js",
-            "types": "./dist/Config/messages.d.ts"
+            "import": "./dist/messages.js",
+            "types": "./dist/messages.d.ts"
         },
-        "./package.json": "./package.json"
+        "./package.json": "./package.json",
+        "./input.css": "./styles/input.css",
+        "./text-input.css": "./styles/text-input.css"
     },
     "packageManager": "bun@1.4.2"
 }

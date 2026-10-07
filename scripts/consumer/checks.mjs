@@ -1,4 +1,10 @@
 export async function check({ page, expect }) {
+    await expect(
+        page.getByLabel('External error', { exact: true }),
+    ).toHaveAttribute('aria-describedby', 'external-error-error')
+    await expect(page.locator('#external-error-error')).toHaveText(
+        'External error immediately',
+    )
     const form = page.locator('#consumer-form')
     const formValue = (name) =>
         form.evaluate(

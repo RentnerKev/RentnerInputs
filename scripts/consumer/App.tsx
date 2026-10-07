@@ -13,6 +13,13 @@ export function App() {
 
     return (
         <div className="rounded-xl bg-background-dark p-6 text-white">
+            <TextInput
+                id="external-error"
+                label="External error"
+                value=""
+                error="External error immediately"
+                onValueChange={() => undefined}
+            />
             <form
                 id="consumer-form"
                 aria-label="Consumer fields"
