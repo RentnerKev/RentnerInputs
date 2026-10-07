@@ -1,506 +1,70 @@
-# @rentnerkev/inputs
+<p align="center">
+    <img src="https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/banner.png" alt="RentnerInputs" width="100%">
+</p>
 
-Controlled React input components with labels, validation, icons, length
-counters, localization, and customizable Tailwind styling.
+<p align="center">
+    <a href="https://github.com/RentnerKev/RentnerInputs/actions/workflows/ci.yml"><img src="https://github.com/RentnerKev/RentnerInputs/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+    <a href="https://github.com/RentnerKev/RentnerInputs/actions/workflows/codeql.yml"><img src="https://github.com/RentnerKev/RentnerInputs/actions/workflows/codeql.yml/badge.svg?branch=main" alt="CodeQL"></a>
+    <a href="https://www.npmjs.com/package/@rentnerkev/inputs"><img src="https://img.shields.io/npm/v/@rentnerkev/inputs" alt="npm version"></a>
+    <a href="https://www.npmjs.com/package/@rentnerkev/inputs"><img src="https://img.shields.io/npm/dm/@rentnerkev/inputs" alt="npm downloads"></a>
+    <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
+</p>
 
-## Requirements
-
-Use React 19 with React DOM 19, an ESM-capable build, and Tailwind CSS 4 for
-the documented styling. Import this package's `tailwind.css` entry into your
-Tailwind stylesheet. It uses `@source` for published classes and `@theme` for
-global tokens such as `--color-primary`. Check for token name collisions with
-your app and override them in a later `@theme` block if needed.
-
-In a React Server Components app, import and render interactive inputs from a
-module beginning with `'use client'`; define their state and callbacks there.
-See the [Tailwind directives](https://tailwindcss.com/docs/functions-and-directives)
-and [React client boundary](https://react.dev/reference/rsc/use-client) guides.
+Controlled React inputs with validation, character counters, formatted values and customizable Tailwind styling.
 
 ## Installation
 
-With npm:
-
-```bash
-npm install @rentnerkev/inputs
-```
-
-Or with Bun:
+Requires React 19, React DOM 19 and Tailwind CSS 4.
 
 ```bash
 bun add @rentnerkev/inputs
+# npm alternative
+npm install @rentnerkev/inputs
 ```
 
-## Components
-
-Each field type has a dedicated component, logic hook, and props type:
-
-- `TextInput`
-- `EmailInput`
-- `PhoneInput`
-- `NumberInput`
-- `OtpInput` (digit and one-time-code fields)
-- `MoneyInput`
-- `PasswordInput`
-- `QuantityInput`
-- `TimeInput`
-- `Textarea`
-- `SearchInput` and `NativeTimeInput` (native search and time controls)
-- `CheckboxInput`, `RadioInput`, `RangeInput`, and `FileInput` (native semantics)
-
-`CustomInput` remains available as a backward-compatible entry point and
-selects the concrete component through its `type` prop. It also accepts
-`type="search"` and `type="native-time"`.
-
-## Project-wide defaults
-
-Wrap the app once with `InputProvider` to set locale, messages, visual classes,
-and validation behavior centrally. Nested providers inherit settings and can
-override only the relevant values, such as the authenticated user's locale.
-
-```tsx
-import { InputProvider } from '@rentnerkev/inputs'
-
-;<InputProvider
-    locale="en"
-    validationMode="external"
-    customDesign={{
-        bg: 'bg-app-field',
-        border: 'border-app-border',
-        text: 'text-app-ink',
-        focusBorder: 'focus:border-app-accent',
-    }}
-    classNames={{
-        input: 'h-12 w-full rounded-xl text-sm',
-        textarea: 'w-full rounded-xl text-sm',
-        checkbox: 'size-4 accent-app-accent',
-    }}
->
-    <YourApp />
-</InputProvider>
-```
-
-`validationMode="external"` leaves validation messages to a form library while
-preserving native attributes, events, and explicit `error` or `aria-invalid`
-props. The default `"built-in"` mode retains the package's own validation.
-Each field can override the provider's locale, messages, design, classes, or
-validation mode as needed. The package includes German, English, Spanish, and
-French messages; other locales continue to fall back to German.
-
-For `OtpInput`, external validation keeps the hidden native `required`
-constraint but leaves the incomplete-code message to the caller. A form
-validation handler should read that invalid state and pass an `error` message
-back to `OtpInput`; the OTP props do not expose an input-level `onInvalid`
-callback. A form-level `onInvalidCapture` handler can connect native constraint
-failures to the form library's error state.
-
-## Quick start
-
-```tsx
-import { useRef, useState } from 'react'
-import { EmailInput, Textarea } from '@rentnerkev/inputs'
-
-export function ContactForm() {
-    const [email, setEmail] = useState('')
-    const [message, setMessage] = useState('')
-    const emailRef = useRef<HTMLInputElement>(null)
-
-    return (
-        <form>
-            <EmailInput
-                ref={emailRef}
-                id="email"
-                label="Email address"
-                name="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                onKeyDown={(event) => {
-                    if (event.key === 'Escape') emailRef.current?.blur()
-                }}
-                placeholder="name@example.com"
-                autoComplete="email"
-                required
-                maxLength={120}
-                showLength
-            />
-
-            <Textarea
-                id="message"
-                label="Message"
-                name="message"
-                value={message}
-                onValueChange={setMessage}
-                placeholder="Your message"
-                rows={6}
-                minLength={10}
-                maxLength={500}
-                showLength
-                required
-            />
-        </form>
-    )
-}
-```
-
-## `CustomInput`
-
-Use `CustomInput` when the field type is selected dynamically or when migrating
-from an earlier package version.
-
-```tsx
-import { CustomInput } from '@rentnerkev/inputs'
-
-;<CustomInput
-    type="password"
-    value={password}
-    onValueChange={setPassword}
-    placeholder="Password"
-    autoComplete="current-password"
-    showPasswordStrength
-/>
-
-;<CustomInput
-    type="quantity"
-    value={quantity}
-    onValueChange={setQuantity}
-    placeholder="Quantity"
-    minValue={1}
-    maxValue={999}
-    suffix="x"
-/>
-
-;<CustomInput
-    type="textarea"
-    value={message}
-    onValueChange={setMessage}
-    placeholder="Message"
-    rows={4}
-/>
-```
-
-## Native attributes and events
-
-The concrete input components support the usual
-`InputHTMLAttributes<HTMLInputElement>`. `Textarea` supports
-`TextareaHTMLAttributes<HTMLTextAreaElement>`, including:
-
-- events such as `onFocus`, `onBlur`, `onInvalid`, `onInput`, `onKeyDown`,
-  `onKeyUp`, `onClick`, `onPaste`, and `onCopy`;
-- form attributes such as `id`, `name`, `required`, `disabled`, `readOnly`,
-  `form`, and `autoComplete`;
-- constraints such as `minLength`, `maxLength`, `min`, `max`, `step`, and
-  `pattern`;
-- accessibility and metadata attributes such as `aria-*`, `data-*`,
-  `tabIndex`, and `title`;
-- React refs through `ref`.
-
-Internal and consumer event handlers are composed. A custom `onFocus`, for
-example, does not replace the package's focus handling.
-
-Every controlled string field supports `onValueChange`, which receives the next
-accepted string value directly. This includes `TextInput`, `Textarea`,
-`EmailInput`, `PasswordInput`, `MoneyInput`, `PhoneInput`, `NumberInput`,
-`QuantityInput`, `SearchInput`, `NativeTimeInput`, and `TimeInput`. Use it with
-a state setter when you do not need the native change event:
-
-```tsx
-<TextInput value={name} onValueChange={setName} />
-<Textarea value={message} onValueChange={setMessage} />
-```
-
-`onChange` remains available for native event access. When both callbacks are
-provided, internal validation runs first, then `onChange` receives the native
-event and `onValueChange` receives the accepted string. A controlled field needs
-either `onChange`, `onValueChange`, or both, damit kein Callback stillschweigend
-ohne Wirkung bleibt.
-
-## Shared field contract
-
-| Prop            | Type                                           | Default                  | Description                                                                                                    |
-| --------------- | ---------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| `value`         | `string`                                       | Required                 | Controlled field value.                                                                                        |
-| `onChange`      | `ChangeEventHandler`                           | –                        | Receives the native event after internal input handling.                                                       |
-| `onValueChange` | `(value: string) => void`                      | –                        | Receives the accepted string value directly on every string field.                                             |
-| `label`         | `ReactNode`                                    | –                        | Accessible label above the field.                                                                              |
-| `description`   | `ReactNode`                                    | –                        | Help text with a stable ARIA relationship.                                                                     |
-| `error`         | `string \| null`                               | –                        | External error; overrides internal errors. `null` suppresses built-in errors and native `required` validation. |
-| `icon`          | `ReactNode`                                    | –                        | Icon displayed on the left.                                                                                    |
-| `triggerRef`    | `Ref<HTMLInputElement \| HTMLTextAreaElement>` | –                        | Alias ref in addition to the standard `ref`.                                                                   |
-| `showLength`    | `boolean`                                      | `false`                  | Displays the current character count.                                                                          |
-| `customDesign`  | `CustomDesign`                                 | –                        | Overrides individual design classes.                                                                           |
-| `locale`        | `InputLocale`                                  | `'de'`                   | Message language or Intl locale string.                                                                        |
-| `messages`      | `Partial<InputMessages>`                       | –                        | Overrides selected localized messages.                                                                         |
-| `className`     | `string`                                       | `w-full py-3 rounded-xl` | Classes for the actual input element.                                                                          |
-
-For every string field, provide `onChange`, `onValueChange`, or both. `OtpInput`
-keeps its array-valued `onValueChange` contract for digit arrays.
-
-Use native `maxLength` and `minLength` props for character constraints.
-`showLength` adds the visible counter.
-
-For `NumberInput`, `min` and `max` control both the native attributes and built-in validation. `minValue` and `maxValue` remain supported as aliases. If both forms are supplied, the native `min` or `max` value takes precedence.
-
-Consumer IDs, the description ID, and the visible error ID are merged into
-`aria-describedby`. An invalid native submit focuses the visible field.
-`disabled` removes the field from internal validation. `readOnly` prevents
-changes and internal constraint validation while retaining its value and native
-attributes.
-
-Pass `error={null}` to clear displayed and built-in errors. The component also
-omits its native `required` attribute in this mode; other native constraints
-remain and can still block submission. Use `validationMode="external"` when a
-form library owns the messages but should retain native constraints.
-
-For `TimeInput`, `triggerRef` points to the visible hour trigger. The same
-button ref is available through `CustomInput` when `type="time"`.
-
-## Component-specific props
-
-| Component       | Additional props                                                                                                   |
-| --------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `NumberInput`   | `min`, `max`; `minValue`, `maxValue` aliases                                                                       |
-| `OtpInput`      | `length` (default `6`), `onComplete`, `status`, `animated`, `showProgress`, `feedbackClassNames`, `inputClassName` |
-| `MoneyInput`    | `currency` (default `EUR`), `locale` (`'de'`, `'en'`, or an Intl locale)                                           |
-| `PasswordInput` | `showPasswordStrength`                                                                                             |
-| `QuantityInput` | `minValue`, `maxValue`, `suffix` (default `x`)                                                                     |
-| `TimeInput`     | `minuteStep` (integer from `1` through `60`; other values use `1`)                                                 |
-| `Textarea`      | Native textarea props such as `rows` and `wrap`; resize through `className`                                        |
-
-`MoneyInput` interprets decimal and grouping separators and digits using its
-`locale` (or the surrounding `InputProvider` locale), and checks grouped values
-against that locale's grouping pattern. For example, use `"1234.56"` with
-`locale="en"` and `"1234,56"` with `locale="de"`. A decimal separator without
-digits remains editable while typing; unfinished or malformed grouping does
-not pass validation. The controlled value and
-`onValueChange` callback use that unformatted decimal string. When the field is
-unfocused, the visible value is formatted as currency and preserves every
-fractional digit from the controlled string (while adding the currency's
-usual minimum fraction digits when needed). If `name` is set, native form
-submission uses the unformatted controlled decimal string, not the formatted
-display.
-The visible text input has no `name`; use the component's `name` prop instead
-of `event.currentTarget.name` in native change handlers.
-
-`QuantityInput` follows the same form-value rule: `name` submits the raw
-controlled quantity even when the blurred display includes a suffix such as
-`"5kg"`. Its visible text input has no `name`.
-
-`TimeInput` gives its hour and minute buttons separate accessible names based
-on the field label and localized part name, followed by the current value when
-one is selected. Read-only triggers remain focusable and expose `aria-disabled`
-because their button actions are unavailable. Open a list with Enter or Space;
-use Up and Down Arrow to move through options, Home and End to jump to the
-first or last option, Page Up and Page Down to move by ten options, Enter or
-Space to select, and Escape to close the list and return focus to its button.
-Minute options use an integer `minuteStep` from `1` through `60`; a missing or
-invalid step falls back to `1`. Native time `min`, `max`, and `step` constraints
-also filter the choices, with `step` measured in seconds as it is for a native
-`<input type="time">`. Browsers that expose `type="time"` as a text input get
-the same range and step checks through custom validity.
-
-`minuteStep` builds a grid from minute `00` within each hour, then native
-constraints filter that grid. The two grids can have no shared choices. For
-example, `minuteStep={15}`, `min="09:10"`, and `step={900}` make native-valid
-times `09:10`, `09:25`, `09:40`, and `09:55`, while the minute-step grid offers
-`09:00`, `09:15`, `09:30`, and `09:45`; the selector is therefore empty. Use
-`minuteStep={1}` to expose every minute allowed by the native constraints, or
-choose an origin that aligns both grids, such as `min="09:00"` with
-`minuteStep={15}` and `step={900}`.
-
-### One-time codes
-
-`OtpInput` keeps each digit in a controlled array, so editing one position preserves the others. It supports typing, arrow keys, Backspace, pasting a complete or partial code, and browser one-time-code autofill. `onComplete` receives the joined code when all positions are filled. With `name`, the joined value is submitted as one form field.
-
-```tsx
-import { useRef, useState } from 'react'
-import { OtpInput } from '@rentnerkev/inputs'
-
-function LoginCode({
-    checkCode,
-}: {
-    checkCode: (code: string) => Promise<boolean>
-}) {
-    const [digits, setDigits] = useState<Array<string>>(Array(6).fill(''))
-    const [status, setStatus] = useState<'idle' | 'error' | 'success'>('idle')
-    const currentCode = useRef('')
-
-    async function verify(code: string) {
-        setStatus('idle')
-        const valid = await checkCode(code)
-        if (currentCode.current === code) {
-            setStatus(valid ? 'success' : 'error')
-        }
-    }
-
-    return (
-        <OtpInput
-            name="code"
-            label="Bestätigungscode"
-            value={digits}
-            onValueChange={(nextDigits) => {
-                currentCode.current = nextDigits.join('')
-                setDigits(nextDigits)
-                setStatus('idle')
-            }}
-            onComplete={verify}
-            status={status}
-            required
-        />
-    )
-}
-```
-
-`status="error"` briefly shakes the digits and shows a localized error; `status="success"` turns a complete code green and announces confirmation. Completion alone never marks a code as valid. Editing the code should reset the status to `"idle"`. The progress rail and focus lift are enabled by default. Set `animated={false}` to remove motion or `showProgress={false}` to hide the rail. Motion also respects `prefers-reduced-motion`.
-
-`feedbackClassNames` replaces the default Tailwind classes for `focus`, `filled`, `error`, `success`, `progressTrack`, `progressFilled`, `progressError`, `progressSuccess`, `errorAnimation`, `successAnimation`, `errorMessage`, and `successMessage`. For example, `feedbackClassNames={{ success: 'border-lime-400 bg-lime-400/10 text-lime-200 focus:ring-lime-400/50', successAnimation: 'motion-safe:animate-pulse', successMessage: 'text-lime-300' }}` changes the confirmation style. Use the `messages` prop or `InputProvider` to override `otpInvalid` and `otpVerified`. Import `@rentnerkev/inputs/tailwind.css` to include the default animation utilities.
-
-The first digit can be focused through `ref` or `triggerRef`. Use `className` for the outer field and `inputClassName` or `InputProvider`'s `classNames.otp` for all digit fields.
-
-## Localization and messages
-
-German remains the default for backward compatibility. Set `locale="en"` for
-the complete English validation and ARIA messages. Existing Intl locale strings
-such as `en-GB` and `en_GB` remain available to `MoneyInput`; hyphen and
-underscore locale separators are normalized for Intl formatting. `en-` and
-`en_` variants use the English message catalog.
-
-```tsx
-<EmailInput
-    value={email}
-    onChange={(event) => setEmail(event.target.value)}
-    locale="en"
-    messages={{ required: 'Please enter your email address' }}
-    required
-/>
-```
-
-The typed catalog is available from the root entry and
-`@rentnerkev/inputs/messages`.
-
-## Custom design
-
-```tsx
-<EmailInput
-    value={email}
-    onChange={(event) => setEmail(event.target.value)}
-    customDesign={{
-        labelText: 'text-blue-200',
-        focusRing: 'focus:ring-blue-500/50',
-        focusBorder: 'focus:border-blue-500',
-        iconFocus: 'group-focus-within:text-blue-500',
-    }}
-/>
-```
-
-`CustomDesign` supports `bg`, `border`, `text`, `labelText`, `placeholder`,
-`focusRing`, `focusBorder`, `errorBorder`, `errorRing`, `errorRingBase`, `errorText`,
-`iconColor`, `iconFocus`, `counterBg`, `counterText`, `counterBorderFocus`, and
-the password-strength classes.
-`errorRing` styles a focused invalid input; `errorRingBase` styles the outer
-`TimeInput` ring while its required error is visible.
-
-When no `id` is provided, the component creates a stable ID so its label and
-field remain accessible.
-
-The native checkbox, radio, range, and file controls forward all native input
-attributes and refs. They are available when a field should retain browser
-behavior, including unchecked radio values and uncontrolled file selection.
-
-## Tailwind CSS
-
-Import the package entry after Tailwind CSS in your main stylesheet:
+Import the package styles in your Tailwind stylesheet:
 
 ```css
 @import 'tailwindcss';
 @import '@rentnerkev/inputs/tailwind.css';
 ```
 
-The entry scans only published JavaScript under `dist`. It provides the shared
-`primary`, `primary-hover`, `background-dark`, `surface-dark`, `input-dark`,
-`border-dark`, `secondary-text`, and `muted-foreground` theme tokens. Override
-them with a later `@theme` block when needed.
+## Quick start
 
-## Public entry points
+```tsx
+'use client'
 
-All components and prop types are exported from `@rentnerkev/inputs`. Direct
-component entry points are also available:
+import { useState } from 'react'
+import { TextInput } from '@rentnerkev/inputs'
 
-- `@rentnerkev/inputs/input`
-- `@rentnerkev/inputs/text-input`
-- `@rentnerkev/inputs/search-input`
-- `@rentnerkev/inputs/native-time-input`
-- `@rentnerkev/inputs/checkbox-input`
-- `@rentnerkev/inputs/radio-input`
-- `@rentnerkev/inputs/range-input`
-- `@rentnerkev/inputs/file-input`
-- `@rentnerkev/inputs/number-input`
-- `@rentnerkev/inputs/otp-input`
-- `@rentnerkev/inputs/phone-input`
-- `@rentnerkev/inputs/email-input`
-- `@rentnerkev/inputs/money-input`
-- `@rentnerkev/inputs/password-input`
-- `@rentnerkev/inputs/quantity-input`
-- `@rentnerkev/inputs/time-input`
-- `@rentnerkev/inputs/textarea`
-- `@rentnerkev/inputs/types`
-- `@rentnerkev/inputs/messages`
-- `@rentnerkev/inputs/tailwind.css`
+export function NameField() {
+    const [value, setValue] = useState('')
 
-## Development
-
-```bash
-bun install --frozen-lockfile
-bun install --cwd playground --frozen-lockfile
-bun run verify
-bun run playground:build
+    return (
+        <TextInput
+            label="Name"
+            value={value}
+            onValueChange={setValue}
+            showLength
+            maxLength={40}
+        />
+    )
+}
 ```
 
-`bun run verify` checks types, Oxlint, Oxfmt, tests, the package build, and the
-published package contents.
+## Screenshots
 
-## License
+| Text, email and character counters                                                                                                                                                                                                                                                                             | Password strength and currency formatting                                                                                                                                                                                                                                                                                      |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [![Text, email and character counters](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/text-email-and-character-counters.png)](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/text-email-and-character-counters.png)      | [![Password strength and currency formatting](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/password-strength-and-formatted-currency.png)](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/password-strength-and-formatted-currency.png) |
+| **Inline validation and number limits**                                                                                                                                                                                                                                                                        | **Time selection and OTP confirmation**                                                                                                                                                                                                                                                                                        |
+| [![Inline validation and number limits](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/inline-validation-and-number-limits.png)](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/inline-validation-and-number-limits.png) | [![Time selection and OTP confirmation](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/time-selection-and-otp-confirmation.png)](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/time-selection-and-otp-confirmation.png)                 |
 
-MIT
+[Full API and usage guide](https://github.com/RentnerKev/RentnerInputs/blob/main/docs/usage.md) · [Local Playground](./playground) · [MIT license](./LICENSE)
 
-### Scoped CSS entries
+Run the Playground from the repository root:
 
-The existing `@rentnerkev/inputs/tailwind.css` covers every direct input export.
-For applications using only `CustomInput`, import `@rentnerkev/inputs/input.css`;
-for applications using only `TextInput`, import `@rentnerkev/inputs/text-input.css`.
-These share the original theme/keyframes and include tooltip styles. Their explicit
-Tailwind sources are generated during `bun run build` from reachable emitted own
-modules (including lazy imports); `bun scripts/build-css.mjs --check` verifies them.
-Use the full entry when also rendering other direct controls such as OTP or primitives.
-
-Error tooltips load on the client when a visible error first needs them. The icon,
-error paragraph and ARIA references remain available during SSR, loading, or a
-failed optional chunk. Existing tooltip provider defaults apply after loading.
-This reduces initial JavaScript for bundlers that support code splitting; it does
-not promise a smaller total bundle, and bundlers may keep dynamic imports inline.
-
-## Source architecture
-
-The defining UI lives in `src/shared/Inputs/Components`, with one owning
-`use...Logic` orchestrator per complex component under `Hooks` and explicit
-props/result contracts under `Types`. Focused editing, validation, navigation,
-subscriptions and ref lifecycles remain separate hooks with named inputs.
-Templates consume `state`, `handler`, `setter` and `refs`; UI-free date, formatting
-and validation modules live in `src/lib/Inputs`. `src/config` contains declarative
-design data only.
-
-The root and historical component/subpath files are public npm compatibility
-facades. Internal modules import their defining owner directly. Existing npm
-exports, controlled-value callbacks and React peer ranges remain unchanged.
-Tests live in `src/tests`, mirroring shared and lib owners; package contracts
-stay at the package-test root.
-
-Oxlint includes React, accessibility and playground checks. Local accessibility
-exceptions preserve the existing composite ARIA grid/dialog/segmented controls
-and opt-in native contracts where replacing them with suggested HTML tags would
-change behavior. Focus and accessibility are also checked in Chromium, Firefox
-and WebKit.
-
-The optional error-tooltip failure boundary remains a React class component:
-React error boundaries require that lifecycle API. Its client hydration
-subscription lives in a focused hook; error text and ARIA remain synchronous.
-Scoped CSS is generated from reachable built modules, including compatibility
-facades and lazy imports, and verified in packed-package consumers.
+```bash
+bun install --cwd playground
+bun run playground:dev
+```
