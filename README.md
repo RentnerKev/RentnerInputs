@@ -17,9 +17,9 @@ Controlled React inputs with validation, character counters, formatted values an
 Requires React 19, React DOM 19 and Tailwind CSS 4.
 
 ```bash
-bun add @rentnerkev/inputs
-# npm alternative
 npm install @rentnerkev/inputs
+# or with Bun
+bun add @rentnerkev/inputs
 ```
 
 Import the package styles in your Tailwind stylesheet:
