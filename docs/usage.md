@@ -421,6 +421,11 @@ them with a later `@theme` block when needed.
 
 ## Public entry points
 
+The package root also exports `CheckboxInputProps`, `RadioInputProps`,
+`RangeInputProps`, `FileInputProps`, `BaseInputProps`, `BaseTextareaProps`,
+`InputVisualProps`, `NumericValueProps`, and `PasswordStrength`. Existing imports
+from `@rentnerkev/inputs/types` remain available.
+
 All components and prop types are exported from `@rentnerkev/inputs`. Direct
 component entry points are also available:
 
