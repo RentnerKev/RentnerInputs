@@ -47,6 +47,7 @@ describe('published package contract', () => {
             './types',
             './messages',
             './package.json',
+            './ai',
         ])
     })
 

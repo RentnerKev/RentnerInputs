@@ -10,7 +10,9 @@
     "files": [
         "dist",
         "tailwind.css",
-        "styles"
+        "styles",
+        "README.md",
+        "docs/usage.md"
     ],
     "sideEffects": [
         "./tailwind.css",
@@ -155,7 +157,11 @@
         },
         "./package.json": "./package.json",
         "./input.css": "./styles/input.css",
-        "./text-input.css": "./styles/text-input.css"
+        "./text-input.css": "./styles/text-input.css",
+        "./ai": {
+            "types": "./dist/ai.d.ts",
+            "import": "./dist/ai.js"
+        }
     },
     "packageManager": "bun@1.4.2"
 }
