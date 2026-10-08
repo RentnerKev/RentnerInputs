@@ -60,7 +60,7 @@ export function NameField() {
 | **Inline validation and number limits**                                                                                                                                                                                                                                                                        | **Time selection and OTP confirmation**                                                                                                                                                                                                                                                                                        |
 | [![Inline validation and number limits](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/inline-validation-and-number-limits.png)](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/inline-validation-and-number-limits.png) | [![Time selection and OTP confirmation](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/time-selection-and-otp-confirmation.png)](https://raw.githubusercontent.com/RentnerKev/RentnerInputs/main/assets/readme/screenshots/time-selection-and-otp-confirmation.png)                 |
 
-[Full API and usage guide](https://github.com/RentnerKev/RentnerInputs/blob/main/docs/usage.md) · [Local Playground](./playground) · [MIT license](./LICENSE)
+[Full API and usage guide](https://npm.rentner.dev/docs/inputs) · [Local Playground](./playground) · [MIT license](./LICENSE)
 
 Run the Playground from the repository root:
 
