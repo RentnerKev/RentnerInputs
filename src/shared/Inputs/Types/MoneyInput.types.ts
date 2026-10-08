@@ -1,4 +1,4 @@
-import type { BaseInputProps } from './InputShared.types.js'
+import type { BaseInputProps } from './InputShared.types.ts'
 
 export interface MoneyInputProps extends BaseInputProps {
     type?: 'money'

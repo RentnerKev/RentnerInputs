@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
-import useQuantityInputLogic from '../../Hooks/Inputs/useQuantityInput.logic.js'
-import type { QuantityInputComponentProps } from '../../Types/QuantityInput.types.js'
-import { InputField } from './InputField.js'
+import useQuantityInputLogic from '../../Hooks/Inputs/useQuantityInputLogic.ts'
+import type { QuantityInputComponentProps } from '../../Types/QuantityInput.types.ts'
+import { InputField } from './InputField.tsx'
 
 export const QuantityInput = forwardRef<
     HTMLInputElement,

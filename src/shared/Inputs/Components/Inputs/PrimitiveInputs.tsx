@@ -1,17 +1,17 @@
 import { forwardRef } from 'react'
-import { useInputDefaults } from '../../Hooks/useInputDefaults.js'
+import { useInputDefaults } from '../../Hooks/useInputDefaults.ts'
 import type {
     CheckboxInputProps,
     RadioInputProps,
     RangeInputProps,
     FileInputProps,
-} from '../../Types/PrimitiveInputs.types.js'
+} from '../../Types/PrimitiveInputs.types.ts'
 export type {
     CheckboxInputProps,
     RadioInputProps,
     RangeInputProps,
     FileInputProps,
-} from '../../Types/PrimitiveInputs.types.js'
+} from '../../Types/PrimitiveInputs.types.ts'
 
 export const CheckboxInput = forwardRef<HTMLInputElement, CheckboxInputProps>(
     function CheckboxInput({ type: _type, className, ...props }, ref) {

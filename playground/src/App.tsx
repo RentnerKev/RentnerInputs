@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
-import { CustomInput, OtpInput } from '../../src'
+import { usePlaygroundLogic } from './Hooks/usePlaygroundLogic.ts'
+import { CustomInput } from '../../src/shared/Inputs/Components/CustomInput.tsx'
+import { OtpInput } from '../../src/shared/Inputs/Components/Inputs/OtpInput.tsx'
 import {
     MailIcon,
     Hash,
@@ -12,28 +13,9 @@ import {
 } from 'lucide-react'
 
 export function App() {
-    const readOnlyTime = new URLSearchParams(window.location.search).has(
-        'readonly-time',
-    )
-    const [email, setEmail] = useState('')
-    const [phone, setPhone] = useState('')
-    const [amount, setAmount] = useState('')
-    const [limitedAmount, setLimitedAmount] = useState('')
-    const [username, setUsername] = useState('')
-    const [money, setMoney] = useState('')
-    const [password, setPassword] = useState('')
-    const [message, setMessage] = useState('')
-    const [appointmentTime, setAppointmentTime] = useState(
-        readOnlyTime ? '09:30' : '',
-    )
-    const [otpDigits, setOtpDigits] = useState<Array<string>>(Array(6).fill(''))
-    const [otpStatus, setOtpStatus] = useState<'idle' | 'error' | 'success'>(
-        'idle',
-    )
-
-    function handleSubmit(event: React.FormEvent) {
-        event.preventDefault()
-        const data = {
+    const {
+        state: {
+            readOnlyTime,
             email,
             phone,
             amount,
@@ -43,12 +25,28 @@ export function App() {
             password,
             message,
             appointmentTime,
-        }
-        alert(
-            'Daten erfolgreich an das Backend gesendet:\n' +
-                JSON.stringify(data, null, 2),
-        )
-    }
+            otpDigits,
+            otpStatus,
+        },
+        setter: {
+            setEmail,
+            setPhone,
+            setAmount,
+            setLimitedAmount,
+            setUsername,
+            setMoney,
+            setPassword,
+            setMessage,
+            setAppointmentTime,
+        },
+        handler: {
+            handleSubmit,
+            handleOtpChange,
+            handleOtpError,
+            handleOtpSuccess,
+            handleOtpReset,
+        },
+    } = usePlaygroundLogic()
 
     return (
         <main className="relative min-h-screen p-6 md:p-10">
@@ -179,16 +177,13 @@ export function App() {
                             label="Bestätigungscode"
                             description="Die Ziffern zeigen deinen Fortschritt. Teste die Rückmeldung unten."
                             value={otpDigits}
-                            onValueChange={(nextDigits) => {
-                                setOtpDigits(nextDigits)
-                                setOtpStatus('idle')
-                            }}
+                            onValueChange={handleOtpChange}
                             status={otpStatus}
                         />
                         <div className="flex flex-wrap gap-2">
                             <button
                                 type="button"
-                                onClick={() => setOtpStatus('error')}
+                                onClick={handleOtpError}
                                 className="rounded-lg border border-red-500/40 px-3 py-1.5 text-xs text-red-300 transition-colors hover:bg-red-500/10"
                             >
                                 Falsch
@@ -196,14 +191,14 @@ export function App() {
                             <button
                                 type="button"
                                 disabled={otpDigits.some((digit) => !digit)}
-                                onClick={() => setOtpStatus('success')}
+                                onClick={handleOtpSuccess}
                                 className="rounded-lg border border-emerald-400/40 px-3 py-1.5 text-xs text-emerald-300 transition-colors hover:bg-emerald-400/10 disabled:cursor-not-allowed disabled:opacity-40"
                             >
                                 Bestätigt
                             </button>
                             <button
                                 type="button"
-                                onClick={() => setOtpStatus('idle')}
+                                onClick={handleOtpReset}
                                 className="rounded-lg border border-border-dark px-3 py-1.5 text-xs text-secondary-text transition-colors hover:bg-white/5"
                             >
                                 Zurücksetzen

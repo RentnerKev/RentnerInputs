@@ -1,17 +1,17 @@
 import {
     InputContext,
     useInputProviderLogic,
-} from '../Hooks/useInputDefaults.js'
-import type { InputProviderProps } from '../Types/InputProvider.types.js'
+} from '../Hooks/useInputDefaults.ts'
+import type { InputProviderProps } from '../Types/InputProvider.types.ts'
 export type {
     InputProviderProps,
     InputClassNames,
     InputValidationMode,
-} from '../Types/InputProvider.types.js'
+} from '../Types/InputProvider.types.ts'
 export {
     useInputDefaults,
     useInputMessages,
-} from '../Hooks/useInputDefaults.js'
+} from '../Hooks/useInputDefaults.ts'
 
 export function InputProvider(props: InputProviderProps) {
     const { state } = useInputProviderLogic(props)

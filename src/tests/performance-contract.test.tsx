@@ -1,11 +1,11 @@
 import { describe, expect, spyOn, test } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { validateEmail } from '../lib/Inputs/inputValidation.utils.js'
-import { formatMoneyValue } from '../lib/Inputs/money.utils.js'
-import { PasswordInput } from '../shared/Inputs/Components/Inputs/PasswordInput.js'
-import { TextInput } from '../shared/Inputs/Components/Inputs/TextInput.js'
-import { Textarea } from '../shared/Inputs/Components/Inputs/Textarea.js'
-import { TimeInput } from '../shared/Inputs/Components/Inputs/TimeInput.js'
+import { validateEmail } from '../lib/Inputs/inputValidation.utils.ts'
+import { formatMoneyValue } from '../lib/Inputs/money.utils.ts'
+import { PasswordInput } from '../shared/Inputs/Components/Inputs/PasswordInput.tsx'
+import { TextInput } from '../shared/Inputs/Components/Inputs/TextInput.tsx'
+import { Textarea } from '../shared/Inputs/Components/Inputs/Textarea.tsx'
+import { TimeInput } from '../shared/Inputs/Components/Inputs/TimeInput.tsx'
 
 describe('performance compatibility', () => {
     test('keeps the email grammar for exhaustive short strings and whitespace', () => {

@@ -2,16 +2,14 @@ import type {
     InputElement,
     UseInputFieldLogicOptions,
     InputFieldValidationResult,
-} from '../../Types/InputFieldValidation.types.js'
+} from '../../Types/InputFieldValidation.types.ts'
 import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, FocusEvent, InvalidEvent } from 'react'
-import { resolveInputMessages } from '../../../../lib/Inputs/messages.js'
-import { useInputDefaults } from '../useInputDefaults.js'
-import { useComposedRefs } from '../useComposedRefs.js'
+import { resolveInputMessages } from '../../../../lib/Inputs/messages.ts'
+import { useInputDefaults } from '../useInputDefaults.ts'
+import { useComposedRefs } from '../useComposedRefs.ts'
 
-interface NativeErrorSnapshot {
-    constraints: string
-}
+import type { NativeErrorSnapshot } from '../../Types/InputFieldValidation.types.ts'
 
 const nativeConstraintAttributes = [
     'type',

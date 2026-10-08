@@ -1,4 +1,4 @@
-import type { BaseTextareaProps } from './InputShared.types.js'
+import type { BaseTextareaProps } from './InputShared.types.ts'
 
 export interface TextareaProps extends BaseTextareaProps {
     type?: 'textarea'

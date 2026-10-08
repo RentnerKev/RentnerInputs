@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import type { InputLocale, InputMessages } from './Messages.types.js'
-import type { CustomDesign } from './InputShared.types.js'
+import type { InputLocale, InputMessages } from './Messages.types.ts'
+import type { CustomDesign } from './InputShared.types.ts'
 
 export interface InputClassNames {
     input?: string

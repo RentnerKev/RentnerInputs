@@ -35,7 +35,7 @@ export type TextareaLogicResult = {
         hasVisibleError: boolean
         describedBy: string | undefined
         labelledBy: string | undefined
-        design: Required<import('./InputShared.types.js').CustomDesign>
+        design: Required<import('./InputShared.types.ts').CustomDesign>
         hasLeftIcon: boolean
         fieldClassName: string
     }

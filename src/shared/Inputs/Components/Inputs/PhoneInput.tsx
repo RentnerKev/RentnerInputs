@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
-import usePhoneInputLogic from '../../Hooks/Inputs/usePhoneInput.logic.js'
-import type { PhoneInputComponentProps } from '../../Types/PhoneInput.types.js'
-import { InputField } from './InputField.js'
+import usePhoneInputLogic from '../../Hooks/Inputs/usePhoneInputLogic.ts'
+import type { PhoneInputComponentProps } from '../../Types/PhoneInput.types.ts'
+import { InputField } from './InputField.tsx'
 
 export const PhoneInput = forwardRef<
     HTMLInputElement,

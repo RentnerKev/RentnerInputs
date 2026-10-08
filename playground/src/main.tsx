@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 // oxlint-disable-next-line import/no-unassigned-import -- Playground CSS entry.
 import './index.css'
-import { App } from './App'
+import { App } from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>

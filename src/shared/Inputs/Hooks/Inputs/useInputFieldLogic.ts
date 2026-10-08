@@ -1,9 +1,9 @@
-import type { InputFieldLogicResult } from '../../Types/InputFieldLogicResult.types.js'
+import type { InputFieldLogicResult } from '../../Types/InputFieldLogicResult.types.ts'
 import { useId } from 'react'
-import { DESIGN_CONFIG } from '../../../../config/inputDesign.config.js'
-import { useInputDefaults, useInputMessages } from '../useInputDefaults.js'
-import { mergeAriaDescribedBy } from '../../../../lib/Inputs/fieldA11y.utils.js'
-import type { InputFieldProps } from '../../Types/InputField.types.js'
+import { DESIGN_CONFIG } from '../../../../config/inputDesign.config.ts'
+import { useInputDefaults, useInputMessages } from '../useInputDefaults.ts'
+import { mergeAriaDescribedBy } from '../../../../lib/Inputs/fieldA11y.utils.ts'
+import type { InputFieldProps } from '../../Types/InputField.types.ts'
 
 export default function useInputFieldLogic({
     logic,

@@ -1,4 +1,4 @@
-import type { BaseInputProps, NumericValueProps } from './InputShared.types.js'
+import type { BaseInputProps, NumericValueProps } from './InputShared.types.ts'
 
 export interface NumberInputProps extends BaseInputProps, NumericValueProps {
     type?: 'number'

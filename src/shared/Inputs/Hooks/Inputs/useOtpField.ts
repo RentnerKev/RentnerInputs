@@ -5,8 +5,8 @@ import type {
     InvalidEvent,
     KeyboardEvent,
 } from 'react'
-import { useInputDefaults, useInputMessages } from '../useInputDefaults.js'
-import type { OtpLogicOptions } from '../../Types/OtpField.types.js'
+import { useInputDefaults, useInputMessages } from '../useInputDefaults.ts'
+import type { OtpLogicOptions } from '../../Types/OtpField.types.ts'
 
 export default function useOtpField({
     value,

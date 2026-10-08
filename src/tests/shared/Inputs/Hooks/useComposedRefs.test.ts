@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { createRef } from 'react'
-import { composeRefs } from '../../../../shared/Inputs/Hooks/useComposedRefs.js'
+import { composeRefs } from '../../../../shared/Inputs/Hooks/useComposedRefs.ts'
 
 describe('composed refs', () => {
     test('runs React 19 callback cleanup and clears object and legacy refs', () => {

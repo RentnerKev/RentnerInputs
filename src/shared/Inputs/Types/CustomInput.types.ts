@@ -2,7 +2,7 @@ import type { ChangeEventHandler, InputHTMLAttributes, Ref } from 'react'
 import type {
     InputVisualProps,
     NumericValueProps,
-} from './InputShared.types.js'
+} from './InputShared.types.ts'
 
 export type CustomInputType =
     | 'text'

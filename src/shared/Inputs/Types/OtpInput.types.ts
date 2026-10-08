@@ -1,7 +1,7 @@
 import type { ReactNode, Ref } from 'react'
-import type { InputLocale, InputMessages } from './Messages.types.js'
-import type { CustomDesign } from './InputShared.types.js'
-import type { InputValidationMode } from './InputProvider.types.js'
+import type { InputLocale, InputMessages } from './Messages.types.ts'
+import type { CustomDesign } from './InputShared.types.ts'
+import type { InputValidationMode } from './InputProvider.types.ts'
 
 export type OtpInputStatus = 'idle' | 'error' | 'success'
 

@@ -1,11 +1,11 @@
 import { describe, expect, test } from 'bun:test'
 import { createElement, createRef } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { CustomInput } from '../../../../../shared/Inputs/Components/CustomInput.js'
-import { Textarea } from '../../../../../shared/Inputs/Components/Inputs/Textarea.js'
-import { TextInput } from '../../../../../shared/Inputs/Components/Inputs/TextInput.js'
-import { TimeInput } from '../../../../../shared/Inputs/Components/Inputs/TimeInput.js'
-import { mergeAriaDescribedBy } from '../../../../../lib/Inputs/fieldA11y.utils.js'
+import { CustomInput } from '../../../../../shared/Inputs/Components/CustomInput.tsx'
+import { Textarea } from '../../../../../shared/Inputs/Components/Inputs/Textarea.tsx'
+import { TextInput } from '../../../../../shared/Inputs/Components/Inputs/TextInput.tsx'
+import { TimeInput } from '../../../../../shared/Inputs/Components/Inputs/TimeInput.tsx'
+import { mergeAriaDescribedBy } from '../../../../../lib/Inputs/fieldA11y.utils.ts'
 
 const noopChange = () => undefined
 const noopValueChange = (_value: string) => undefined

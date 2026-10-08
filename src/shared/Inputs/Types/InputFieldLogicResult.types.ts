@@ -1,11 +1,11 @@
 export type InputFieldLogicResult = {
     state: {
-        logic: import('./InputField.types.js').InputFieldProps['logic']
+        logic: import('./InputField.types.ts').InputFieldProps['logic']
         inputType: import('react').HTMLInputTypeAttribute | undefined
         displayValue: string | undefined
         rightControl: import('react').ReactNode
         passwordStrength:
-            | import('./InputShared.types.js').PasswordStrength
+            | import('./InputShared.types.ts').PasswordStrength
             | undefined
         showPasswordStrength: boolean | undefined
         label: import('react').ReactNode
@@ -27,7 +27,7 @@ export type InputFieldLogicResult = {
             | undefined
         ariaRequired: ('false' | 'true' | boolean) | undefined
         nativeProps: import('react').InputHTMLAttributes<HTMLInputElement>
-        resolvedMessages: Required<import('./Messages.types.js').InputMessages>
+        resolvedMessages: Required<import('./Messages.types.ts').InputMessages>
         fieldId: string
         labelId: string
         descriptionId: string
@@ -37,7 +37,7 @@ export type InputFieldLogicResult = {
         hasVisibleError: boolean
         describedBy: string | undefined
         labelledBy: string | undefined
-        design: Required<import('./InputShared.types.js').CustomDesign>
+        design: Required<import('./InputShared.types.ts').CustomDesign>
         hasLeftIcon: boolean
         fieldClassName: string
         passwordStrengthBarClass: string

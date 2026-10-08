@@ -1,6 +1,6 @@
 import type { ChangeEventHandler, InputHTMLAttributes, ReactNode } from 'react'
-import type { BaseInputProps, PasswordStrength } from './InputShared.types.js'
-import type { InputFieldValidationResult } from './InputFieldValidation.types.js'
+import type { BaseInputProps, PasswordStrength } from './InputShared.types.ts'
+import type { InputFieldValidationResult } from './InputFieldValidation.types.ts'
 
 type InputFieldLogic = Pick<
     InputFieldValidationResult<HTMLInputElement>,

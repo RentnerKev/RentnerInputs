@@ -32,8 +32,8 @@ async function sources(entry) {
 
 await Promise.all(
     Object.entries({
-        input: 'Components/CustomInput.js',
-        'text-input': 'Components/Inputs/TextInput.js',
+        input: 'shared/Inputs/Components/CustomInput.js',
+        'text-input': 'shared/Inputs/Components/Inputs/TextInput.js',
     }).map(async ([name, entry]) => {
         const path = resolve(root, 'styles', `${name}.css`)
         const css = [

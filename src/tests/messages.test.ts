@@ -3,12 +3,12 @@ import {
     inputMessageCatalog,
     resolveInputIntlLocale,
     resolveInputMessages,
-} from '../lib/Inputs/messages.js'
+} from '../lib/Inputs/messages.ts'
 import {
     validateEmail,
     validateNumber,
-} from '../lib/Inputs/inputValidation.utils.js'
-import { getPasswordStrength } from '../lib/Inputs/passwordStrength.utils.js'
+} from '../lib/Inputs/inputValidation.utils.ts'
+import { getPasswordStrength } from '../lib/Inputs/passwordStrength.utils.ts'
 
 describe('input locale messages', () => {
     test('keeps German defaults', () => {

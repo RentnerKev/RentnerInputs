@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
-import useMoneyInputLogic from '../../Hooks/Inputs/useMoneyInput.logic.js'
-import type { MoneyInputComponentProps } from '../../Types/MoneyInput.types.js'
-import { InputField } from './InputField.js'
+import useMoneyInputLogic from '../../Hooks/Inputs/useMoneyInputLogic.ts'
+import type { MoneyInputComponentProps } from '../../Types/MoneyInput.types.ts'
+import { InputField } from './InputField.tsx'
 
 export const MoneyInput = forwardRef<
     HTMLInputElement,

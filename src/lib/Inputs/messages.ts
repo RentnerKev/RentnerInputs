@@ -1,7 +1,7 @@
 import type {
     InputLocale,
     InputMessages,
-} from '../../shared/Inputs/Types/Messages.types.js'
+} from '../../shared/Inputs/Types/Messages.types.ts'
 export const inputMessageCatalog: Record<
     'de' | 'en' | 'es' | 'fr',
     Required<InputMessages>
@@ -155,3 +155,8 @@ export function resolveInputIntlLocale(locale: InputLocale = 'de') {
     if (locale === 'fr') return 'fr-FR'
     return locale.replace(/_/g, '-')
 }
+
+export type {
+    InputLocale,
+    InputMessages,
+} from '../../shared/Inputs/Types/Messages.types.ts'

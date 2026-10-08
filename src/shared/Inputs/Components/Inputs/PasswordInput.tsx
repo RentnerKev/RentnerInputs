@@ -1,8 +1,8 @@
 import { Eye, EyeOff } from 'lucide-react'
 import { forwardRef } from 'react'
-import usePasswordInputLogic from '../../Hooks/Inputs/usePasswordInput.logic.js'
-import type { PasswordInputComponentProps } from '../../Types/PasswordInput.types.js'
-import { InputField } from './InputField.js'
+import usePasswordInputLogic from '../../Hooks/Inputs/usePasswordInputLogic.ts'
+import type { PasswordInputComponentProps } from '../../Types/PasswordInput.types.ts'
+import { InputField } from './InputField.tsx'
 
 export const PasswordInput = forwardRef<
     HTMLInputElement,

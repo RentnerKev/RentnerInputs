@@ -5,8 +5,8 @@ export type PasswordInputLogicResult = {
         >
     }
     state: {
-        design: Required<import('./InputShared.types.js').CustomDesign>
-        messages: Required<import('./Messages.types.js').InputMessages>
+        design: Required<import('./InputShared.types.ts').CustomDesign>
+        messages: Required<import('./Messages.types.ts').InputMessages>
         safeValue: string
         error: string | null
         hasError: boolean
@@ -15,7 +15,7 @@ export type PasswordInputLogicResult = {
         counterText: string
         showPassword: boolean
         passwordStrength:
-            | import('./InputShared.types.js').PasswordStrength
+            | import('./InputShared.types.ts').PasswordStrength
             | undefined
         shouldShowPasswordStrength: boolean
         dynamicPaddingRight: number

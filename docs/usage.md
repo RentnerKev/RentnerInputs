@@ -487,9 +487,10 @@ Templates consume `state`, `handler`, `setter` and `refs`; UI-free date, formatt
 and validation modules live in `src/lib/Inputs`. `src/config` contains declarative
 design data only.
 
-The root and historical component/subpath files are public npm compatibility
-facades. Internal modules import their defining owner directly. Existing npm
-exports, controlled-value callbacks and React peer ranges remain unchanged.
+The package root aggregates the public API; component and utility subpaths map
+directly to their defining built modules. The public `types` entry keeps its
+existing contract without importing the UI. Internal modules import their
+defining owner directly. Controlled callbacks and React peer ranges stay stable.
 Tests live in `src/tests`, mirroring shared and lib owners; package contracts
 stay at the package-test root.
 
@@ -502,5 +503,5 @@ and WebKit.
 The optional error-tooltip failure boundary remains a React class component:
 React error boundaries require that lifecycle API. Its client hydration
 subscription lives in a focused hook; error text and ARIA remain synchronous.
-Scoped CSS is generated from reachable built modules, including compatibility
-facades and lazy imports, and verified in packed-package consumers.
+Scoped CSS is generated from reachable defining modules and lazy imports,
+and verified in packed-package consumers.

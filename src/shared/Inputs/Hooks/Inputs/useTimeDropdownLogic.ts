@@ -1,4 +1,4 @@
-import type { TimeDropdownLogicResult } from '../../Types/TimeDropdownLogicResult.types.js'
+import type { TimeDropdownLogicResult } from '../../Types/TimeDropdownLogicResult.types.ts'
 import {
     useRef,
     useId,
@@ -6,8 +6,8 @@ import {
     type FocusEvent,
     type KeyboardEvent as ReactKeyboardEvent,
 } from 'react'
-import { mergeAriaDescribedBy } from '../../../../lib/Inputs/fieldA11y.utils.js'
-import type { TimeDropdownProps } from '../../Types/TimeDropdown.types.js'
+import { mergeAriaDescribedBy } from '../../../../lib/Inputs/fieldA11y.utils.ts'
+import type { TimeDropdownProps } from '../../Types/TimeDropdown.types.ts'
 export default function useTimeDropdownLogic({
     label,
     value,

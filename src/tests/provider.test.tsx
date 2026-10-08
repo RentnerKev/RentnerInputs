@@ -1,17 +1,17 @@
 import { describe, expect, test } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { InputProvider } from '../shared/Inputs/Components/InputProvider.js'
-import { TextInput } from '../shared/Inputs/Components/Inputs/TextInput.js'
-import { PasswordInput } from '../shared/Inputs/Components/Inputs/PasswordInput.js'
+import { InputProvider } from '../shared/Inputs/Components/InputProvider.tsx'
+import { TextInput } from '../shared/Inputs/Components/Inputs/TextInput.tsx'
+import { PasswordInput } from '../shared/Inputs/Components/Inputs/PasswordInput.tsx'
 import {
     CheckboxInput,
     FileInput,
     RadioInput,
     RangeInput,
-} from '../shared/Inputs/Components/Inputs/PrimitiveInputs.js'
-import { SearchInput } from '../shared/Inputs/Components/Inputs/SearchInput.js'
-import { NativeTimeInput } from '../shared/Inputs/Components/Inputs/NativeTimeInput.js'
-import { Textarea } from '../shared/Inputs/Components/Inputs/Textarea.js'
+} from '../shared/Inputs/Components/Inputs/PrimitiveInputs.tsx'
+import { SearchInput } from '../shared/Inputs/Components/Inputs/SearchInput.tsx'
+import { NativeTimeInput } from '../shared/Inputs/Components/Inputs/NativeTimeInput.tsx'
+import { Textarea } from '../shared/Inputs/Components/Inputs/Textarea.tsx'
 
 const noopChange = () => undefined
 

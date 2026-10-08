@@ -1,13 +1,13 @@
 import { forwardRef } from 'react'
-import { useFieldValidation } from '../../Hooks/Inputs/useFieldValidation.js'
-import type { SearchInputComponentProps } from '../../Types/SearchInput.types.js'
-import { InputField } from './InputField.js'
+import { useFieldValidation } from '../../Hooks/Inputs/useFieldValidation.ts'
+import type { SearchInputComponentProps } from '../../Types/SearchInput.types.ts'
+import { InputField } from './InputField.tsx'
 
 export type {
     SearchInputProps,
     SearchInputValueProps,
     SearchInputComponentProps,
-} from '../../Types/SearchInput.types.js'
+} from '../../Types/SearchInput.types.ts'
 
 export const SearchInput = forwardRef<
     HTMLInputElement,

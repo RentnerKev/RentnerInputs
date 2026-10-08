@@ -1,25 +1,9 @@
-import { resolveInputIntlLocale } from './messages.js'
-import type { InputLocale } from '../../shared/Inputs/Types/Messages.types.js'
-
-interface MoneyLocaleInfo {
-    decimal: string
-    group?: string
-    primaryGroupSize: number
-    secondaryGroupSize: number
-    digits: Array<[localized: string, ascii: string]>
-    intlLocale: string
-}
-
-interface ParsedMoneyParts {
-    integer: string
-    fraction?: string
-}
-
-interface MoneyInputParseResult {
-    accepted: boolean
-    complete: boolean
-    parts?: ParsedMoneyParts
-}
+import type {
+    MoneyLocaleInfo,
+    MoneyInputParseResult,
+} from './Types/money.utils.types.ts'
+import { resolveInputIntlLocale } from './messages.ts'
+import type { InputLocale } from '../../shared/Inputs/Types/Messages.types.ts'
 
 const moneyLocaleInfoCache = new Map<string, MoneyLocaleInfo>()
 

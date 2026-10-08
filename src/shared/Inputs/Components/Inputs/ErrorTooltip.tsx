@@ -1,9 +1,9 @@
-import { useTooltipClientReady } from '../../Hooks/useTooltipClientReady.js'
+import { useTooltipClientReady } from '../../Hooks/useTooltipClientReady.ts'
 import type {
     ErrorTooltipProps,
     TooltipBoundaryProps,
     TooltipBoundaryState,
-} from '../../Types/ErrorTooltip.types.js'
+} from '../../Types/ErrorTooltip.types.ts'
 import { Component, lazy, Suspense } from 'react'
 import { AlertCircle } from 'lucide-react'
 

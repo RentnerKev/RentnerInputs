@@ -1,12 +1,15 @@
 import { forwardRef } from 'react'
-import useTextInputLogic from '../../Hooks/Inputs/useTextInput.logic.js'
-import type { TextInputComponentProps } from '../../Types/TextInput.types.js'
-import { InputField } from './InputField.js'
+import { useFieldValidation } from '../../Hooks/Inputs/useFieldValidation.ts'
+import type { TextInputComponentProps } from '../../Types/TextInput.types.ts'
+import { InputField } from './InputField.tsx'
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputComponentProps>(
     function TextInput({ type: _type, ...props }, ref) {
         void _type
-        const logic = useTextInputLogic(props, ref)
+        const logic = useFieldValidation<HTMLInputElement>({
+            ...props,
+            forwardedRef: ref,
+        })
         return <InputField {...props} logic={logic} inputType="text" />
     },
 )

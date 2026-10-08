@@ -5,8 +5,8 @@ import type {
     ReactNode,
     TextareaHTMLAttributes,
 } from 'react'
-import type { InputLocale, InputMessages } from './Messages.types.js'
-import type { InputValidationMode } from './InputProvider.types.js'
+import type { InputLocale, InputMessages } from './Messages.types.ts'
+import type { InputValidationMode } from './InputProvider.types.ts'
 
 export interface CustomDesign {
     bg?: string

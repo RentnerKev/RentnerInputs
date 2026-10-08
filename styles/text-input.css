@@ -2,7 +2,6 @@
 @import '@rentnerkev/tooltips/tailwind.css';
 @import './theme.css';
 
-@source "../dist/Components/Inputs/TextInput.js";
 @source "../dist/config/inputDesign.config.js";
 @source "../dist/lib/Inputs/fieldA11y.utils.js";
 @source "../dist/lib/Inputs/messages.js";
@@ -11,7 +10,6 @@
 @source "../dist/shared/Inputs/Components/Inputs/TextInput.js";
 @source "../dist/shared/Inputs/Hooks/Inputs/useFieldValidation.js";
 @source "../dist/shared/Inputs/Hooks/Inputs/useInputFieldLogic.js";
-@source "../dist/shared/Inputs/Hooks/Inputs/useTextInput.logic.js";
 @source "../dist/shared/Inputs/Hooks/useComposedRefs.js";
 @source "../dist/shared/Inputs/Hooks/useInputDefaults.js";
 @source "../dist/shared/Inputs/Hooks/useTooltipClientReady.js";

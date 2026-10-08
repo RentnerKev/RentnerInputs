@@ -1,11 +1,11 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- The custom listbox owns roving option-button focus; native select/option and fieldset would change keyboard/layout semantics. */
-import useTimeDropdownLogic from '../../Hooks/Inputs/useTimeDropdownLogic.js'
-import type { TimeDropdownProps } from '../../Types/TimeDropdown.types.js'
+import useTimeDropdownLogic from '../../Hooks/Inputs/useTimeDropdownLogic.ts'
+import type { TimeDropdownProps } from '../../Types/TimeDropdown.types.ts'
 import { ChevronDown, Clock } from 'lucide-react'
-import { ErrorTooltip } from './ErrorTooltip.js'
+import { ErrorTooltip } from './ErrorTooltip.tsx'
 import { forwardRef } from 'react'
-import useTimeInputLogic from '../../Hooks/Inputs/useTimeInput.logic.js'
-import type { TimeInputComponentProps } from '../../Types/TimeInput.types.js'
+import useTimeInputLogic from '../../Hooks/Inputs/useTimeInputLogic.ts'
+import type { TimeInputComponentProps } from '../../Types/TimeInput.types.ts'
 
 function TimeDropdown({
     label,

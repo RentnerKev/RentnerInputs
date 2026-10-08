@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { QuantityInput } from '../../../../../shared/Inputs/Components/Inputs/QuantityInput.js'
+import { QuantityInput } from '../../../../../shared/Inputs/Components/Inputs/QuantityInput.tsx'
 
 describe('quantity input form value', () => {
     test('submits the raw controlled value instead of the blurred suffix', () => {

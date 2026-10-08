@@ -16,7 +16,7 @@ export type TimeInputLogicResult = {
         nativeRequired: boolean | undefined
         ariaErrorMessage: string | undefined
         readOnly: boolean | undefined
-        resolvedMessages: Required<import('./Messages.types.js').InputMessages>
+        resolvedMessages: Required<import('./Messages.types.ts').InputMessages>
         fieldId: string
         labelId: string
         descriptionId: string
@@ -48,7 +48,7 @@ export type TimeInputLogicResult = {
               }
         fieldRequired: ('false' | 'true' | boolean) | undefined
         fieldAria: import('react').AriaAttributes
-        design: Required<import('./InputShared.types.js').CustomDesign>
+        design: Required<import('./InputShared.types.ts').CustomDesign>
         fieldClassName: string
         hasLeftIcon: boolean
         hours: string[]

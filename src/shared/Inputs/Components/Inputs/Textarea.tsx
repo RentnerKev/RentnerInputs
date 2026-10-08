@@ -1,7 +1,7 @@
-import { ErrorTooltip } from './ErrorTooltip.js'
+import { ErrorTooltip } from './ErrorTooltip.tsx'
 import { forwardRef } from 'react'
-import useTextareaLogic from '../../Hooks/Inputs/useTextarea.logic.js'
-import type { TextareaComponentProps } from '../../Types/Textarea.types.js'
+import useTextareaLogic from '../../Hooks/Inputs/useTextareaLogic.ts'
+import type { TextareaComponentProps } from '../../Types/Textarea.types.ts'
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaComponentProps>(
     function Textarea(props, ref) {

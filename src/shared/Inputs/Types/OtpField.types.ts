@@ -1,4 +1,4 @@
-import type { OtpInputProps } from './OtpInput.types.js'
+import type { OtpInputProps } from './OtpInput.types.ts'
 
 export type OtpLogicOptions = Pick<
     OtpInputProps,

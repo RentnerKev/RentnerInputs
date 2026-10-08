@@ -1,15 +1,15 @@
 import { describe, expect, test } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { MoneyInput } from '../../../shared/Inputs/Components/Inputs/MoneyInput.js'
-import { InputProvider } from '../../../shared/Inputs/Components/InputProvider.js'
+import { MoneyInput } from '../../../shared/Inputs/Components/Inputs/MoneyInput.tsx'
+import { InputProvider } from '../../../shared/Inputs/Components/InputProvider.tsx'
 import {
     acceptsMoney,
     validateMoney,
-} from '../../../lib/Inputs/inputValidation.utils.js'
+} from '../../../lib/Inputs/inputValidation.utils.ts'
 import {
     formatMoneyValue,
     parseMoneyValue,
-} from '../../../lib/Inputs/money.utils.js'
+} from '../../../lib/Inputs/money.utils.ts'
 
 describe('money input locale parsing', () => {
     test('parses decimal and grouping separators for the selected locale', () => {

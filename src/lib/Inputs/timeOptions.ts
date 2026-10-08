@@ -1,3 +1,9 @@
+import type {
+    TimeConstraintOptions,
+    TimeOptionConstraints,
+    TimeOptions,
+    ResolvedTimeConstraints,
+} from './Types/timeOptions.types.ts'
 function formatTimePart(value: number) {
     return String(value).padStart(2, '0')
 }
@@ -14,29 +20,6 @@ export function createMinuteOptions(minuteStep: number | undefined) {
     return Array.from({ length: Math.ceil(60 / safeMinuteStep) }, (_, index) =>
         formatTimePart(Math.min(index * safeMinuteStep, 59)),
     )
-}
-
-export interface TimeConstraintOptions {
-    min?: string | number
-    max?: string | number
-    step?: number | string
-    value?: string
-}
-
-interface TimeOptionConstraints extends TimeConstraintOptions {
-    minuteStep?: number
-}
-
-export interface TimeOptions {
-    hours: string[]
-    minutesByHour: Record<string, string[]>
-}
-
-interface ResolvedTimeConstraints {
-    minSeconds?: number
-    maxSeconds?: number
-    stepBase: number
-    stepSeconds?: number
 }
 
 function parseTimeSeconds(value: string | number | undefined) {
@@ -149,3 +132,8 @@ export function getTimePart(value: string, index: number) {
     const part = parts[index]
     return part && /^\d{2}$/.test(part) ? part : ''
 }
+
+export type {
+    TimeConstraintOptions,
+    TimeOptions,
+} from './Types/timeOptions.types.ts'

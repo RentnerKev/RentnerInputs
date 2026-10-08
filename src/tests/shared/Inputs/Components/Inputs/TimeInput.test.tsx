@@ -1,11 +1,11 @@
 import { describe, expect, test } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { TimeInput } from '../../../../../shared/Inputs/Components/Inputs/TimeInput.js'
+import { TimeInput } from '../../../../../shared/Inputs/Components/Inputs/TimeInput.tsx'
 import {
     createMinuteOptions,
     createTimeOptions,
     isTimeValueValid,
-} from '../../../../../lib/Inputs/timeOptions.js'
+} from '../../../../../lib/Inputs/timeOptions.ts'
 
 describe('time input keyboard and option contracts', () => {
     test('gives the hour and minute triggers distinct accessible names', () => {

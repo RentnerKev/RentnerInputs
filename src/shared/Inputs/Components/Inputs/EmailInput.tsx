@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
-import useEmailInputLogic from '../../Hooks/Inputs/useEmailInput.logic.js'
-import type { EmailInputComponentProps } from '../../Types/EmailInput.types.js'
-import { InputField } from './InputField.js'
+import useEmailInputLogic from '../../Hooks/Inputs/useEmailInputLogic.ts'
+import type { EmailInputComponentProps } from '../../Types/EmailInput.types.ts'
+import { InputField } from './InputField.tsx'
 
 export const EmailInput = forwardRef<
     HTMLInputElement,

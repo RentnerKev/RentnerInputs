@@ -1,11 +1,11 @@
 import { createContext, useContext, useMemo } from 'react'
-import { resolveInputMessages } from '../../../lib/Inputs/messages.js'
-import type { InputLocale, InputMessages } from '../Types/Messages.types.js'
+import { resolveInputMessages } from '../../../lib/Inputs/messages.ts'
+import type { InputLocale, InputMessages } from '../Types/Messages.types.ts'
 import type {
     InputDefaults,
     InputProviderProps,
     InputProviderLogicResult,
-} from '../Types/InputProvider.types.js'
+} from '../Types/InputProvider.types.ts'
 
 export const InputContext = createContext<InputDefaults>({})
 export function useInputDefaults(): InputDefaults {

@@ -18,18 +18,18 @@
     ],
     "scripts": {
         "build": "bun -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\" && tsc && bun scripts/build-css.mjs",
-        "typecheck": "tsc --noEmit && bun run typecheck:automation",
-        "typecheck:api": "tsc --noEmit --project type-tests/tsconfig.json",
+        "typecheck": "tsc --noEmit && tsc --project playground/tsconfig.json --noEmit && bun run typecheck:automation",
+        "typecheck:api": "tsc --noEmit --project tsconfig.type-tests.json",
         "prepare": "bun run build",
         "pack:check": "bun pm pack --dry-run",
-        "pack:consumer": "node scripts/verify-package.mjs",
+        "pack:consumer": "node scripts/consumer/verify.mjs",
         "playground:dev": "bun --cwd playground dev",
         "playground:build": "bun --cwd playground build",
         "e2e": "playwright test",
-        "lint": "oxlint src scripts type-tests playground/src playwright.config.ts .github/scripts",
-        "lint:fix": "oxlint --fix src scripts type-tests playground/src playwright.config.ts .github/scripts",
-        "format": "oxfmt src scripts type-tests playground README.md package.json tailwind.css styles/theme.css tsconfig.json playwright.config.ts .oxlintrc.json .oxfmtrc.json bunfig.toml .github",
-        "format:check": "oxfmt --check src scripts type-tests playground README.md package.json tailwind.css styles/theme.css tsconfig.json playwright.config.ts .oxlintrc.json .oxfmtrc.json bunfig.toml .github",
+        "lint": "oxlint --deny-warnings src scripts playground/src playwright.config.ts .github/scripts",
+        "lint:fix": "oxlint --fix --deny-warnings src scripts playground/src playwright.config.ts .github/scripts",
+        "format": "oxfmt src scripts playground README.md docs package.json tailwind.css styles/theme.css tsconfig.json tsconfig.type-tests.json playwright.config.ts .oxlintrc.json .oxfmtrc.json bunfig.toml .github",
+        "format:check": "oxfmt --check src scripts playground README.md docs package.json tailwind.css styles/theme.css tsconfig.json tsconfig.type-tests.json playwright.config.ts .oxlintrc.json .oxfmtrc.json bunfig.toml .github",
         "test": "bun test",
         "verify": "bun run typecheck && bun run typecheck:api && bun run lint && bun run format:check && bun run test && bun run build && bun run pack:check && bun run pack:consumer && bun run e2e",
         "typecheck:automation": "tsc --noEmit -p .github/scripts/tsconfig.json"
@@ -58,6 +58,7 @@
         "@axe-core/playwright": "^4.13.0",
         "@playwright/test": "^1.63.0",
         "@tailwindcss/vite": "^4.3.3",
+        "@types/bun": "^1.4.2",
         "@types/node": "^24.19.1",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
@@ -77,80 +78,80 @@
         },
         "./tailwind.css": "./tailwind.css",
         "./input": {
-            "import": "./dist/Components/CustomInput.js",
-            "types": "./dist/Components/CustomInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/CustomInput.js",
+            "types": "./dist/shared/Inputs/Components/CustomInput.d.ts"
         },
         "./text-input": {
-            "import": "./dist/Components/Inputs/TextInput.js",
-            "types": "./dist/Components/Inputs/TextInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/TextInput.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/TextInput.d.ts"
         },
         "./search-input": {
-            "import": "./dist/Components/Inputs/SearchInput.js",
-            "types": "./dist/Components/Inputs/SearchInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/SearchInput.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/SearchInput.d.ts"
         },
         "./native-time-input": {
-            "import": "./dist/Components/Inputs/NativeTimeInput.js",
-            "types": "./dist/Components/Inputs/NativeTimeInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/NativeTimeInput.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/NativeTimeInput.d.ts"
         },
         "./checkbox-input": {
-            "import": "./dist/Components/Inputs/PrimitiveInputs.js",
-            "types": "./dist/Components/Inputs/PrimitiveInputs.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/PrimitiveInputs.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/PrimitiveInputs.d.ts"
         },
         "./radio-input": {
-            "import": "./dist/Components/Inputs/PrimitiveInputs.js",
-            "types": "./dist/Components/Inputs/PrimitiveInputs.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/PrimitiveInputs.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/PrimitiveInputs.d.ts"
         },
         "./range-input": {
-            "import": "./dist/Components/Inputs/PrimitiveInputs.js",
-            "types": "./dist/Components/Inputs/PrimitiveInputs.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/PrimitiveInputs.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/PrimitiveInputs.d.ts"
         },
         "./file-input": {
-            "import": "./dist/Components/Inputs/PrimitiveInputs.js",
-            "types": "./dist/Components/Inputs/PrimitiveInputs.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/PrimitiveInputs.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/PrimitiveInputs.d.ts"
         },
         "./number-input": {
-            "import": "./dist/Components/Inputs/NumberInput.js",
-            "types": "./dist/Components/Inputs/NumberInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/NumberInput.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/NumberInput.d.ts"
         },
         "./otp-input": {
-            "import": "./dist/Components/Inputs/OtpInput.js",
-            "types": "./dist/Components/Inputs/OtpInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/OtpInput.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/OtpInput.d.ts"
         },
         "./phone-input": {
-            "import": "./dist/Components/Inputs/PhoneInput.js",
-            "types": "./dist/Components/Inputs/PhoneInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/PhoneInput.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/PhoneInput.d.ts"
         },
         "./email-input": {
-            "import": "./dist/Components/Inputs/EmailInput.js",
-            "types": "./dist/Components/Inputs/EmailInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/EmailInput.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/EmailInput.d.ts"
         },
         "./money-input": {
-            "import": "./dist/Components/Inputs/MoneyInput.js",
-            "types": "./dist/Components/Inputs/MoneyInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/MoneyInput.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/MoneyInput.d.ts"
         },
         "./password-input": {
-            "import": "./dist/Components/Inputs/PasswordInput.js",
-            "types": "./dist/Components/Inputs/PasswordInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/PasswordInput.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/PasswordInput.d.ts"
         },
         "./quantity-input": {
-            "import": "./dist/Components/Inputs/QuantityInput.js",
-            "types": "./dist/Components/Inputs/QuantityInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/QuantityInput.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/QuantityInput.d.ts"
         },
         "./time-input": {
-            "import": "./dist/Components/Inputs/TimeInput.js",
-            "types": "./dist/Components/Inputs/TimeInput.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/TimeInput.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/TimeInput.d.ts"
         },
         "./textarea": {
-            "import": "./dist/Components/Inputs/Textarea.js",
-            "types": "./dist/Components/Inputs/Textarea.d.ts"
+            "import": "./dist/shared/Inputs/Components/Inputs/Textarea.js",
+            "types": "./dist/shared/Inputs/Components/Inputs/Textarea.d.ts"
         },
         "./types": {
             "import": "./dist/types.js",
             "types": "./dist/types.d.ts"
         },
         "./messages": {
-            "import": "./dist/messages.js",
-            "types": "./dist/messages.d.ts"
+            "import": "./dist/lib/Inputs/messages.js",
+            "types": "./dist/lib/Inputs/messages.d.ts"
         },
         "./package.json": "./package.json",
         "./input.css": "./styles/input.css",

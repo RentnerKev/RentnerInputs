@@ -1,13 +1,13 @@
 import { forwardRef } from 'react'
-import { useFieldValidation } from '../../Hooks/Inputs/useFieldValidation.js'
-import type { NativeTimeInputComponentProps } from '../../Types/NativeTimeInput.types.js'
-import { InputField } from './InputField.js'
+import { useFieldValidation } from '../../Hooks/Inputs/useFieldValidation.ts'
+import type { NativeTimeInputComponentProps } from '../../Types/NativeTimeInput.types.ts'
+import { InputField } from './InputField.tsx'
 
 export type {
     NativeTimeInputProps,
     NativeTimeInputValueProps,
     NativeTimeInputComponentProps,
-} from '../../Types/NativeTimeInput.types.js'
+} from '../../Types/NativeTimeInput.types.ts'
 
 export const NativeTimeInput = forwardRef<
     HTMLInputElement,

@@ -1,14 +1,12 @@
-import { inputMessageCatalog } from './messages.js'
+import { inputMessageCatalog } from './messages.ts'
 import type {
     InputLocale,
     InputMessages,
-} from '../../shared/Inputs/Types/Messages.types.js'
+} from '../../shared/Inputs/Types/Messages.types.ts'
 import {
     acceptsMoney as acceptsLocalizedMoney,
     isCompleteMoneyValue,
-} from './money.utils.js'
-
-export type InputValidator = (value: string) => string | null
+} from './money.utils.ts'
 
 export function validateEmail(
     value: string,
@@ -70,4 +68,14 @@ export function acceptsMoney(value: string, locale: InputLocale = 'de') {
 
 export function acceptsQuantity(value: string) {
     return value === '' || /^[0-9]*$/.test(value)
+}
+
+export function resolveNumberBound(
+    nativeBound: string | number | undefined,
+    valueBound: number | undefined,
+) {
+    if (nativeBound === undefined) return valueBound
+    if (nativeBound === '') return undefined
+    const parsedBound = Number(nativeBound)
+    return Number.isFinite(parsedBound) ? parsedBound : undefined
 }

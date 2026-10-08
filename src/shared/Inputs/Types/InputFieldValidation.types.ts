@@ -10,9 +10,9 @@ import type {
     Dispatch,
     SetStateAction,
 } from 'react'
-import type { InputLocale, InputMessages } from './Messages.types.js'
-import type { InputValidationMode } from './InputProvider.types.js'
-import type { InputValidator } from '../../../lib/Inputs/inputValidation.utils.js'
+import type { InputLocale, InputMessages } from './Messages.types.ts'
+import type { InputValidationMode } from './InputProvider.types.ts'
+import type { InputValidator } from '../../../lib/Inputs/Types/inputValidation.types.ts'
 
 export type InputElement = HTMLInputElement | HTMLTextAreaElement
 
@@ -63,4 +63,8 @@ export interface InputFieldValidationResult<Element extends InputElement> {
         setNativeError: Dispatch<SetStateAction<string | null>>
     }
     refs: { field: RefCallback<InputElement> }
+}
+
+export interface NativeErrorSnapshot {
+    constraints: string
 }

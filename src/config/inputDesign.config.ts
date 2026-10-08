@@ -1,4 +1,4 @@
-import type { CustomDesign } from '../shared/Inputs/Types/InputShared.types.js'
+import type { CustomDesign } from '../shared/Inputs/Types/InputShared.types.ts'
 
 export const DESIGN_CONFIG = {
     bg: 'bg-input-dark',

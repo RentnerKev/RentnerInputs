@@ -50,13 +50,13 @@ describe('published package contract', () => {
         ])
     })
 
-    test('documents npm before Bun installation', () => {
+    test('documents Bun and npm installation', () => {
         const npmInstallPosition = readme.indexOf(
             'npm install @rentnerkev/inputs',
         )
         const bunInstallPosition = readme.indexOf('bun add @rentnerkev/inputs')
 
         expect(npmInstallPosition).toBeGreaterThan(-1)
-        expect(bunInstallPosition).toBeGreaterThan(npmInstallPosition)
+        expect(bunInstallPosition).toBeGreaterThan(-1)
     })
 })

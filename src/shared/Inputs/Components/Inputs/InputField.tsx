@@ -1,6 +1,6 @@
-import { ErrorTooltip } from './ErrorTooltip.js'
-import useInputFieldLogic from '../../Hooks/Inputs/useInputFieldLogic.js'
-import type { InputFieldProps } from '../../Types/InputField.types.js'
+import { ErrorTooltip } from './ErrorTooltip.tsx'
+import useInputFieldLogic from '../../Hooks/Inputs/useInputFieldLogic.ts'
+import type { InputFieldProps } from '../../Types/InputField.types.ts'
 
 export function InputField(props: InputFieldProps) {
     const {

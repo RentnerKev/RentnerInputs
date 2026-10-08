@@ -1,6 +1,6 @@
-import { inputMessageCatalog } from './messages.js'
-import type { InputMessages } from '../../shared/Inputs/Types/Messages.types.js'
-import type { PasswordStrength } from '../../shared/Inputs/Types/InputShared.types.js'
+import { inputMessageCatalog } from './messages.ts'
+import type { InputMessages } from '../../shared/Inputs/Types/Messages.types.ts'
+import type { PasswordStrength } from '../../shared/Inputs/Types/InputShared.types.ts'
 
 const COMMON_PASSWORDS = new Set([
     'password',

@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Ref } from 'react'
-import type { TimeInputComponentProps } from '../../Types/TimeInput.types.js'
-import { useInputMessages } from '../useInputDefaults.js'
-import { useFieldValidation } from './useFieldValidation.js'
-import { useComposedRefs } from '../useComposedRefs.js'
+import type { TimeInputComponentProps } from '../../Types/TimeInput.types.ts'
+import { useInputMessages } from '../useInputDefaults.ts'
+import { useFieldValidation } from './useFieldValidation.ts'
+import { useComposedRefs } from '../useComposedRefs.ts'
 
 import {
     createTimeOptions,
     getTimePart,
     isTimeValueValid,
-} from '../../../../lib/Inputs/timeOptions.js'
+} from '../../../../lib/Inputs/timeOptions.ts'
 
 export default function useTimeField(
     props: TimeInputComponentProps,

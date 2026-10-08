@@ -1,8 +1,8 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role, jsx-a11y/role-supports-aria-props, jsx-a11y/no-autofocus -- Preserve the composite OTP group error contract and explicitly opt-in autoFocus API; each digit independently exposes invalid state. */
 import { forwardRef } from 'react'
 import { CircleAlert, CircleCheck } from 'lucide-react'
-import useOtpInputLogic from '../../Hooks/Inputs/useOtpInput.logic.js'
-import type { OtpInputProps } from '../../Types/OtpInput.types.js'
+import useOtpInputLogic from '../../Hooks/Inputs/useOtpInputLogic.ts'
+import type { OtpInputProps } from '../../Types/OtpInput.types.ts'
 
 export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
     function OtpInput(props, ref) {

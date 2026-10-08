@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'bun:test'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { NumberInput } from '../../../../../shared/Inputs/Components/Inputs/NumberInput.js'
-import { OtpInput } from '../../../../../shared/Inputs/Components/Inputs/OtpInput.js'
-import { resolveNumberBound } from '../../../../../shared/Inputs/Hooks/Inputs/useNumberInput.logic.js'
+import { NumberInput } from '../../../../../shared/Inputs/Components/Inputs/NumberInput.tsx'
+import { OtpInput } from '../../../../../shared/Inputs/Components/Inputs/OtpInput.tsx'
+import { resolveNumberBound } from '../../../../../lib/Inputs/inputValidation.utils.ts'
 
 describe('OTP and number fields', () => {
     test('labels each digit and submits the joined code', () => {

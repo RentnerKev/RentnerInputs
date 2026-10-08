@@ -7,7 +7,7 @@ export type OtpInputLogicResult = {
         animated: boolean
         showProgress: boolean
         feedbackClassNames:
-            | import('../../../types.js').OtpFeedbackClassNames
+            | import('./OtpInput.types.ts').OtpFeedbackClassNames
             | undefined
         required: boolean | undefined
         disabled: boolean | undefined
@@ -16,12 +16,12 @@ export type OtpInputLogicResult = {
         className: string | undefined
         inputClassName: string | undefined
         ariaLabel: string | undefined
-        defaults: import('./InputProvider.types.js').InputDefaults
-        design: Required<import('./InputShared.types.js').CustomDesign>
+        defaults: import('./InputProvider.types.ts').InputDefaults
+        design: Required<import('./InputShared.types.ts').CustomDesign>
         digits: string[]
         code: string
         digitCount: number
-        resolvedMessages: Required<import('./Messages.types.js').InputMessages>
+        resolvedMessages: Required<import('./Messages.types.ts').InputMessages>
         resolvedError: string | null
         hasError: boolean
         visualStatus: string
