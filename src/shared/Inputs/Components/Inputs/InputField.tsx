@@ -98,11 +98,7 @@ export function InputField(props: InputFieldProps) {
                     }
                     aria-labelledby={labelledBy}
                     aria-required={
-                        disabled
-                            ? undefined
-                            : error === undefined
-                              ? nativeRequired || ariaRequired || undefined
-                              : ariaRequired
+                        disabled ? undefined : nativeRequired || ariaRequired
                     }
                     style={{
                         paddingLeft: hasLeftIcon ? 44 : 16,

@@ -100,10 +100,7 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
                     aria-labelledby={labelledBy}
                     aria-describedby={describedBy}
                     aria-invalid={hasError || undefined}
-                    aria-required={
-                        (required && !disabled && error === undefined) ||
-                        undefined
-                    }
+                    aria-required={(required && !disabled) || undefined}
                     data-otp-status={visualStatus}
                     onBlurCapture={handleGroupBlur}
                     className={`flex min-w-0 gap-2 sm:gap-3 ${

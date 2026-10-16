@@ -95,9 +95,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaComponentProps>(
                         aria-required={
                             disabled
                                 ? undefined
-                                : error === undefined
-                                  ? nativeRequired || ariaRequired || undefined
-                                  : ariaRequired
+                                : nativeRequired || ariaRequired
                         }
                         style={{
                             paddingLeft: hasLeftIcon ? 44 : 16,

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { createElement, createRef } from 'react'
+import { createElement, createRef, type ComponentProps } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { CustomInput } from '../../../../../shared/Inputs/Components/CustomInput.tsx'
 import { Textarea } from '../../../../../shared/Inputs/Components/Inputs/Textarea.tsx'
@@ -173,7 +173,7 @@ describe('shared input field contract', () => {
         )
 
         expect(markup).not.toContain('required=""')
-        expect(markup).not.toContain('aria-required="true"')
+        expect(markup).toContain('aria-required="true"')
     })
 
     test('keeps numeric labels and suppresses required ARIA on disabled fields', () => {
@@ -221,3 +221,88 @@ describe('shared input field contract', () => {
         ).toBe('consumer-help description error')
     })
 })
+
+type RequiredFieldProps = Pick<
+    ComponentProps<typeof TextInput>,
+    'required' | 'disabled' | 'error' | 'aria-required'
+>
+
+for (const { name, render } of [
+    {
+        name: 'TextInput',
+        render: (props: RequiredFieldProps) => (
+            <TextInput value="" onChange={noopChange} {...props} />
+        ),
+    },
+    {
+        name: 'Textarea',
+        render: (props: RequiredFieldProps) => (
+            <Textarea value="" onChange={noopChange} {...props} />
+        ),
+    },
+    {
+        name: 'TimeInput',
+        render: (props: RequiredFieldProps) => (
+            <TimeInput value="" onChange={noopChange} {...props} />
+        ),
+    },
+]) {
+    describe(name + ' required semantics', () => {
+        for (const error of [undefined, null, '', 'Externally invalid']) {
+            test('keeps required semantics with error=' + String(error), () => {
+                const markup = renderToStaticMarkup(
+                    render({ required: true, error }),
+                )
+
+                expect(markup).toContain('aria-required="true"')
+                expect(/\srequired=""/.test(markup)).toBe(error === undefined)
+            })
+
+            test(
+                'leaves optional fields optional with error=' + String(error),
+                () => {
+                    const markup = renderToStaticMarkup(render({ error }))
+
+                    expect(markup).not.toContain('aria-required=')
+                    expect(markup).not.toMatch(/\srequired=""/)
+                },
+            )
+
+            test(
+                'omits required semantics when disabled with error=' +
+                    String(error),
+                () => {
+                    const markup = renderToStaticMarkup(
+                        render({ required: true, disabled: true, error }),
+                    )
+
+                    expect(markup).not.toContain('aria-required=')
+                },
+            )
+        }
+
+        for (const ariaRequired of [true, false, 'true', 'false'] as const) {
+            test(
+                'preserves explicit aria-required=' + String(ariaRequired),
+                () => {
+                    const markup = renderToStaticMarkup(
+                        render({ error: null, 'aria-required': ariaRequired }),
+                    )
+
+                    expect(markup).toContain(
+                        'aria-required="' + String(ariaRequired) + '"',
+                    )
+                    expect(markup).not.toMatch(/\srequired=""/)
+                },
+            )
+        }
+
+        test('does not let explicit false hide a required field', () => {
+            const markup = renderToStaticMarkup(
+                render({ required: true, error: null, 'aria-required': false }),
+            )
+
+            expect(markup).toContain('aria-required="true"')
+        })
+    })
+}

@@ -119,11 +119,7 @@ export default function useTimeInputLogic(
             }
     const readOnly = inputProps.readOnly
     const fieldInvalid = logic.state.hasError || ariaInvalid || undefined
-    const fieldRequired = disabled
-        ? undefined
-        : error === undefined
-          ? nativeRequired || ariaRequired || undefined
-          : ariaRequired
+    const fieldRequired = disabled ? undefined : nativeRequired || ariaRequired
     const fieldAria = {
         ...additionalAria,
         'aria-label': ariaLabel,

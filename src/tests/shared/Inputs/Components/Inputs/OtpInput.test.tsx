@@ -90,3 +90,38 @@ describe('OTP and number fields', () => {
         expect(markup).toContain('max="10"')
     })
 })
+
+describe('OTP required semantics', () => {
+    for (const error of [undefined, null, '', 'Externally invalid']) {
+        for (const required of [false, true]) {
+            for (const disabled of [false, true]) {
+                test(
+                    'required=' +
+                        required +
+                        ', disabled=' +
+                        disabled +
+                        ', error=' +
+                        String(error),
+                    () => {
+                        const markup = renderToStaticMarkup(
+                            <OtpInput
+                                value={[]}
+                                onValueChange={() => undefined}
+                                required={required}
+                                disabled={disabled}
+                                error={error}
+                            />,
+                        )
+
+                        expect(markup.includes('aria-required="true"')).toBe(
+                            required && !disabled,
+                        )
+                        expect(/\srequired=""/.test(markup)).toBe(
+                            required && !disabled && error === undefined,
+                        )
+                    },
+                )
+            }
+        }
+    }
+})
