@@ -364,7 +364,9 @@ test('animates OTP verification feedback and announces both outcomes', async ({
 
     await page.getByRole('button', { name: 'Bestätigt' }).click()
     await expect(group).toHaveAttribute('data-otp-status', 'success')
-    await expect(page.getByRole('status')).toContainText('Code bestätigt')
+    await expect(
+        page.getByRole('status').filter({ hasText: 'Code bestätigt' }),
+    ).toHaveText('Code bestätigt')
     await expect(firstDigit).toHaveCSS('animation-name', 'otp-confirm')
 
     await firstDigit.fill('9')

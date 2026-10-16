@@ -76,6 +76,7 @@ test('uses provider portal defaults and keeps logical Tab order', async ({
     await expect(minute).toBeFocused()
     await expect(page.getByRole('listbox')).toHaveCount(0)
     await minute.click()
+    await expect(page.getByTestId('time-blurs')).toHaveText('0')
     await expect(popup).toBeVisible()
     await expect(popup).toHaveCSS('z-index', '12345')
     await expect(

@@ -1,4 +1,4 @@
-import type { FocusEvent } from 'react'
+import type { FocusEvent, MouseEvent as ReactMouseEvent } from 'react'
 
 export type TimeDropdownLogicResult = {
     state: {
@@ -19,6 +19,9 @@ export type TimeDropdownLogicResult = {
         handleBlur: (event: FocusEvent<HTMLDivElement>) => void
         handleTriggerKeyDown: (
             event: ReactKeyboardEvent<HTMLButtonElement>,
+        ) => void
+        handleTriggerMouseDown: (
+            event: ReactMouseEvent<HTMLButtonElement>,
         ) => void
         handleSelect: (option: string) => void
     }

@@ -6,6 +6,7 @@ import {
     useLayoutEffect,
     useState,
     type FocusEvent,
+    type MouseEvent as ReactMouseEvent,
     type KeyboardEvent as ReactKeyboardEvent,
 } from 'react'
 import { mergeAriaDescribedBy } from '../../../../lib/Inputs/fieldA11y.utils.ts'
@@ -19,6 +20,7 @@ function getDeepActiveElement(ownerDocument: Document): Element | null {
 export default function useTimeDropdownLogic({
     label,
     value,
+    disabled,
     options,
     isOpen,
     fieldAria,
@@ -213,6 +215,13 @@ export default function useTimeDropdownLogic({
         onClose()
     }
 
+    function handleTriggerMouseDown(event: ReactMouseEvent<HTMLButtonElement>) {
+        if (event.button !== 0 || disabled) return
+        // WebKit otherwise blurs an already focused button before click opens the popup.
+        event.preventDefault()
+        event.currentTarget.focus()
+    }
+
     function handleTriggerKeyDown(
         event: ReactKeyboardEvent<HTMLButtonElement>,
     ) {
@@ -238,6 +247,7 @@ export default function useTimeDropdownLogic({
             handleOptionKeyDown,
             handleBlur,
             handleTriggerKeyDown,
+            handleTriggerMouseDown,
             handleSelect,
         },
         refs: { listboxRef, rootRef },

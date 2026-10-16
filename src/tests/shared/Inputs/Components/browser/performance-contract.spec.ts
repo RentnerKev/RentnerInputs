@@ -5,24 +5,37 @@ test('only subscribes to outside mousedown while a TimeInput dropdown is open', 
 }) => {
     await page.addInitScript(() => {
         const active = new Set<EventListenerOrEventListenerObject>()
+        let baseline = new Set<EventListenerOrEventListenerObject>()
         const add = document.addEventListener.bind(document)
         const remove = document.removeEventListener.bind(document)
-        Object.assign(window, { activeTimeListeners: () => active.size })
+        Object.assign(window, {
+            captureTimeListenerBaseline: () => {
+                baseline = new Set(active)
+            },
+            activeTimeListeners: () =>
+                Array.from(active).filter((listener) => !baseline.has(listener))
+                    .length,
+        })
         document.addEventListener = (type, listener, options) => {
-            if (
-                type === 'mousedown' &&
-                typeof listener === 'function' &&
-                listener.name === 'handleDocumentMouseDown'
-            )
-                active.add(listener)
+            if (type === 'mousedown') active.add(listener)
             add(type, listener, options)
         }
         document.removeEventListener = (type, listener, options) => {
-            active.delete(listener)
+            if (type === 'mousedown') active.delete(listener)
             remove(type, listener, options)
         }
     })
     await page.goto('/')
+    const captureBaseline = () =>
+        page.evaluate(() =>
+            (
+                window as unknown as { captureTimeListenerBaseline: () => void }
+            ).captureTimeListenerBaseline(),
+        )
+    await expect(
+        page.getByRole('button', { name: /^Uhrzeit Stunde auswählen/ }),
+    ).toBeVisible()
+    await captureBaseline()
     const count = () =>
         page.evaluate(() =>
             (
@@ -45,6 +58,10 @@ test('only subscribes to outside mousedown while a TimeInput dropdown is open', 
     await expect(page.getByRole('listbox')).toHaveCount(0)
     await expect.poll(count).toBe(0)
     await page.goto('/refs-test.html')
+    await expect(
+        page.getByRole('button', { name: 'Time Stunde auswählen' }),
+    ).toBeVisible()
+    await captureBaseline()
     await page.getByRole('button', { name: 'Time Stunde auswählen' }).click()
     await expect.poll(count).toBe(1)
     // Dispatch only click: a preceding mousedown would close the menu first.

@@ -78,6 +78,7 @@ function TimeDropdown({
                     undefined
                 }
                 disabled={disabled}
+                onMouseDown={handler.handleTriggerMouseDown}
                 onKeyDown={handler.handleTriggerKeyDown}
                 onClick={onToggle}
                 className={`flex w-full cursor-pointer items-center justify-between focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${controlSizeClassName || 'h-11'} ${controlClassName ?? 'rounded-lg border border-rentner-border bg-rentner-control px-3 text-left text-sm font-semibold text-rentner-foreground transition-colors focus-visible:ring-rentner-accent'}`}
