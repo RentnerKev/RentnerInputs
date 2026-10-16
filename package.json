@@ -1,6 +1,6 @@
 {
     "name": "@rentnerkev/inputs",
-    "version": "2.7.0",
+    "version": "2.8.0",
     "description": "Controlled React input components with validation, icons, length counters, and Tailwind design hooks.",
     "author": "RentnerKev",
     "license": "MIT",
@@ -51,7 +51,7 @@
         "registry": "https://registry.npmjs.org"
     },
     "dependencies": {
-        "@rentnerkev/tooltips": "^2.0.8",
+        "@rentnerkev/tooltips": "^2.2.0",
         "lucide-react": "^1.52.0"
     },
     "peerDependencies": {
