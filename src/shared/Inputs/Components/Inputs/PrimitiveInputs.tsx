@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { useInputDefaults } from '../../Hooks/useInputDefaults.ts'
+import { useInputPresentation } from '../../Hooks/useInputPresentation.ts'
 import type {
     CheckboxInputProps,
     RadioInputProps,
@@ -14,76 +14,84 @@ export type {
 } from '../../Types/PrimitiveInputs.types.ts'
 
 export const CheckboxInput = forwardRef<HTMLInputElement, CheckboxInputProps>(
-    function CheckboxInput({ type: _type, className, ...props }, ref) {
+    function CheckboxInput(
+        { type: _type, className, controlSize, classNames, ...props },
+        ref,
+    ) {
         void _type
-        const defaults = useInputDefaults()
+        const presentation = useInputPresentation({
+            controlSize,
+            classNames,
+        }).state
         return (
             <input
                 {...props}
                 ref={ref}
                 type="checkbox"
-                className={
-                    className ??
-                    defaults.classNames?.checkbox ??
-                    'size-4 accent-primary'
-                }
+                className={`${presentation.sizeClassName} ${className ?? presentation.classNames.control ?? presentation.classNames.checkbox ?? 'size-4 accent-rentner-accent'}`}
             />
         )
     },
 )
 
 export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(
-    function RadioInput({ type: _type, className, ...props }, ref) {
+    function RadioInput(
+        { type: _type, className, controlSize, classNames, ...props },
+        ref,
+    ) {
         void _type
-        const defaults = useInputDefaults()
+        const presentation = useInputPresentation({
+            controlSize,
+            classNames,
+        }).state
         return (
             <input
                 {...props}
                 ref={ref}
                 type="radio"
-                className={
-                    className ??
-                    defaults.classNames?.radio ??
-                    'size-4 accent-primary'
-                }
+                className={`${presentation.sizeClassName} ${className ?? presentation.classNames.control ?? presentation.classNames.radio ?? 'size-4 accent-rentner-accent'}`}
             />
         )
     },
 )
 
 export const RangeInput = forwardRef<HTMLInputElement, RangeInputProps>(
-    function RangeInput({ type: _type, className, ...props }, ref) {
+    function RangeInput(
+        { type: _type, className, controlSize, classNames, ...props },
+        ref,
+    ) {
         void _type
-        const defaults = useInputDefaults()
+        const presentation = useInputPresentation({
+            controlSize,
+            classNames,
+        }).state
         return (
             <input
                 {...props}
                 ref={ref}
                 type="range"
-                className={
-                    className ??
-                    defaults.classNames?.range ??
-                    'w-full accent-primary'
-                }
+                className={`${presentation.sizeClassName} ${className ?? presentation.classNames.control ?? presentation.classNames.range ?? 'w-full accent-rentner-accent'}`}
             />
         )
     },
 )
 
 export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
-    function FileInput({ type: _type, className, ...props }, ref) {
+    function FileInput(
+        { type: _type, className, controlSize, classNames, ...props },
+        ref,
+    ) {
         void _type
-        const defaults = useInputDefaults()
+        const presentation = useInputPresentation({
+            controlSize,
+            classNames,
+        }).state
         return (
             <input
                 {...props}
                 ref={ref}
                 type="file"
-                className={
-                    className ??
-                    defaults.classNames?.file ??
-                    'block w-full text-sm'
-                }
+                className={`${presentation.sizeClassName} ${className ?? presentation.classNames.control ?? presentation.classNames.file ?? 'block w-full text-sm'}`}
             />
         )
     },

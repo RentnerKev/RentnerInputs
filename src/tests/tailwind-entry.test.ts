@@ -59,6 +59,7 @@ describe('Tailwind package contract', () => {
         expect(manifest.sideEffects).toEqual([
             './tailwind.css',
             './styles/*.css',
+            './theme.css',
         ])
     })
 
@@ -83,4 +84,28 @@ describe('Tailwind package contract', () => {
             expect(theme).toContain(token)
         }
     })
+})
+
+test('exports the common theme and sizes as reachable Tailwind tokens', () => {
+    expect(manifest.files).toContain('theme.css')
+    expect(manifest.exports['./theme.css']).toBe('./theme.css')
+    expect(tailwindEntry).toContain("@import './theme.css'")
+    const sharedTheme = readFileSync(
+        resolve(repositoryRoot, 'theme.css'),
+        'utf8',
+    )
+    for (const token of [
+        '--rentner-control',
+        '--rentner-surface',
+        '--rentner-foreground',
+        '--rentner-muted',
+        '--rentner-border',
+        '--rentner-accent',
+        '--rentner-danger',
+        '--rentner-radius',
+        '--spacing-rentner-control-sm',
+        '--spacing-rentner-control-md',
+        '--spacing-rentner-control-lg',
+    ])
+        expect(sharedTheme).toContain(token)
 })

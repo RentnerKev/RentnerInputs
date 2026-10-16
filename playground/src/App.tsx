@@ -1,4 +1,6 @@
 import { usePlaygroundLogic } from './Hooks/usePlaygroundLogic.ts'
+import { InputProvider } from '../../src/shared/Inputs/Components/InputProvider.tsx'
+import { NumericInput } from '../../src/shared/Inputs/Components/Inputs/NumericInput.tsx'
 import { CustomInput } from '../../src/shared/Inputs/Components/CustomInput.tsx'
 import { OtpInput } from '../../src/shared/Inputs/Components/Inputs/OtpInput.tsx'
 import {
@@ -14,7 +16,11 @@ import {
 
 export function App() {
     const {
+        refs: { setShadowHost },
         state: {
+            timeBlurs,
+            portalContainer,
+            numericValue,
             readOnlyTime,
             email,
             phone,
@@ -29,6 +35,7 @@ export function App() {
             otpStatus,
         },
         setter: {
+            setNumericValue,
             setEmail,
             setPhone,
             setAmount,
@@ -40,6 +47,7 @@ export function App() {
             setAppointmentTime,
         },
         handler: {
+            handleTimeBlur,
             handleSubmit,
             handleOtpChange,
             handleOtpError,
@@ -49,185 +57,211 @@ export function App() {
     } = usePlaygroundLogic()
 
     return (
-        <main className="relative min-h-screen p-6 md:p-10">
-            <div className="glow-effect left-[20%] top-[20%]" />
-            <div className="glow-effect glow-effect-small left-[70%] top-[60%]" />
+        <>
+            <div data-testid="time-shadow-host" ref={setShadowHost} />
+            <InputProvider
+                portalContainer={portalContainer}
+                portalClassName="time-popup-custom"
+                portalZIndex={12345}
+            >
+                <main className="relative min-h-screen p-6 md:p-10">
+                    <div className="glow-effect left-[20%] top-[20%]" />
+                    <div className="glow-effect glow-effect-small left-[70%] top-[60%]" />
 
-            <div className="relative z-10 mx-auto flex min-h-[80vh] max-w-4xl flex-col items-center justify-center gap-6">
-                <h1 className="text-2xl font-semibold text-white md:text-3xl">
-                    RentnerInputs Playground
-                </h1>
+                    <div className="relative z-10 mx-auto flex min-h-[80vh] max-w-4xl flex-col items-center justify-center gap-6">
+                        <h1 className="text-2xl font-semibold text-white md:text-3xl">
+                            RentnerInputs Playground
+                        </h1>
 
-                <form
-                    onSubmit={handleSubmit}
-                    className="w-full max-w-md mt-10 space-y-6"
-                >
-                    <CustomInput
-                        label="Text"
-                        value={username}
-                        onValueChange={setUsername}
-                        placeholder="Benutzername (Text)"
-                        required
-                        showLength={true}
-                        minLength={3}
-                        maxLength={20}
-                        icon={<Type className="h-5 w-5" />}
-                        className="w-full py-4 rounded-md"
-                        customDesign={{
-                            focusRing: 'focus:ring-blue-500/50',
-                            focusBorder: 'focus:border-blue-500',
-                            iconFocus: 'group-focus-within:text-blue-500',
-                        }}
-                    />
+                        <form
+                            onSubmit={handleSubmit}
+                            className="w-full max-w-md mt-10 space-y-6"
+                        >
+                            <NumericInput
+                                label="Numerischer Wert"
+                                name="numericValue"
+                                value={numericValue}
+                                onValueChange={setNumericValue}
+                                controlSize="md"
+                            />
+                            <output data-testid="numeric-value">
+                                {numericValue === null ? 'null' : numericValue}
+                            </output>
+                            <CustomInput
+                                label="Text"
+                                value={username}
+                                onValueChange={setUsername}
+                                placeholder="Benutzername (Text)"
+                                required
+                                showLength={true}
+                                minLength={3}
+                                maxLength={20}
+                                icon={<Type className="h-5 w-5" />}
+                                className="w-full py-4 rounded-md"
+                                customDesign={{
+                                    focusRing: 'focus:ring-blue-500/50',
+                                    focusBorder: 'focus:border-blue-500',
+                                    iconFocus:
+                                        'group-focus-within:text-blue-500',
+                                }}
+                            />
 
-                    <CustomInput
-                        label="E-Mail-Adresse"
-                        value={email}
-                        onValueChange={setEmail}
-                        placeholder="E-Mail Adresse"
-                        required
-                        showLength={true}
-                        maxLength={100}
-                        type="email"
-                        icon={<MailIcon className="h-5 w-5" />}
-                    />
+                            <CustomInput
+                                label="E-Mail-Adresse"
+                                value={email}
+                                onValueChange={setEmail}
+                                placeholder="E-Mail Adresse"
+                                required
+                                showLength={true}
+                                maxLength={100}
+                                type="email"
+                                icon={<MailIcon className="h-5 w-5" />}
+                            />
 
-                    <CustomInput
-                        label="Passwort"
-                        value={password}
-                        onValueChange={setPassword}
-                        placeholder="Passwort"
-                        required
-                        showLength={true}
-                        minLength={8}
-                        maxLength={132}
-                        type="password"
-                        icon={<Lock className="h-5 w-5" />}
-                        showPasswordStrength={true}
-                    />
+                            <CustomInput
+                                label="Passwort"
+                                value={password}
+                                onValueChange={setPassword}
+                                placeholder="Passwort"
+                                required
+                                showLength={true}
+                                minLength={8}
+                                maxLength={132}
+                                type="password"
+                                icon={<Lock className="h-5 w-5" />}
+                                showPasswordStrength={true}
+                            />
 
-                    <CustomInput
-                        label="Telefonnummer"
-                        value={phone}
-                        onValueChange={setPhone}
-                        placeholder="Telefonnummer"
-                        showLength={true}
-                        maxLength={200}
-                        type="phone"
-                    />
+                            <CustomInput
+                                label="Telefonnummer"
+                                value={phone}
+                                onValueChange={setPhone}
+                                placeholder="Telefonnummer"
+                                showLength={true}
+                                maxLength={200}
+                                type="phone"
+                            />
 
-                    <CustomInput
-                        label="Nachricht"
-                        value={message}
-                        onValueChange={setMessage}
-                        placeholder="Nachricht (Textarea)"
-                        required
-                        showLength={true}
-                        minLength={10}
-                        maxLength={240}
-                        type="textarea"
-                        rows={5}
-                        icon={<MessageSquareText className="h-5 w-5" />}
-                        className="w-full py-4 rounded-md"
-                    />
+                            <CustomInput
+                                label="Nachricht"
+                                value={message}
+                                onValueChange={setMessage}
+                                placeholder="Nachricht (Textarea)"
+                                required
+                                showLength={true}
+                                minLength={10}
+                                maxLength={240}
+                                type="textarea"
+                                rows={5}
+                                icon={<MessageSquareText className="h-5 w-5" />}
+                                className="w-full py-4 rounded-md"
+                            />
 
-                    <CustomInput
-                        label="Uhrzeit"
-                        name="appointmentTime"
-                        value={appointmentTime}
-                        onValueChange={setAppointmentTime}
-                        readOnly={readOnlyTime}
-                        placeholder="Uhrzeit"
-                        required
-                        type="time"
-                        minuteStep={5}
-                        icon={<Clock className="h-5 w-5" />}
-                        className="w-70 py-4 rounded-md"
-                    />
+                            <CustomInput
+                                label="Uhrzeit"
+                                onBlur={handleTimeBlur}
+                                name="appointmentTime"
+                                value={appointmentTime}
+                                onValueChange={setAppointmentTime}
+                                readOnly={readOnlyTime}
+                                placeholder="Uhrzeit"
+                                required
+                                type="time"
+                                minuteStep={5}
+                                icon={<Clock className="h-5 w-5" />}
+                                className="w-70 py-4 rounded-md"
+                            />
 
-                    <CustomInput
-                        label="Betrag"
-                        value={amount}
-                        onValueChange={setAmount}
-                        placeholder="Betrag (Zahl)"
-                        required
-                        showLength={true}
-                        maxLength={8}
-                        type="number"
-                        icon={<Hash className="h-5 w-5" />}
-                    />
+                            <output data-testid="time-blurs">
+                                {timeBlurs}
+                            </output>
+                            <CustomInput
+                                label="Betrag"
+                                value={amount}
+                                onValueChange={setAmount}
+                                placeholder="Betrag (Zahl)"
+                                required
+                                showLength={true}
+                                maxLength={8}
+                                type="number"
+                                icon={<Hash className="h-5 w-5" />}
+                            />
 
-                    <CustomInput
-                        label="Begrenzter Betrag"
-                        value={limitedAmount}
-                        onValueChange={setLimitedAmount}
-                        placeholder="Limit-Test (min. 5, max. 50)"
-                        required
-                        showLength={true}
-                        maxLength={2}
-                        minValue={5}
-                        max={50}
-                        type="number"
-                        icon={<Hash className="h-5 w-5" />}
-                    />
+                            <CustomInput
+                                label="Begrenzter Betrag"
+                                value={limitedAmount}
+                                onValueChange={setLimitedAmount}
+                                placeholder="Limit-Test (min. 5, max. 50)"
+                                required
+                                showLength={true}
+                                maxLength={2}
+                                minValue={5}
+                                max={50}
+                                type="number"
+                                icon={<Hash className="h-5 w-5" />}
+                            />
 
-                    <div className="space-y-3">
-                        <OtpInput
-                            name="otp"
-                            label="Bestätigungscode"
-                            description="Die Ziffern zeigen deinen Fortschritt. Teste die Rückmeldung unten."
-                            value={otpDigits}
-                            onValueChange={handleOtpChange}
-                            status={otpStatus}
-                        />
-                        <div className="flex flex-wrap gap-2">
+                            <div className="space-y-3">
+                                <OtpInput
+                                    name="otp"
+                                    label="Bestätigungscode"
+                                    description="Die Ziffern zeigen deinen Fortschritt. Teste die Rückmeldung unten."
+                                    value={otpDigits}
+                                    onValueChange={handleOtpChange}
+                                    status={otpStatus}
+                                />
+                                <div className="flex flex-wrap gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={handleOtpError}
+                                        className="rounded-lg border border-red-500/40 px-3 py-1.5 text-xs text-red-300 transition-colors hover:bg-red-500/10"
+                                    >
+                                        Falsch
+                                    </button>
+                                    <button
+                                        type="button"
+                                        disabled={otpDigits.some(
+                                            (digit) => !digit,
+                                        )}
+                                        onClick={handleOtpSuccess}
+                                        className="rounded-lg border border-emerald-400/40 px-3 py-1.5 text-xs text-emerald-300 transition-colors hover:bg-emerald-400/10 disabled:cursor-not-allowed disabled:opacity-40"
+                                    >
+                                        Bestätigt
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleOtpReset}
+                                        className="rounded-lg border border-border-dark px-3 py-1.5 text-xs text-secondary-text transition-colors hover:bg-white/5"
+                                    >
+                                        Zurücksetzen
+                                    </button>
+                                </div>
+                            </div>
+
+                            <CustomInput
+                                label="Geldbetrag"
+                                name="money"
+                                value={money}
+                                onValueChange={setMoney}
+                                placeholder="Umsatz (Geld)"
+                                locale="en"
+                                currency="USD"
+                                required
+                                type="money"
+                                icon={<Banknote className="h-5 w-5" />}
+                            />
+
                             <button
-                                type="button"
-                                onClick={handleOtpError}
-                                className="rounded-lg border border-red-500/40 px-3 py-1.5 text-xs text-red-300 transition-colors hover:bg-red-500/10"
+                                type="submit"
+                                className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 font-semibold text-background-dark transition-all hover:bg-primary-hover active:scale-[0.98]"
                             >
-                                Falsch
+                                <Send className="h-5 w-5" />
+                                Daten absenden
                             </button>
-                            <button
-                                type="button"
-                                disabled={otpDigits.some((digit) => !digit)}
-                                onClick={handleOtpSuccess}
-                                className="rounded-lg border border-emerald-400/40 px-3 py-1.5 text-xs text-emerald-300 transition-colors hover:bg-emerald-400/10 disabled:cursor-not-allowed disabled:opacity-40"
-                            >
-                                Bestätigt
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleOtpReset}
-                                className="rounded-lg border border-border-dark px-3 py-1.5 text-xs text-secondary-text transition-colors hover:bg-white/5"
-                            >
-                                Zurücksetzen
-                            </button>
-                        </div>
+                        </form>
                     </div>
-
-                    <CustomInput
-                        label="Geldbetrag"
-                        name="money"
-                        value={money}
-                        onValueChange={setMoney}
-                        placeholder="Umsatz (Geld)"
-                        locale="en"
-                        currency="USD"
-                        required
-                        type="money"
-                        icon={<Banknote className="h-5 w-5" />}
-                    />
-
-                    <button
-                        type="submit"
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 font-semibold text-background-dark transition-all hover:bg-primary-hover active:scale-[0.98]"
-                    >
-                        <Send className="h-5 w-5" />
-                        Daten absenden
-                    </button>
-                </form>
-            </div>
-        </main>
+                </main>
+            </InputProvider>
+        </>
     )
 }

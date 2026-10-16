@@ -2,6 +2,12 @@ import type { FocusEvent } from 'react'
 
 export type TimeDropdownLogicResult = {
     state: {
+        position: {
+            top: number
+            left: number
+            width: number
+            maxHeight: number
+        }
         labelledBy: string | undefined
         fallbackLabel: string
         accessibleName: string | undefined
@@ -17,6 +23,7 @@ export type TimeDropdownLogicResult = {
         handleSelect: (option: string) => void
     }
     refs: {
+        rootRef: import('react').RefObject<HTMLDivElement | null>
         listboxRef: import('react').RefObject<HTMLDivElement | null>
     }
 }

@@ -196,3 +196,29 @@ void [
     invalidEmailHandler,
     extensionExamples,
 ]
+
+import { NumericInput, getInputFieldProps } from '../../index.ts'
+const nullableField = {
+    name: 'amount',
+    state: { value: null as number | null },
+    handleChange: (_value: number | null) => undefined,
+    handleBlur: () => undefined,
+}
+const numericAdapterUsage = (
+    <NumericInput
+        {...getInputFieldProps(nullableField)}
+        controlSize="md"
+        classNames={{
+            root: 'w-full',
+            label: 'text-sm',
+            control: 'border',
+            leading: 'pl-2',
+            trailing: 'pr-2',
+        }}
+    />
+)
+void numericAdapterUsage
+// @ts-expect-error NumericInput accepts number|null, not string drafts
+const numericRejectsString: import('../../index.ts').NumericInputProps['value'] =
+    '1'
+void numericRejectsString

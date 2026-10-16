@@ -153,8 +153,10 @@ try {
         `
         import { readFileSync } from 'node:fs'
         for (const entry of ${JSON.stringify(entryPoints)}) await import(entry)
-        const css = import.meta.resolve('${manifest.name}/tailwind.css')
-        if (!readFileSync(new URL(css), 'utf8').trim()) throw new Error('CSS export is empty')
+        for (const entry of ${JSON.stringify(Object.keys(manifest.exports).filter((entry) => entry.endsWith('.css')))}) {
+            const css = import.meta.resolve('${manifest.name}' + entry.slice(1))
+            if (!readFileSync(new URL(css), 'utf8').trim()) throw new Error('CSS export is empty: ' + entry)
+        }
     `,
     ])
     writeFileSync(
@@ -177,6 +179,16 @@ try {
                 ]
             `)
             .join('\n'),
+    )
+    mkdirSync(join(consumerRoot, 'Hooks'), { recursive: true })
+    writeFileSync(
+        join(consumerRoot, 'Hooks/useNumericFieldLogic.ts'),
+        readFileSync(
+            fileURLToPath(
+                new URL('./Hooks/useNumericFieldLogic.ts', import.meta.url),
+            ),
+            'utf8',
+        ),
     )
     writeFileSync(
         join(consumerRoot, 'App.tsx'),

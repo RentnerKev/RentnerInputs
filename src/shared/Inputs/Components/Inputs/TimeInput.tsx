@@ -1,4 +1,6 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- The custom listbox owns roving option-button focus; native select/option and fieldset would change keyboard/layout semantics. */
+import { createPortal } from 'react-dom'
+import { useInputPresentation } from '../../Hooks/useInputPresentation.ts'
 import useTimeDropdownLogic from '../../Hooks/Inputs/useTimeDropdownLogic.ts'
 import type { TimeDropdownProps } from '../../Types/TimeDropdown.types.ts'
 import { ChevronDown, Clock } from 'lucide-react'
@@ -21,6 +23,12 @@ function TimeDropdown({
     onToggle,
     onClose,
     onSelect,
+    fieldOwnerId,
+    portalContainer,
+    portalClassName,
+    portalZIndex,
+    controlClassName,
+    controlSizeClassName,
 }: TimeDropdownProps) {
     const { state, handler, refs } = useTimeDropdownLogic({
         label,
@@ -44,10 +52,10 @@ function TimeDropdown({
         generatedLabelId,
         valueId,
     } = state
-    const { listboxRef } = refs
+    const { listboxRef, rootRef } = refs
     const { handleBlur, handleOptionKeyDown } = handler
     return (
-        <div className="relative flex-1" onBlur={handleBlur}>
+        <div ref={rootRef} className="relative flex-1" onBlur={handleBlur}>
             {!labelledBy && (
                 <span id={generatedLabelId} className="sr-only">
                     {fallbackLabel}
@@ -72,60 +80,77 @@ function TimeDropdown({
                 disabled={disabled}
                 onKeyDown={handler.handleTriggerKeyDown}
                 onClick={onToggle}
-                className="flex h-11 w-full cursor-pointer items-center justify-between rounded-lg border border-border-dark bg-background-dark/60 px-3 text-left text-sm font-semibold text-white transition-colors hover:border-secondary-text/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50"
+                className={`flex w-full cursor-pointer items-center justify-between focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${controlSizeClassName || 'h-11'} ${controlClassName ?? 'rounded-lg border border-rentner-border bg-rentner-control px-3 text-left text-sm font-semibold text-rentner-foreground transition-colors focus-visible:ring-rentner-accent'}`}
             >
                 <span
                     id={value ? valueId : undefined}
-                    className={value ? 'text-white' : 'text-gray-400'}
+                    className={
+                        !value && controlClassName === undefined
+                            ? 'text-rentner-muted'
+                            : undefined
+                    }
                 >
                     {value || placeholder}
                 </span>
                 <ChevronDown
-                    className={`h-4 w-4 text-primary transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    className={`h-4 w-4 transition-transform ${controlClassName === undefined ? 'text-rentner-accent' : ''} ${isOpen ? 'rotate-180' : ''}`}
                 />
             </button>
 
-            {isOpen && (
-                <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-30 max-h-52 overflow-y-auto rounded-lg border border-secondary-text/50 bg-input-dark p-1 shadow-xl shadow-black/30">
+            {isOpen &&
+                typeof document !== 'undefined' &&
+                createPortal(
                     <div
-                        ref={listboxRef}
-                        role="listbox"
-                        tabIndex={-1}
-                        aria-label={label}
-                        onKeyDown={handleOptionKeyDown}
-                        className="space-y-1"
+                        data-rentner-time-owner={fieldOwnerId}
+                        className={`fixed overflow-y-auto rounded-lg border border-rentner-border bg-rentner-surface p-1 shadow-xl ${portalClassName ?? ''}`}
+                        style={{
+                            ...state.position,
+                            zIndex:
+                                portalZIndex ?? 'var(--rentner-overlay-z, 30)',
+                        }}
                     >
-                        {options.map((option, index) => (
-                            <button
-                                key={option}
-                                type="button"
-                                role="option"
-                                aria-selected={option === value}
-                                tabIndex={
-                                    option === value || (!value && index === 0)
-                                        ? 0
-                                        : -1
-                                }
-                                disabled={disabled || readOnly}
-                                onClick={() => handler.handleSelect(option)}
-                                className={`flex w-full cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
-                                    option === value
-                                        ? 'bg-primary text-background-dark'
-                                        : 'text-secondary-text hover:bg-border-dark hover:text-white'
-                                }`}
-                            >
-                                {option}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
+                        <div
+                            ref={listboxRef}
+                            role="listbox"
+                            tabIndex={-1}
+                            aria-label={label}
+                            onKeyDown={handleOptionKeyDown}
+                            className="space-y-1"
+                        >
+                            {options.map((option, index) => (
+                                <button
+                                    key={option}
+                                    type="button"
+                                    role="option"
+                                    aria-selected={option === value}
+                                    tabIndex={
+                                        option === value ||
+                                        (!value && index === 0)
+                                            ? 0
+                                            : -1
+                                    }
+                                    disabled={disabled || readOnly}
+                                    onClick={() => handler.handleSelect(option)}
+                                    className={`flex w-full cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
+                                        option === value
+                                            ? 'bg-rentner-accent text-rentner-accent-foreground'
+                                            : 'text-rentner-muted hover:bg-rentner-control hover:text-rentner-foreground'
+                                    }`}
+                                >
+                                    {option}
+                                </button>
+                            ))}
+                        </div>
+                    </div>,
+                    portalContainer ?? document.body,
+                )}
         </div>
     )
 }
 
 export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
     function TimeInput(props, ref) {
+        const presentation = useInputPresentation(props).state
         const {
             state,
             handler,
@@ -163,20 +188,29 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
         } = state
 
         return (
-            <div className="group w-full">
+            <div className={presentation.classNames.root ?? 'group w-full'}>
                 {hasLabel && (
                     <label
                         id={labelId}
                         htmlFor={fieldId}
-                        className={`mb-2 block text-sm font-medium ${design.labelText}`}
+                        className={
+                            presentation.classNames.label ??
+                            `mb-2 block text-sm font-medium ${design.labelText}`
+                        }
                     >
                         {label}
                     </label>
                 )}
 
-                <div ref={wrapperRef} className="relative">
+                <div
+                    ref={wrapperRef}
+                    className="relative"
+                    onBlurCapture={handler.handleFieldBlur}
+                >
                     {hasLeftIcon && (
-                        <div className="absolute inset-y-0 left-0 z-10 flex items-center pl-4">
+                        <div
+                            className={`absolute inset-y-0 left-0 z-10 flex items-center ${presentation.classNames.leading ?? 'pl-4'}`}
+                        >
                             {state.hasError ? (
                                 <ErrorTooltip
                                     content={state.error ?? ''}
@@ -213,7 +247,7 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                     />
 
                     <div
-                        className={fieldClassName}
+                        className={`${fieldClassName} ${presentation.sizeClassName}`}
                         role="group"
                         aria-labelledby={labelledBy}
                         aria-describedby={describedBy}
@@ -225,6 +259,12 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                             {resolvedMessages.minuteSelect}
                         </span>
                         <TimeDropdown
+                            fieldOwnerId={fieldId}
+                            portalContainer={presentation.portalContainer}
+                            portalClassName={presentation.portalClassName}
+                            portalZIndex={presentation.portalZIndex}
+                            controlClassName={presentation.classNames.trailing}
+                            controlSizeClassName={presentation.sizeClassName}
                             id={fieldId}
                             buttonRef={triggerRef}
                             label={resolvedMessages.hourSelect}
@@ -251,6 +291,12 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                             :
                         </span>
                         <TimeDropdown
+                            fieldOwnerId={fieldId}
+                            portalContainer={presentation.portalContainer}
+                            portalClassName={presentation.portalClassName}
+                            portalZIndex={presentation.portalZIndex}
+                            controlClassName={presentation.classNames.trailing}
+                            controlSizeClassName={presentation.sizeClassName}
                             label={resolvedMessages.minuteSelect}
                             value={state.selectedMinute}
                             placeholder={resolvedMessages.minutePlaceholder}
@@ -279,7 +325,10 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                 {hasDescription && (
                     <p
                         id={descriptionId}
-                        className="mt-1 text-xs text-secondary-text"
+                        className={
+                            presentation.classNames.description ??
+                            'mt-1 text-xs text-rentner-muted'
+                        }
                     >
                         {description}
                     </p>
@@ -289,7 +338,10 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                     <p
                         id={errorId}
                         aria-live="polite"
-                        className={`mt-1 text-xs ${design.errorText}`}
+                        className={
+                            presentation.classNames.error ??
+                            `mt-1 text-xs ${design.errorText}`
+                        }
                     >
                         {state.error}
                     </p>

@@ -1,4 +1,5 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role, jsx-a11y/role-supports-aria-props, jsx-a11y/no-autofocus -- Preserve the composite OTP group error contract and explicitly opt-in autoFocus API; each digit independently exposes invalid state. */
+import { useInputPresentation } from '../../Hooks/useInputPresentation.ts'
 import { forwardRef } from 'react'
 import { CircleAlert, CircleCheck } from 'lucide-react'
 import useOtpInputLogic from '../../Hooks/Inputs/useOtpInputLogic.ts'
@@ -6,6 +7,7 @@ import type { OtpInputProps } from '../../Types/OtpInput.types.ts'
 
 export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
     function OtpInput(props, ref) {
+        const presentation = useInputPresentation(props).state
         const { state, handler, refs } = useOtpInputLogic(props, ref)
         const {
             name,
@@ -22,7 +24,6 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
             className,
             inputClassName,
             ariaLabel,
-            defaults,
             design,
             digits,
             code,
@@ -61,12 +62,17 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
         const { validationInput, setDigitRef, firstDigitRef } = refs
 
         return (
-            <div className={`relative min-w-0 ${className ?? ''}`}>
+            <div
+                className={`relative min-w-0 ${presentation.classNames.root ?? className ?? ''}`}
+            >
                 {hasLabel && (
                     <label
                         id={labelId}
                         htmlFor={`${groupId}-digit-1`}
-                        className={`mb-2 block text-sm font-medium ${design.labelText}`}
+                        className={
+                            presentation.classNames.label ??
+                            `mb-2 block text-sm font-medium ${design.labelText}`
+                        }
                     >
                         {label}
                     </label>
@@ -141,24 +147,27 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
                             }
                             onPaste={(event) => handleDigitPaste(index, event)}
                             data-otp-filled={Boolean(digits[index])}
-                            className={`h-14 w-12 min-w-0 flex-1 rounded-xl border text-center text-2xl font-semibold outline-none focus:z-10 focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 sm:h-16 sm:w-14 ${
-                                animated
-                                    ? 'motion-safe:transition-[transform,border-color,box-shadow,background-color,color] motion-safe:duration-200 motion-safe:ease-out'
-                                    : ''
-                            } ${focusClasses} ${
-                                hasError
-                                    ? errorClasses
-                                    : isSuccess
-                                      ? successClasses
-                                      : digits[index]
-                                        ? filledClasses
-                                        : idleClasses
-                            } ${
-                                animated && isSuccess
-                                    ? (feedbackClassNames?.successAnimation ??
-                                      'motion-safe:animate-otp-confirm')
-                                    : ''
-                            } ${defaults.classNames?.otp ?? ''} ${inputClassName ?? ''}`}
+                            className={`min-w-0 flex-1 outline-none focus:z-10 focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50 ${presentation.sizeClassName || 'h-14 sm:h-16'} ${
+                                presentation.classNames.control ??
+                                `w-12 rounded-rentner-control border text-center text-2xl font-semibold sm:w-14 ${
+                                    animated
+                                        ? 'motion-safe:transition-[transform,border-color,box-shadow,background-color,color] motion-safe:duration-200 motion-safe:ease-out'
+                                        : ''
+                                } ${focusClasses} ${
+                                    hasError
+                                        ? errorClasses
+                                        : isSuccess
+                                          ? successClasses
+                                          : digits[index]
+                                            ? filledClasses
+                                            : idleClasses
+                                } ${
+                                    animated && isSuccess
+                                        ? (feedbackClassNames?.successAnimation ??
+                                          'motion-safe:animate-otp-confirm')
+                                        : ''
+                                } ${presentation.classNames.otp ?? ''} ${inputClassName ?? ''}`
+                            }`}
                         />
                     ))}
                 </div>
@@ -191,7 +200,10 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
                 {hasDescription && (
                     <p
                         id={descriptionId}
-                        className="mt-1 text-xs text-secondary-text"
+                        className={
+                            presentation.classNames.description ??
+                            'mt-1 text-xs text-rentner-muted'
+                        }
                     >
                         {description}
                     </p>
@@ -200,7 +212,10 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
                     <p
                         id={errorId}
                         aria-live="polite"
-                        className={`mt-2 flex items-center gap-1.5 text-xs ${feedbackClassNames?.errorMessage ?? design.errorText}`}
+                        className={
+                            presentation.classNames.error ??
+                            `mt-2 flex items-center gap-1.5 text-xs ${feedbackClassNames?.errorMessage ?? design.errorText}`
+                        }
                     >
                         <CircleAlert aria-hidden="true" className="size-3.5" />
                         {resolvedError}

@@ -1,5 +1,11 @@
 import type { AriaAttributes, Ref } from 'react'
 export interface TimeDropdownProps {
+    fieldOwnerId?: string
+    portalContainer?: Element | DocumentFragment | null
+    portalClassName?: string
+    portalZIndex?: number
+    controlClassName?: string
+    controlSizeClassName?: string
     label: string
     value: string
     placeholder: string

@@ -1,5 +1,5 @@
 import type { TimeInputLogicResult } from '../../Types/TimeInputLogicResult.types.ts'
-import { useId, type Ref, type AriaAttributes } from 'react'
+import { useId, type Ref, type AriaAttributes, type FocusEvent } from 'react'
 import { DESIGN_CONFIG } from '../../../../config/inputDesign.config.ts'
 import { useInputDefaults, useInputMessages } from '../useInputDefaults.ts'
 import {
@@ -20,6 +20,11 @@ export default function useTimeInputLogic(
         locale,
         messages,
         className,
+        classNames: providedClassNames,
+        controlSize,
+        portalContainer: _portalContainer,
+        portalClassName: _portalClassName,
+        portalZIndex: _portalZIndex,
         disabled,
         validationMode,
         triggerRef,
@@ -37,7 +42,8 @@ export default function useTimeInputLogic(
     }: TimeInputComponentProps,
     ref: Ref<HTMLInputElement>,
 ): TimeInputLogicResult {
-    void [_type, _showLength]
+    void [_type, _showLength, _portalContainer, _portalClassName, _portalZIndex]
+    const classNames = providedClassNames
     const { ariaProps: additionalAria, otherProps: inputProps } =
         partitionAriaProps(props)
     const defaults = useInputDefaults()
@@ -137,14 +143,74 @@ export default function useTimeInputLogic(
         ...customDesign,
     }
     const fieldClasses =
-        className ?? defaults.classNames?.input ?? 'w-full py-3 rounded-xl'
+        className ??
+        defaults.classNames?.input ??
+        ((controlSize ?? defaults.controlSize)
+            ? 'w-full rounded-rentner-control'
+            : 'w-full py-3 rounded-rentner-control')
     const hasLeftIcon = Boolean(icon || logic.state.hasError)
-    const fieldClassName = `peer flex min-h-14 items-center gap-3 ${hasLeftIcon ? 'pl-11' : 'pl-4'} pr-4 transition-[background-color,border-color,box-shadow,color] ${fieldClasses} ${design.bg} border ${design.text} ${
-        logic.state.hasError
-            ? `${design.errorBorder} ring-2 ${design.errorRingBase}`
-            : design.border
+    const fieldClassName = `peer flex ${(controlSize ?? defaults.controlSize) ? '' : 'min-h-14'} items-center ${
+        classNames?.control ??
+        defaults.classNames?.control ??
+        `gap-3 ${hasLeftIcon ? 'pl-11' : 'pl-4'} pr-4 transition-[background-color,border-color,box-shadow,color] ${fieldClasses} ${design.bg} border ${design.text} ${
+            logic.state.hasError
+                ? `${design.errorBorder} ring-2 ${design.errorRingBase}`
+                : design.border
+        }`
     } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`
 
+    function handleFieldBlur(event: FocusEvent<HTMLDivElement>) {
+        const root = event.currentTarget
+        const nextTarget = event.relatedTarget
+        const input = root.querySelector<HTMLInputElement>('input[type="time"]')
+        if (!input || event.target === input) return
+        function containsFocus(target: EventTarget | null) {
+            return (
+                target instanceof Node &&
+                (root.contains(target) ||
+                    (target instanceof Element &&
+                        target
+                            .closest('[data-rentner-time-owner]')
+                            ?.getAttribute('data-rentner-time-owner') ===
+                            fieldId))
+            )
+        }
+        function reportBlur(relatedTarget: Element | null) {
+            logic.handler.handleBlur({
+                ...event,
+                currentTarget: input!,
+                target: input!,
+                relatedTarget,
+                preventDefault: event.preventDefault.bind(event),
+                stopPropagation: event.stopPropagation.bind(event),
+                persist: event.persist.bind(event),
+                isDefaultPrevented: event.isDefaultPrevented.bind(event),
+                isPropagationStopped: event.isPropagationStopped.bind(event),
+            })
+        }
+        if (containsFocus(nextTarget)) return
+        if (
+            nextTarget instanceof Element &&
+            nextTarget.shadowRoot &&
+            Array.from(
+                nextTarget.shadowRoot.querySelectorAll(
+                    '[data-rentner-time-owner]',
+                ),
+            ).some(
+                (popup) =>
+                    popup.getAttribute('data-rentner-time-owner') === fieldId,
+            )
+        ) {
+            queueMicrotask(() => {
+                let active = nextTarget.ownerDocument.activeElement
+                while (active?.shadowRoot?.activeElement)
+                    active = active.shadowRoot.activeElement
+                if (!containsFocus(active)) reportBlur(active)
+            })
+            return
+        }
+        reportBlur(nextTarget)
+    }
     return {
         state: {
             safeValue: logic.state.safeValue,
@@ -190,6 +256,7 @@ export default function useTimeInputLogic(
             isMinuteDropdownOpen: logic.state.isMinuteDropdownOpen,
         },
         handler: {
+            handleFieldBlur,
             handleFocus: logic.handler.handleFocus,
             handleBlur: logic.handler.handleBlur,
             handleInvalid: logic.handler.handleInvalid,

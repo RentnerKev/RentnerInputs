@@ -1,7 +1,33 @@
 export async function check({ page, expect }) {
+    const numeric = page.getByLabel('Nullable numeric')
+    await expect(numeric).toHaveCSS('height', '44px')
+    await expect(numeric).toHaveCSS('background-color', 'rgb(17, 34, 51)')
+    await numeric.fill('-')
+    await expect(numeric).toHaveValue('-')
+    await expect(page.getByTestId('numeric-value')).toHaveText('null')
+    await numeric.fill('2.5')
+    await numeric.press('Tab')
+    await expect(page.getByTestId('numeric-value')).toHaveText('2.5')
+    expect(
+        await page
+            .locator('#numeric-form')
+            .evaluate((form) => new FormData(form).get('numericValue')),
+    ).toBe('2.5')
+    await numeric.fill('')
+    await numeric.press('Tab')
+    await expect(page.getByTestId('numeric-value')).toHaveText('null')
+    // Return to the neutral page surface before checking unfocused money/quantity formatting.
+    await page
+        .getByRole('heading', { name: 'Packaged consumer', exact: true })
+        .click()
+
     await expect(
         page.getByLabel('External error', { exact: true }),
     ).toHaveAttribute('aria-describedby', 'external-error-error')
+    await expect(page.getByLabel('External error', { exact: true })).toHaveCSS(
+        'padding-left',
+        '44px',
+    )
     await expect(page.locator('#external-error-error')).toHaveText(
         'External error immediately',
     )

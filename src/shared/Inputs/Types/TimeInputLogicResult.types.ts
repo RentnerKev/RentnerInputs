@@ -59,6 +59,7 @@ export type TimeInputLogicResult = {
         isMinuteDropdownOpen: boolean
     }
     handler: {
+        handleFieldBlur: import('react').FocusEventHandler<HTMLDivElement>
         handleFocus: (
             event: import('react').FocusEvent<HTMLInputElement, Element>,
         ) => void

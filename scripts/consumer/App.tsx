@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
+import { useNumericFieldLogic } from './Hooks/useNumericFieldLogic.ts'
 import {
     MoneyInput,
+    NumericInput,
+    InputProvider,
     QuantityInput,
     TextInput,
     TimeInput,
 } from '@rentnerkev/inputs'
 
 export function App() {
+    const {
+        state: { numericValue, numericProps },
+    } = useNumericFieldLogic()
     const [requiredValue, setRequiredValue] = useState('')
     const [filteredValue, setFilteredValue] = useState('3')
     const [time, setTime] = useState('09:10')
@@ -20,6 +26,25 @@ export function App() {
                 error="External error immediately"
                 onValueChange={() => undefined}
             />
+            <div style={{ '--rentner-control': '#112233' } as CSSProperties}>
+                <InputProvider
+                    controlSize="md"
+                    classNames={{ label: 'text-sm font-medium' }}
+                >
+                    <form id="numeric-form" aria-label="Numeric form">
+                        <NumericInput
+                            {...numericProps}
+                            label="Nullable numeric"
+                        />
+                        <output
+                            aria-label="Numeric committed value"
+                            data-testid="numeric-value"
+                        >
+                            {numericValue === null ? 'null' : numericValue}
+                        </output>
+                    </form>
+                </InputProvider>
+            </div>
             <form
                 id="consumer-form"
                 aria-label="Consumer fields"

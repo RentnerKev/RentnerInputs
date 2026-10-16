@@ -88,3 +88,5 @@ export type {
     InputLocale,
     InputMessages,
 } from './shared/Inputs/Types/Messages.types.ts'
+
+export type { NumericInputProps } from './shared/Inputs/Types/NumericInput.types.ts'

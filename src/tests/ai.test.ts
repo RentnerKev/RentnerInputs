@@ -39,6 +39,16 @@ describe('read-only AI package context', () => {
 
     test('returns declarations for every public typed entry and dependent types', () => {
         const api = getPackageApi()
+        expect(
+            getPackageApi({ subpath: './form', symbol: 'getInputFieldProps' })
+                .declarations.length,
+        ).toBeGreaterThan(0)
+        expect(
+            getPackageApi({
+                subpath: './numeric-input',
+                symbol: 'NumericInput',
+            }).declarations.length,
+        ).toBeGreaterThan(0)
         expect(Object.keys(api.subpaths)).toContain('.')
         expect(api.subpaths).not.toHaveProperty('./ai')
         expect(api.declarations.length).toBeGreaterThan(1)
@@ -73,6 +83,9 @@ describe('read-only AI package context', () => {
             'Invalid public symbol',
         )
         expect(() => getPackageApi({ subpath: '../package.json' })).toThrow(
+            'Unknown public subpath',
+        )
+        expect(() => getPackageApi({ subpath: './theme.css' })).toThrow(
             'Unknown public subpath',
         )
         expect(() => getPackageApi({ subpath: './tailwind.css' })).toThrow(

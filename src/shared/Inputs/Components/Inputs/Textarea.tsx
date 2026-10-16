@@ -35,24 +35,30 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaComponentProps>(
             labelledBy,
             design,
             hasLeftIcon,
+            classNames,
             fieldClassName,
         } = state
 
         return (
-            <div className="group min-w-0 w-full">
+            <div className={`group min-w-0 ${classNames.root ?? 'w-full'}`}>
                 {hasLabel && (
                     <label
                         id={`${fieldId}-label`}
                         htmlFor={fieldId}
-                        className={`mb-2 block text-sm font-medium ${design.labelText}`}
+                        className={
+                            classNames.label ??
+                            `mb-2 block text-sm font-medium ${design.labelText}`
+                        }
                     >
                         {label}
                     </label>
                 )}
 
-                <div className="relative">
+                <div className={`relative ${classNames.wrapper ?? ''}`}>
                     {hasLeftIcon && (
-                        <div className="absolute left-0 top-4 z-10 flex items-start pl-4">
+                        <div
+                            className={`absolute left-0 top-4 z-10 flex items-start ${classNames.leading ?? 'pl-4'}`}
+                        >
                             {state.hasError ? (
                                 <ErrorTooltip
                                     content={state.error ?? ''}
@@ -60,7 +66,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaComponentProps>(
                                 />
                             ) : (
                                 <span
-                                    className={`flex items-center ${design.iconColor} ${design.iconFocus} transition-colors [&>svg]:h-5 [&>svg]:w-5`}
+                                    className={`flex items-center [&>svg]:h-5 [&>svg]:w-5 ${classNames.leading === undefined ? `${design.iconColor} ${design.iconFocus} transition-colors` : ''}`}
                                 >
                                     {icon}
                                 </span>
@@ -98,19 +104,31 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaComponentProps>(
                                 : nativeRequired || ariaRequired
                         }
                         style={{
-                            paddingLeft: hasLeftIcon ? 44 : 16,
+                            paddingLeft: hasLeftIcon
+                                ? 44
+                                : classNames.control === undefined
+                                  ? 16
+                                  : undefined,
                             ...nativeProps.style,
-                            paddingRight: `${state.dynamicPaddingRight}px`,
+                            paddingRight:
+                                state.effectiveShowLength || showLength
+                                    ? `${state.dynamicPaddingRight}px`
+                                    : classNames.control === undefined
+                                      ? 16
+                                      : nativeProps.style?.paddingRight,
                         }}
                         className={fieldClassName}
                     />
 
                     {(state.effectiveShowLength || showLength) && (
                         <div
-                            className={`pointer-events-none absolute bottom-0 right-0 z-10 rounded-br-xl rounded-tl-xl border p-1 text-[10px] font-medium uppercase tracking-wider transition-[background-color,border-color,color] ${design.counterBg} ${
-                                state.hasError
-                                    ? `${design.errorBorder} ${design.errorText} peer-focus:${design.errorBorder}`
-                                    : `${design.border} ${design.counterText} ${design.counterBorderFocus}`
+                            className={`pointer-events-none absolute bottom-0 right-0 z-10 ${
+                                classNames.counter ??
+                                `rounded-br-xl rounded-tl-xl border p-1 text-[10px] font-medium uppercase tracking-wider transition-[background-color,border-color,color] ${design.counterBg} ${
+                                    state.hasError
+                                        ? `${design.errorBorder} ${design.errorText} peer-focus:${design.errorBorder}`
+                                        : `${design.border} ${design.counterText} ${design.counterBorderFocus}`
+                                }`
                             }`}
                         >
                             {state.counterText}
@@ -121,7 +139,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaComponentProps>(
                 {hasDescription && (
                     <p
                         id={descriptionId}
-                        className="mt-1 text-xs text-secondary-text"
+                        className={
+                            classNames.description ??
+                            'mt-1 text-xs text-rentner-muted'
+                        }
                     >
                         {description}
                     </p>
@@ -131,7 +152,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaComponentProps>(
                     <p
                         id={errorId}
                         aria-live="polite"
-                        className={`mt-1 text-xs ${design.errorText}`}
+                        className={
+                            classNames.error ??
+                            `mt-1 text-xs ${design.errorText}`
+                        }
                     >
                         {state.error}
                     </p>

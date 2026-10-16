@@ -1,7 +1,11 @@
 import type { Dispatch, FormEvent, SetStateAction } from 'react'
 import type { OtpInputStatus } from '../../../src/shared/Inputs/Types/OtpInput.types.ts'
 export type PlaygroundLogicResult = {
+    refs: { setShadowHost: import('react').RefCallback<HTMLDivElement> }
     state: {
+        timeBlurs: number
+        portalContainer: HTMLElement | ShadowRoot | null | undefined
+        numericValue: number | null
         readOnlyTime: boolean
         email: string
         phone: string
@@ -16,6 +20,7 @@ export type PlaygroundLogicResult = {
         otpStatus: OtpInputStatus
     }
     setter: {
+        setNumericValue: Dispatch<SetStateAction<number | null>>
         setEmail: Dispatch<SetStateAction<string>>
         setPhone: Dispatch<SetStateAction<string>>
         setAmount: Dispatch<SetStateAction<string>>
@@ -29,6 +34,7 @@ export type PlaygroundLogicResult = {
         setOtpStatus: Dispatch<SetStateAction<OtpInputStatus>>
     }
     handler: {
+        handleTimeBlur: import('react').FocusEventHandler<HTMLInputElement>
         handleSubmit: (event: FormEvent<HTMLFormElement>) => void
         handleOtpChange: (digits: string[]) => void
         handleOtpError: () => void

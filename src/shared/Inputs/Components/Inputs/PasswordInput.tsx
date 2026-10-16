@@ -1,4 +1,5 @@
 import { Eye, EyeOff } from 'lucide-react'
+import { useInputPresentation } from '../../Hooks/useInputPresentation.ts'
 import { forwardRef } from 'react'
 import usePasswordInputLogic from '../../Hooks/Inputs/usePasswordInputLogic.ts'
 import type { PasswordInputComponentProps } from '../../Types/PasswordInput.types.ts'
@@ -11,6 +12,7 @@ export const PasswordInput = forwardRef<
     void _type
     const originalProps = { ...props, showPasswordStrength }
     const logic = usePasswordInputLogic(originalProps, ref)
+    const presentation = useInputPresentation(props).state
     const { design, messages } = logic.state
     const rightControl = (
         <button
@@ -25,7 +27,7 @@ export const PasswordInput = forwardRef<
                     ? messages.hidePassword
                     : messages.showPassword
             }
-            className={`absolute inset-y-0 right-4 z-30 flex cursor-pointer items-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-input-dark ${design.iconColor} ${design.iconFocus}`}
+            className={`absolute inset-y-0 right-4 z-30 flex cursor-pointer items-center focus-visible:outline-none focus-visible:ring-2 ${presentation.classNames.trailing ?? `transition-colors focus-visible:ring-rentner-accent focus-visible:ring-offset-2 focus-visible:ring-offset-input-dark ${design.iconColor} ${design.iconFocus}`}`}
         >
             {logic.state.showPassword ? (
                 <EyeOff className="h-5 w-5" />

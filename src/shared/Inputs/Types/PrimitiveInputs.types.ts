@@ -1,6 +1,10 @@
 import type { InputHTMLAttributes } from 'react'
 
-type NativeInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'>
+type NativeInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> &
+    Pick<
+        import('./InputShared.types.ts').InputVisualProps,
+        'controlSize' | 'classNames'
+    >
 
 export interface CheckboxInputProps extends NativeInputProps {
     type?: 'checkbox'

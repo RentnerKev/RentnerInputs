@@ -3,11 +3,19 @@ import {
     useRef,
     useId,
     useEffect,
+    useLayoutEffect,
+    useState,
     type FocusEvent,
     type KeyboardEvent as ReactKeyboardEvent,
 } from 'react'
 import { mergeAriaDescribedBy } from '../../../../lib/Inputs/fieldA11y.utils.ts'
 import type { TimeDropdownProps } from '../../Types/TimeDropdown.types.ts'
+function getDeepActiveElement(ownerDocument: Document): Element | null {
+    let active = ownerDocument.activeElement
+    while (active?.shadowRoot?.activeElement)
+        active = active.shadowRoot.activeElement
+    return active
+}
 export default function useTimeDropdownLogic({
     label,
     value,
@@ -18,6 +26,38 @@ export default function useTimeDropdownLogic({
     onToggle,
     onSelect,
 }: TimeDropdownProps): TimeDropdownLogicResult {
+    const rootRef = useRef<HTMLDivElement | null>(null)
+    const [position, setPosition] = useState({
+        top: 0,
+        left: 0,
+        width: 0,
+        maxHeight: 208,
+    })
+    useLayoutEffect(() => {
+        if (!isOpen) return
+        function updatePosition() {
+            const rect = rootRef.current?.getBoundingClientRect()
+            if (!rect) return
+            const roomBelow = window.innerHeight - rect.bottom - 12
+            const height = Math.min(208, Math.max(roomBelow, rect.top - 12))
+            setPosition({
+                top:
+                    roomBelow >= Math.min(208, rect.top - 12)
+                        ? rect.bottom + 6
+                        : Math.max(6, rect.top - height - 6),
+                left: rect.left,
+                width: rect.width,
+                maxHeight: Math.max(48, height),
+            })
+        }
+        updatePosition()
+        window.addEventListener('resize', updatePosition)
+        window.addEventListener('scroll', updatePosition, true)
+        return () => {
+            window.removeEventListener('resize', updatePosition)
+            window.removeEventListener('scroll', updatePosition, true)
+        }
+    }, [isOpen])
     const listboxRef = useRef<HTMLDivElement | null>(null)
     const generatedLabelId = useId()
     const valueId = useId()
@@ -36,11 +76,9 @@ export default function useTimeDropdownLogic({
     )
 
     function focusTrigger() {
-        const trigger = listboxRef.current
-            ?.closest('div.relative')
-            ?.querySelector<HTMLButtonElement>(
-                'button[aria-haspopup="listbox"]',
-            )
+        const trigger = rootRef.current?.querySelector<HTMLButtonElement>(
+            'button[aria-haspopup="listbox"]',
+        )
         trigger?.focus()
     }
 
@@ -59,6 +97,29 @@ export default function useTimeDropdownLogic({
         if (initialOption) initialOption.focus()
     }, [isOpen, listboxRef, options, value])
 
+    useEffect(() => {
+        if (!isOpen) return
+        function handleOutside(event: MouseEvent) {
+            const target = event.composedPath()[0] ?? event.target
+            if (
+                target instanceof Node &&
+                !rootRef.current?.contains(target) &&
+                !listboxRef.current?.contains(target)
+            ) {
+                let active = listboxRef.current?.ownerDocument.activeElement
+                while (active?.shadowRoot?.activeElement)
+                    active = active.shadowRoot.activeElement
+                if (
+                    active instanceof HTMLElement &&
+                    listboxRef.current?.contains(active)
+                )
+                    active.blur()
+                onClose()
+            }
+        }
+        document.addEventListener('mousedown', handleOutside)
+        return () => document.removeEventListener('mousedown', handleOutside)
+    }, [isOpen, onClose])
     function focusOptionAt(index: number) {
         const optionElements =
             listboxRef.current?.querySelectorAll<HTMLButtonElement>(
@@ -68,6 +129,14 @@ export default function useTimeDropdownLogic({
     }
 
     function handleOptionKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
+        if (event.key === 'Tab') {
+            // Let the browser compute the next real tab stop from the logical trigger.
+            // It knows inert/hidden elements, radio groups, and positive tabindex ordering.
+            if (event.shiftKey) event.preventDefault()
+            focusTrigger()
+            onClose()
+            return
+        }
         if (event.key === 'Escape') {
             event.preventDefault()
             onClose()
@@ -82,7 +151,11 @@ export default function useTimeDropdownLogic({
         if (!optionElements?.length) return
 
         const activeIndex = Array.from(optionElements).findIndex(
-            (option) => option === document.activeElement,
+            (option) =>
+                option ===
+                getDeepActiveElement(
+                    listboxRef.current?.ownerDocument ?? document,
+                ),
         )
         const selectedIndex = Array.from(optionElements).findIndex(
             (option) => option.getAttribute('aria-selected') === 'true',
@@ -115,12 +188,29 @@ export default function useTimeDropdownLogic({
 
     function handleBlur(event: FocusEvent<HTMLDivElement>) {
         const nextTarget = event.relatedTarget
+        const root = event.currentTarget
+        const containsFocus = (target: EventTarget | null) =>
+            target instanceof Node &&
+            (root.contains(target) ||
+                Boolean(listboxRef.current?.contains(target)))
+        if (containsFocus(nextTarget)) return
+        const popupRoot = listboxRef.current?.getRootNode()
         if (
-            !(nextTarget instanceof Node) ||
-            !event.currentTarget.contains(nextTarget)
+            nextTarget instanceof Element &&
+            popupRoot instanceof ShadowRoot &&
+            popupRoot.host === nextTarget
         ) {
-            onClose()
+            queueMicrotask(() => {
+                if (
+                    !containsFocus(
+                        getDeepActiveElement(nextTarget.ownerDocument),
+                    )
+                )
+                    onClose()
+            })
+            return
         }
+        onClose()
     }
 
     function handleTriggerKeyDown(
@@ -137,6 +227,7 @@ export default function useTimeDropdownLogic({
     }
     return {
         state: {
+            position,
             labelledBy,
             fallbackLabel,
             accessibleName,
@@ -149,6 +240,6 @@ export default function useTimeDropdownLogic({
             handleTriggerKeyDown,
             handleSelect,
         },
-        refs: { listboxRef },
+        refs: { listboxRef, rootRef },
     }
 }

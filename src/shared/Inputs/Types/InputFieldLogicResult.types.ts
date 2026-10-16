@@ -39,6 +39,7 @@ export type InputFieldLogicResult = {
         labelledBy: string | undefined
         design: Required<import('./InputShared.types.ts').CustomDesign>
         hasLeftIcon: boolean
+        classNames: import('./InputProvider.types.ts').InputClassNames
         fieldClassName: string
         passwordStrengthBarClass: string
     }

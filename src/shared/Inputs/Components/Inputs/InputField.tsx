@@ -35,6 +35,7 @@ export function InputField(props: InputFieldProps) {
         labelledBy,
         design,
         hasLeftIcon,
+        classNames,
         fieldClassName,
         passwordStrengthBarClass,
     } = useInputFieldLogic(props).state
@@ -46,20 +47,25 @@ export function InputField(props: InputFieldProps) {
     } = logic
 
     return (
-        <div className="group min-w-0 w-full">
+        <div className={`group min-w-0 ${classNames.root ?? 'w-full'}`}>
             {hasLabel && (
                 <label
                     id={labelId}
                     htmlFor={fieldId}
-                    className={`mb-2 block text-sm font-medium ${design.labelText}`}
+                    className={
+                        classNames.label ??
+                        `mb-2 block text-sm font-medium ${design.labelText}`
+                    }
                 >
                     {label}
                 </label>
             )}
 
-            <div className="relative">
+            <div className={`relative ${classNames.wrapper ?? ''}`}>
                 {hasLeftIcon && (
-                    <div className="absolute inset-y-0 left-0 z-10 flex items-center pl-4">
+                    <div
+                        className={`absolute inset-y-0 left-0 z-10 flex items-center ${classNames.leading ?? 'pl-4'}`}
+                    >
                         {fieldState.hasError ? (
                             <ErrorTooltip
                                 content={fieldState.error ?? ''}
@@ -67,7 +73,7 @@ export function InputField(props: InputFieldProps) {
                             />
                         ) : (
                             <span
-                                className={`flex items-center ${design.iconColor} ${design.iconFocus} transition-colors [&>svg]:h-5 [&>svg]:w-5`}
+                                className={`flex items-center [&>svg]:h-5 [&>svg]:w-5 ${classNames.leading === undefined ? `${design.iconColor} ${design.iconFocus} transition-colors` : ''}`}
                             >
                                 {icon}
                             </span>
@@ -101,9 +107,20 @@ export function InputField(props: InputFieldProps) {
                         disabled ? undefined : nativeRequired || ariaRequired
                     }
                     style={{
-                        paddingLeft: hasLeftIcon ? 44 : 16,
+                        paddingLeft: hasLeftIcon
+                            ? 44
+                            : classNames.control === undefined
+                              ? 16
+                              : undefined,
                         ...nativeProps.style,
-                        paddingRight: `${Math.max(fieldState.dynamicPaddingRight, rightControl ? 56 : 16)}px`,
+                        paddingRight:
+                            fieldState.effectiveShowLength ||
+                            showLength ||
+                            rightControl
+                                ? `${Math.max(fieldState.dynamicPaddingRight, rightControl ? 56 : 16)}px`
+                                : classNames.control === undefined
+                                  ? 16
+                                  : nativeProps.style?.paddingRight,
                     }}
                     className={`${fieldClassName} [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
                 />
@@ -112,10 +129,13 @@ export function InputField(props: InputFieldProps) {
 
                 {(fieldState.effectiveShowLength || showLength) && (
                     <div
-                        className={`pointer-events-none absolute bottom-0 right-0 z-10 rounded-br-xl rounded-tl-xl border p-1 text-[10px] font-medium uppercase tracking-wider transition-[background-color,border-color,color] ${design.counterBg} ${
-                            fieldState.hasError
-                                ? `${design.errorBorder} ${design.errorText} peer-focus:${design.errorBorder}`
-                                : `${design.border} ${design.counterText} ${design.counterBorderFocus}`
+                        className={`pointer-events-none absolute bottom-0 right-0 z-10 ${
+                            classNames.counter ??
+                            `rounded-br-xl rounded-tl-xl border p-1 text-[10px] font-medium uppercase tracking-wider transition-[background-color,border-color,color] ${design.counterBg} ${
+                                fieldState.hasError
+                                    ? `${design.errorBorder} ${design.errorText} peer-focus:${design.errorBorder}`
+                                    : `${design.border} ${design.counterText} ${design.counterBorderFocus}`
+                            }`
                         }`}
                     >
                         {fieldState.counterText}
@@ -126,7 +146,10 @@ export function InputField(props: InputFieldProps) {
             {hasDescription && (
                 <p
                     id={descriptionId}
-                    className="mt-1 text-xs text-secondary-text"
+                    className={
+                        classNames.description ??
+                        'mt-1 text-xs text-rentner-muted'
+                    }
                 >
                     {description}
                 </p>
@@ -136,7 +159,9 @@ export function InputField(props: InputFieldProps) {
                 <p
                     id={errorId}
                     aria-live="polite"
-                    className={`mt-1 text-xs ${design.errorText}`}
+                    className={
+                        classNames.error ?? `mt-1 text-xs ${design.errorText}`
+                    }
                 >
                     {fieldState.error}
                 </p>

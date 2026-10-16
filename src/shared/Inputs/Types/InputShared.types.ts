@@ -6,7 +6,10 @@ import type {
     TextareaHTMLAttributes,
 } from 'react'
 import type { InputLocale, InputMessages } from './Messages.types.ts'
-import type { InputValidationMode } from './InputProvider.types.ts'
+import type {
+    InputClassNames,
+    InputValidationMode,
+} from './InputProvider.types.ts'
 
 export interface CustomDesign {
     bg?: string
@@ -34,6 +37,11 @@ export interface CustomDesign {
 }
 
 export interface InputVisualProps {
+    controlSize?: 'sm' | 'md' | 'lg'
+    classNames?: InputClassNames
+    portalContainer?: Element | DocumentFragment | null
+    portalClassName?: string
+    portalZIndex?: number
     label?: ReactNode
     description?: ReactNode
     error?: string | null

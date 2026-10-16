@@ -17,17 +17,39 @@ export function useInputProviderLogic({
     customDesign,
     classNames,
     validationMode,
+    controlSize,
+    portalContainer,
+    portalClassName,
+    portalZIndex,
 }: InputProviderProps): InputProviderLogicResult {
     const parent = useInputDefaults()
     const value = useMemo<InputDefaults>(
         () => ({
+            controlSize: controlSize ?? parent.controlSize,
+            portalContainer:
+                portalContainer === undefined
+                    ? parent.portalContainer
+                    : portalContainer,
+            portalClassName: portalClassName ?? parent.portalClassName,
+            portalZIndex: portalZIndex ?? parent.portalZIndex,
             locale: locale ?? parent.locale,
             validationMode: validationMode ?? parent.validationMode,
             messages: { ...parent.messages, ...messages },
             customDesign: { ...parent.customDesign, ...customDesign },
             classNames: { ...parent.classNames, ...classNames },
         }),
-        [parent, locale, messages, customDesign, classNames, validationMode],
+        [
+            parent,
+            locale,
+            messages,
+            customDesign,
+            classNames,
+            validationMode,
+            controlSize,
+            portalContainer,
+            portalClassName,
+            portalZIndex,
+        ],
     )
     return { state: { value } }
 }

@@ -21,6 +21,8 @@ export interface OtpFeedbackClassNames {
 }
 
 export interface OtpInputProps {
+    controlSize?: 'sm' | 'md' | 'lg'
+    classNames?: import('./InputProvider.types.ts').InputClassNames
     id?: string
     name?: string
     value: ReadonlyArray<string>

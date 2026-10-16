@@ -142,31 +142,6 @@ export default function useTimeField(
         setIsHourDropdownOpen(false)
     }
 
-    useEffect(() => {
-        if (
-            props.disabled ||
-            props.readOnly ||
-            (!isHourDropdownOpen && !isMinuteDropdownOpen)
-        )
-            return
-
-        function handleDocumentMouseDown(event: MouseEvent) {
-            if (!wrapperRef.current?.contains(event.target as Node)) {
-                setIsHourDropdownOpen(false)
-                setIsMinuteDropdownOpen(false)
-            }
-        }
-
-        document.addEventListener('mousedown', handleDocumentMouseDown)
-        return () =>
-            document.removeEventListener('mousedown', handleDocumentMouseDown)
-    }, [
-        isHourDropdownOpen,
-        isMinuteDropdownOpen,
-        props.disabled,
-        props.readOnly,
-    ])
-
     return {
         refs: {
             field: field.refs.field,

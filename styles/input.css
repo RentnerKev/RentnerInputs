@@ -37,4 +37,5 @@
 @source "../dist/shared/Inputs/Hooks/Inputs/useTimeInputLogic.js";
 @source "../dist/shared/Inputs/Hooks/useComposedRefs.js";
 @source "../dist/shared/Inputs/Hooks/useInputDefaults.js";
+@source "../dist/shared/Inputs/Hooks/useInputPresentation.js";
 @source "../dist/shared/Inputs/Hooks/useTooltipClientReady.js";

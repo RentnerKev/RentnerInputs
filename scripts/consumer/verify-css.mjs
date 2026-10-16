@@ -50,20 +50,20 @@ export function verifyCss({ consumerRoot, manifest, runNode, vite }) {
         text = cssFor('text')
     for (const css of [full, input, text]) {
         assert.ok(
-            css.includes('.bg-input-dark'),
+            css.includes('.bg-rentner-control'),
             'Shared field background must be generated',
         )
         assert.ok(
-            css.includes('.border-red-500'),
+            css.includes('.border-rentner-danger'),
             'Error styles must be generated',
         )
         assert.ok(
-            css.includes('.pl-11'),
+            css.includes('.pl-4'),
             'Leading icon spacing must be generated',
         )
     }
     assert.ok(
-        full.includes('.accent-primary'),
+        full.includes('.accent-rentner-accent'),
         'Full entry must cover primitive controls',
     )
     assert.ok(
@@ -77,7 +77,7 @@ export function verifyCss({ consumerRoot, manifest, runNode, vite }) {
     )
     for (const css of [input, text]) {
         assert.ok(
-            !css.includes('.accent-primary'),
+            !css.includes('.accent-rentner-accent'),
             'Scoped entries should exclude primitive controls',
         )
         assert.ok(

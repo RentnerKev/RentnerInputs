@@ -1,10 +1,34 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { FormEvent } from 'react'
 import type { PlaygroundLogicResult } from '../Types/Playground.types.ts'
 export function usePlaygroundLogic(): PlaygroundLogicResult {
+    const [shadowPortalContainer, setShadowPortalContainer] =
+        useState<ShadowRoot | null>(null)
+    const setShadowHost = useCallback((node: HTMLDivElement | null) => {
+        if (node)
+            setShadowPortalContainer(
+                node.shadowRoot ?? node.attachShadow({ mode: 'open' }),
+            )
+    }, [])
+    const portalContainer = new URLSearchParams(window.location.search).has(
+        'shadow-portal',
+    )
+        ? shadowPortalContainer
+        : new URLSearchParams(window.location.search).has('custom-portal')
+          ? document.getElementById('root')
+          : undefined
     const readOnlyTime = new URLSearchParams(window.location.search).has(
         'readonly-time',
     )
+    const [timeBlurs, setTimeBlurs] = useState(0)
+    function handleTimeBlur(
+        event: import('react').FocusEvent<HTMLInputElement>,
+    ) {
+        event.preventDefault()
+        event.stopPropagation()
+        setTimeBlurs((value) => value + 1)
+    }
+    const [numericValue, setNumericValue] = useState<number | null>(null)
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
     const [amount, setAmount] = useState('')
@@ -54,7 +78,11 @@ export function usePlaygroundLogic(): PlaygroundLogicResult {
         setOtpStatus('idle')
     }
     return {
+        refs: { setShadowHost },
         state: {
+            timeBlurs,
+            portalContainer,
+            numericValue,
             readOnlyTime,
             email,
             phone,
@@ -69,6 +97,7 @@ export function usePlaygroundLogic(): PlaygroundLogicResult {
             otpStatus,
         },
         setter: {
+            setNumericValue,
             setEmail,
             setPhone,
             setAmount,
@@ -82,6 +111,7 @@ export function usePlaygroundLogic(): PlaygroundLogicResult {
             setOtpStatus,
         },
         handler: {
+            handleTimeBlur,
             handleSubmit,
             handleOtpChange,
             handleOtpError,

@@ -118,3 +118,9 @@ export type { InputVisualProps } from './shared/Inputs/Types/InputShared.types.t
 export type { NumericValueProps } from './shared/Inputs/Types/InputShared.types.ts'
 
 export type { PasswordStrength } from './shared/Inputs/Types/InputShared.types.ts'
+
+export { getInputFieldProps, getFieldError, mapFieldError } from './form.ts'
+export type { FieldAdapter, FieldAdapterOptions } from './form.ts'
+
+export { NumericInput } from './shared/Inputs/Components/Inputs/NumericInput.tsx'
+export type { NumericInputProps } from './shared/Inputs/Types/NumericInput.types.ts'

@@ -32,6 +32,11 @@ export default function useInputFieldLogic({
     messages,
     validationMode: _validationMode,
     className,
+    classNames: providedClassNames,
+    controlSize,
+    portalContainer: _portalContainer,
+    portalClassName: _portalClassName,
+    portalZIndex: _portalZIndex,
     disabled,
     'aria-describedby': ariaDescribedBy,
     'aria-errormessage': ariaErrorMessage,
@@ -72,19 +77,24 @@ export default function useInputFieldLogic({
         ariaLabelledBy,
         hasLabel ? labelId : undefined,
     )
+    void [_portalContainer, _portalClassName, _portalZIndex]
+    const classNames = { ...defaults.classNames, ...providedClassNames }
+    const size = controlSize ?? defaults.controlSize
+    const sizeClassName =
+        size === 'sm'
+            ? 'h-rentner-control-sm py-0'
+            : size === 'md'
+              ? 'h-rentner-control-md py-0'
+              : size === 'lg'
+                ? 'h-rentner-control-lg py-0'
+                : ''
     const design = {
         ...DESIGN_CONFIG,
         ...defaults.customDesign,
         ...customDesign,
     }
-    const fieldClasses =
-        className ?? defaults.classNames?.input ?? 'w-full py-3 rounded-xl'
     const hasLeftIcon = Boolean(icon || logic.state.hasError)
-    const fieldClassName = `peer block ${hasLeftIcon ? 'pl-11' : 'pl-4'} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-[background-color,border-color,box-shadow,color] ${fieldClasses} ${design.bg} border ${design.text} ${design.placeholder} ${
-        logic.state.hasError
-            ? `${design.errorBorder} focus:ring-2 ${design.errorRing}`
-            : `${design.border} focus:ring-2 ${design.focusRing} ${design.focusBorder}`
-    } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`
+    const fieldClassName = `peer block focus:ring-2 focus-visible:outline-none transition-[background-color,border-color,box-shadow,color] ${classNames.control ?? `${className ?? classNames.input ?? 'w-full py-3 rounded-rentner-control'} ${design.bg} border ${design.text} ${design.placeholder} ${logic.state.hasError ? `${design.errorBorder} focus:ring-2 ${design.errorRing}` : `${design.border} focus:ring-2 ${design.focusRing} ${design.focusBorder}`}`} ${sizeClassName} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`
     const passwordStrengthBarClass =
         !passwordStrength || passwordStrength.score <= 1
             ? design.passwordStrengthWeak
@@ -127,6 +137,7 @@ export default function useInputFieldLogic({
             labelledBy,
             design,
             hasLeftIcon,
+            classNames,
             fieldClassName,
             passwordStrengthBarClass,
         },

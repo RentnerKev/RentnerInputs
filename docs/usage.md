@@ -550,3 +550,27 @@ information, API declarations, usage guides, examples, and search, without
 accounts, write operations, or access to private project files. The installed
 `/ai` entry works locally without that service. Always use the documentation and
 declarations for the version installed in your project.
+
+## Nullable numbers, field shells, and forms
+
+`NumericInput` is additive; `NumberInput` and `MoneyInput` keep their string APIs. NumericInput accepts `value: number | null` and `onValueChange`. Its text draft keeps empty, sign, and decimal intermediates editable. Blur or Enter commits a finite decimal (comma also accepted); empty commits null. Incomplete or non-decimal drafts revert to the controlled value. Exponents, hex, and infinity are rejected. Min/max constraints report validation errors without clamping values.
+
+```tsx
+import { NumericInput, InputProvider } from '@rentnerkev/inputs'
+import { getInputFieldProps } from '@rentnerkev/inputs/form'
+
+;<InputProvider
+    controlSize="md"
+    classNames={{ label: 'text-sm font-semibold' }}
+>
+    <NumericInput {...getInputFieldProps(amountField)} />
+</InputProvider>
+```
+
+The UI-free form entry needs only a structural field: `name`, `state.value`, optional `state.meta.errors/isTouched`, `handleChange(value)`, and `handleBlur()`. It connects the direct value setter and blur, and uses external validation. Error visibility defaults to touched; `showErrors: 'always' | 'never'` and `mapError` customize it. Only strings and objects with a string `message` are read by default. Pass the result of a subscribed field render; this pure helper does not subscribe.
+
+Providers and components accept `controlSize: 'sm' | 'md' | 'lg'` (36/44/48 px). Omit it to preserve existing geometry. `classNames` merges provider and local slots: root, label, description, error, wrapper, control, leading, trailing, counter, plus existing input/textarea/otp/native-control slots. A new control slot replaces the visual default block; legacy className/input/textarea keep customDesign. Functional positioning/focus stays active. Explicit sizes affect textarea controls too; native checkbox/radio/range/file have no field shell.
+
+TimeInput popups use `portalContainer`, `portalClassName`, and `portalZIndex` from provider/local props; null container uses document.body. Focus, keyboard navigation, Escape, and outside clicks remain owned by the dropdown. Dynamic geometry/z-index are inline styles.
+
+`@rentnerkev/inputs/theme.css` exports shared `--rentner-*` tokens. The Tailwind entry includes them automatically; override tokens on your app or a custom portal ancestor. customDesign still overrides default design utilities. Scoped CSS entries also include the shared theme.

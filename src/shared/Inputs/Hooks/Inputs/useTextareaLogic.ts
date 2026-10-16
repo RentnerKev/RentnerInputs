@@ -29,6 +29,11 @@ export default function useTextareaLogic(
         maxLength,
         minLength,
         className,
+        classNames: providedClassNames,
+        controlSize,
+        portalContainer: _portalContainer,
+        portalClassName: _portalClassName,
+        portalZIndex: _portalZIndex,
         disabled,
         validationMode: _validationMode,
         triggerRef: _triggerRef,
@@ -66,19 +71,24 @@ export default function useTextareaLogic(
         hasLabel ? `${fieldId}-label` : undefined,
     )
     const defaults = useInputDefaults()
+    void [_portalContainer, _portalClassName, _portalZIndex]
+    const classNames = { ...defaults.classNames, ...providedClassNames }
+    const size = controlSize ?? defaults.controlSize
+    const sizeClassName =
+        size === 'sm'
+            ? 'h-rentner-control-sm py-0'
+            : size === 'md'
+              ? 'h-rentner-control-md py-0'
+              : size === 'lg'
+                ? 'h-rentner-control-lg py-0'
+                : ''
     const design = {
         ...DESIGN_CONFIG,
         ...defaults.customDesign,
         ...customDesign,
     }
-    const fieldClasses =
-        className ?? defaults.classNames?.textarea ?? 'w-full py-3 rounded-xl'
     const hasLeftIcon = Boolean(icon || logic.state.hasError)
-    const fieldClassName = `peer block min-h-28 resize-y ${hasLeftIcon ? 'pl-11' : 'pl-4'} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-[background-color,border-color,box-shadow,color] ${fieldClasses} ${design.bg} border ${design.text} ${design.placeholder} ${
-        logic.state.hasError
-            ? `${design.errorBorder} focus:ring-2 ${design.errorRing}`
-            : `${design.border} focus:ring-2 ${design.focusRing} ${design.focusBorder}`
-    } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`
+    const fieldClassName = `peer block resize-y focus:ring-2 focus-visible:outline-none transition-[background-color,border-color,box-shadow,color] ${classNames.control ?? `${className ?? classNames.textarea ?? 'min-h-28 w-full py-3 rounded-rentner-control'} ${design.bg} border ${design.text} ${design.placeholder} ${logic.state.hasError ? `${design.errorBorder} focus:ring-2 ${design.errorRing}` : `${design.border} focus:ring-2 ${design.focusRing} ${design.focusBorder}`}`} ${sizeClassName} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`
 
     return {
         state: {
@@ -113,6 +123,7 @@ export default function useTextareaLogic(
             labelledBy,
             design,
             hasLeftIcon,
+            classNames,
             fieldClassName,
         },
         handler: {

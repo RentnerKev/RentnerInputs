@@ -48,6 +48,9 @@ describe('published package contract', () => {
             './messages',
             './package.json',
             './ai',
+            './theme.css',
+            './form',
+            './numeric-input',
         ])
     })
 
