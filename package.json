@@ -32,8 +32,8 @@
         "e2e": "playwright test",
         "lint": "oxlint --deny-warnings src scripts playground/src playwright.config.ts .github/scripts",
         "lint:fix": "oxlint --fix --deny-warnings src scripts playground/src playwright.config.ts .github/scripts",
-        "format": "oxfmt src scripts playground README.md docs package.json tailwind.css styles/theme.css tsconfig.json tsconfig.type-tests.json playwright.config.ts .oxlintrc.json .oxfmtrc.json bunfig.toml .github theme.css",
-        "format:check": "oxfmt --check src scripts playground README.md docs package.json tailwind.css styles/theme.css tsconfig.json tsconfig.type-tests.json playwright.config.ts .oxlintrc.json .oxfmtrc.json bunfig.toml .github theme.css",
+        "format": "bun fmt src scripts playground README.md docs package.json tailwind.css styles/theme.css tsconfig.json tsconfig.type-tests.json playwright.config.ts .oxlintrc.json bunfig.toml .github theme.css",
+        "format:check": "bun fmt --check src scripts playground README.md docs package.json tailwind.css styles/theme.css tsconfig.json tsconfig.type-tests.json playwright.config.ts .oxlintrc.json bunfig.toml .github theme.css",
         "test": "bun test",
         "verify": "bun run typecheck && bun run lint && bun run format:check && bun run test && bun run build && bun run pack:check && bun run pack:consumer && bun run e2e",
         "typecheck:automation": "tsc --noEmit -p .github/scripts/tsconfig.json"
@@ -52,28 +52,27 @@
     },
     "dependencies": {
         "@rentnerkev/tooltips": "^2.2.0",
-        "lucide-react": "^1.52.0"
+        "lucide-react": "^1.61.0"
     },
     "peerDependencies": {
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
     },
     "devDependencies": {
-        "@axe-core/playwright": "^4.13.0",
-        "@playwright/test": "^1.63.0",
+        "@axe-core/playwright": "^4.14.0",
+        "@playwright/test": "^1.64.1",
         "@tailwindcss/vite": "^4.3.3",
-        "@types/bun": "^1.4.2",
-        "@types/node": "^26.6.4",
+        "@types/bun": "^1.4.4",
+        "@types/node": "^26.6.5",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react": "^6.1.2",
-        "oxfmt": "^0.74.0",
-        "oxlint": "^1.87.0",
-        "react": "^19.3.0",
-        "react-dom": "^19.3.0",
+        "oxlint": "^1.89.0",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1",
         "tailwindcss": "^4.3.3",
         "typescript": "^7.0.2",
-        "vite": "^8.3.3"
+        "vite": "^8.3.5"
     },
     "exports": {
         ".": {
@@ -174,5 +173,5 @@
             "import": "./dist/shared/Inputs/Components/Inputs/NumericInput.js"
         }
     },
-    "packageManager": "bun@1.4.2"
+    "packageManager": "bun@1.4.4"
 }
