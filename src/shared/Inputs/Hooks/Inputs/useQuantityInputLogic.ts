@@ -4,6 +4,7 @@ import type { QuantityInputComponentProps } from '../../Types/QuantityInput.type
 import { useInputMessages } from '../useInputDefaults.ts'
 import {
     acceptsQuantity,
+    resolveNumberBound,
     validateNumber,
 } from '../../../../lib/Inputs/inputValidation.utils.ts'
 import { useFieldValidation } from './useFieldValidation.ts'
@@ -13,15 +14,17 @@ export default function useQuantityInputLogic(
     forwardedRef?: Ref<HTMLInputElement>,
 ): QuantityInputLogicResult {
     const messages = useInputMessages(props.locale, props.messages)
+    const minValue = resolveNumberBound(props.min, props.minValue)
+    const maxValue = resolveNumberBound(props.max, props.maxValue)
     const field = useFieldValidation<HTMLInputElement>({
         ...props,
         validate: (value) =>
-            validateNumber(value, props.minValue, props.maxValue, messages),
+            validateNumber(value, minValue, maxValue, messages),
         acceptsValue: (value) =>
             acceptsQuantity(value) &&
             (value === '' ||
-                props.maxValue === undefined ||
-                Number(value) <= props.maxValue),
+                maxValue === undefined ||
+                Number(value) <= maxValue),
         selectZeroOnFocus: true,
         forwardedRef,
     })

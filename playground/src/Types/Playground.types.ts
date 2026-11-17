@@ -11,6 +11,7 @@ export type PlaygroundLogicResult = {
         phone: string
         amount: string
         limitedAmount: string
+        quantity: string
         username: string
         money: string
         password: string
@@ -25,6 +26,7 @@ export type PlaygroundLogicResult = {
         setPhone: Dispatch<SetStateAction<string>>
         setAmount: Dispatch<SetStateAction<string>>
         setLimitedAmount: Dispatch<SetStateAction<string>>
+        setQuantity: Dispatch<SetStateAction<string>>
         setUsername: Dispatch<SetStateAction<string>>
         setMoney: Dispatch<SetStateAction<string>>
         setPassword: Dispatch<SetStateAction<string>>

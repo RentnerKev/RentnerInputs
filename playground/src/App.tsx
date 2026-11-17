@@ -26,6 +26,7 @@ export function App() {
             phone,
             amount,
             limitedAmount,
+            quantity,
             username,
             money,
             password,
@@ -40,6 +41,7 @@ export function App() {
             setPhone,
             setAmount,
             setLimitedAmount,
+            setQuantity,
             setUsername,
             setMoney,
             setPassword,
@@ -199,6 +201,20 @@ export function App() {
                                 max={50}
                                 type="number"
                                 icon={<Hash className="h-5 w-5" />}
+                            />
+
+                            <CustomInput
+                                type="quantity"
+                                label="Quantity with native bounds"
+                                name="quantity"
+                                value={quantity}
+                                onValueChange={setQuantity}
+                                min="5"
+                                max="10"
+                                minValue={1}
+                                maxValue={99}
+                                suffix="kg"
+                                locale="en"
                             />
 
                             <div className="space-y-3">

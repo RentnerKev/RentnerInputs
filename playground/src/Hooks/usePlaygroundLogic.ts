@@ -31,6 +31,7 @@ export function usePlaygroundLogic(): PlaygroundLogicResult {
     const [numericValue, setNumericValue] = useState<number | null>(null)
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
+    const [quantity, setQuantity] = useState('5')
     const [amount, setAmount] = useState('')
     const [limitedAmount, setLimitedAmount] = useState('')
     const [username, setUsername] = useState('')
@@ -52,6 +53,7 @@ export function usePlaygroundLogic(): PlaygroundLogicResult {
             phone,
             amount,
             limitedAmount,
+            quantity,
             username,
             money,
             password,
@@ -88,6 +90,7 @@ export function usePlaygroundLogic(): PlaygroundLogicResult {
             phone,
             amount,
             limitedAmount,
+            quantity,
             username,
             money,
             password,
@@ -102,6 +105,7 @@ export function usePlaygroundLogic(): PlaygroundLogicResult {
             setPhone,
             setAmount,
             setLimitedAmount,
+            setQuantity,
             setUsername,
             setMoney,
             setPassword,
