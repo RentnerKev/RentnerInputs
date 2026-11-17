@@ -193,6 +193,16 @@ The concrete input components support the usual
   `tabIndex`, and `title`;
 - React refs through `ref`.
 
+`NumberInput` and `QuantityInput` prefer native `min` and `max` over the
+`minValue` and `maxValue` aliases. An empty or invalid native bound removes that
+constraint instead of falling back to its alias. Quantity fields keep their
+text-input editing and suffix display; range validation uses custom validity,
+and their named form value remains the raw quantity string.
+
+Phone validation accepts one leading `+`, digits, balanced parentheses, and
+common whitespace, dash, slash and dot separators. Optional empty values remain
+valid. This is formatting validation, without country-specific length rules.
+
 Internal and consumer event handlers are composed. A custom `onFocus`, for
 example, does not replace the package's focus handling.
 

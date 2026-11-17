@@ -29,9 +29,18 @@ export function validatePhone(
     value: string,
     messages: InputMessages = inputMessageCatalog.de,
 ) {
-    return value && !/^[+]*[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/.test(value)
-        ? messages.invalidPhone
-        : null
+    if (!value) return null
+    if (!/^\+?[0-9(][0-9()\s./-]*$/.test(value) || !/[0-9]/.test(value))
+        return messages.invalidPhone
+    let depth = 0
+    for (const character of value) {
+        if (character === '(') depth++
+        else if (character === ')') {
+            if (depth === 0) return messages.invalidPhone
+            depth--
+        }
+    }
+    return depth === 0 ? null : messages.invalidPhone
 }
 
 export function validateNumber(
