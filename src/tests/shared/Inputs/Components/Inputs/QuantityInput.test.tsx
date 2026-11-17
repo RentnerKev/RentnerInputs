@@ -59,6 +59,17 @@ test.each([
     [{ value: '99', max: 'Infinity', maxValue: 5 }, 'valid'],
     [{ value: '', min: 5, max: 10 }, 'valid'],
     [{ value: '1', max: 0, maxValue: 5 }, 'The value must be at most 0'],
-] satisfies [Partial<QuantityInputComponentProps>, string][])('quantity validates resolved native and alias bounds: %j', (bounds, message) => {
-    expect(renderToStaticMarkup(<QuantityValidation value="" onValueChange={() => {}} {...bounds} />)).toBe(`<span>${message}</span>`)
-})
+] satisfies [Partial<QuantityInputComponentProps>, string][])(
+    'quantity validates resolved native and alias bounds: %j',
+    (bounds, message) => {
+        expect(
+            renderToStaticMarkup(
+                <QuantityValidation
+                    value=""
+                    onValueChange={() => {}}
+                    {...bounds}
+                />,
+            ),
+        ).toBe(`<span>${message}</span>`)
+    },
+)
