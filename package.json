@@ -51,7 +51,7 @@
         "registry": "https://registry.npmjs.org"
     },
     "dependencies": {
-        "@rentnerkev/tooltips": "^2.3.2",
+        "@rentnerkev/tooltips": "^2.3.3",
         "lucide-react": "^1.77.0"
     },
     "peerDependencies": {
