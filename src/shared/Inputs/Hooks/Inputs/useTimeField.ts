@@ -11,15 +11,22 @@ import {
     isTimeValueValid,
 } from '../../../../lib/Inputs/timeOptions.ts'
 
+const EMPTY_TIME_OPTIONS: {
+    hours: string[]
+    minutesByHour: Record<string, string[]>
+} = {
+    hours: [],
+    minutesByHour: {},
+}
+const EMPTY_STRING_ARRAY: string[] = []
+
 export default function useTimeField(
     props: TimeInputComponentProps,
     forwardedRef?: Ref<HTMLInputElement>,
 ) {
     const [isHourDropdownOpen, setIsHourDropdownOpen] = useState(false)
     const [isMinuteDropdownOpen, setIsMinuteDropdownOpen] = useState(false)
-    const [supportsNativeTime, setSupportsNativeTime] = useState<
-        boolean | null
-    >(null)
+    const [supportsNativeTime, setSupportsNativeTime] = useState(true)
     const hiddenInputRef = useRef<HTMLInputElement | null>(null)
     const triggerRef = useRef<HTMLButtonElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
@@ -27,35 +34,46 @@ export default function useTimeField(
     const setHiddenInputRef = useComposedRefs(hiddenInputRef, forwardedRef)
     const setTriggerRef = useComposedRefs(triggerRef, forwardedTriggerRef)
     const messages = useInputMessages(props.locale, props.messages)
+    const effectiveStepBaseValue =
+        props.min !== undefined && props.min !== '' ? undefined : props.value
     const timeConstraints = useMemo(
         () => ({
             min: props.min,
             max: props.max,
             step: props.step,
-            value: props.value,
+            value: effectiveStepBaseValue,
         }),
-        [props.max, props.min, props.step, props.value],
+        [props.max, props.min, props.step, effectiveStepBaseValue],
     )
     const field = useFieldValidation<HTMLInputElement>({
         ...fieldProps,
         validate: (value) =>
-            supportsNativeTime === false &&
-            !isTimeValueValid(value, timeConstraints)
+            !supportsNativeTime && !isTimeValueValid(value, timeConstraints)
                 ? messages.invalidInput
                 : null,
         forwardedRef: setHiddenInputRef,
         focusTarget: () => triggerRef.current,
     })
+    const isAnyDropdownOpen = isHourDropdownOpen || isMinuteDropdownOpen
     const timeOptions = useMemo(
         () =>
-            createTimeOptions({
-                minuteStep: props.minuteStep,
-                min: props.min,
-                max: props.max,
-                step: props.step,
-                value: props.value,
-            }),
-        [props.minuteStep, props.min, props.max, props.step, props.value],
+            isAnyDropdownOpen
+                ? createTimeOptions({
+                      minuteStep: props.minuteStep,
+                      min: props.min,
+                      max: props.max,
+                      step: props.step,
+                      value: effectiveStepBaseValue,
+                  })
+                : EMPTY_TIME_OPTIONS,
+        [
+            isAnyDropdownOpen,
+            props.minuteStep,
+            props.min,
+            props.max,
+            props.step,
+            effectiveStepBaseValue,
+        ],
     )
     const hours = timeOptions.hours
     const selectedHour = getTimePart(field.state.safeValue, 0)
@@ -63,16 +81,17 @@ export default function useTimeField(
     const availableHour = hours.includes(selectedHour)
         ? selectedHour
         : (hours[0] ?? '')
-    const minutes = timeOptions.minutesByHour[availableHour] ?? []
+    const minutes =
+        timeOptions.minutesByHour[availableHour] ?? EMPTY_STRING_ARRAY
 
     useEffect(() => {
         const input = hiddenInputRef.current
-        if (input) setSupportsNativeTime(input.type === 'time')
+        if (input && input.type !== 'time') setSupportsNativeTime(false)
     }, [])
 
     useEffect(() => {
         const input = hiddenInputRef.current
-        if (!input || supportsNativeTime !== false) return
+        if (!input || supportsNativeTime) return
 
         if (!input.willValidate || props.disabled || props.readOnly) {
             input.setCustomValidity('')

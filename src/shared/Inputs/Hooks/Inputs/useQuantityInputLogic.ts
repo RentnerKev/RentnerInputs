@@ -26,6 +26,7 @@ export default function useQuantityInputLogic(
                 maxValue === undefined ||
                 Number(value) <= maxValue),
         selectZeroOnFocus: true,
+        trackFocus: true,
         forwardedRef,
     })
     const displayValue =

@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role, jsx-a11y/role-supports-aria-props, jsx-a11y/no-autofocus -- Preserve the composite OTP group error contract and explicitly opt-in autoFocus API; each digit independently exposes invalid state. */
 import { useInputPresentation } from '../../Hooks/useInputPresentation.ts'
-import { forwardRef } from 'react'
+import { forwardRef, useMemo } from 'react'
 import { CircleAlert, CircleCheck } from 'lucide-react'
 import useOtpInputLogic from '../../Hooks/Inputs/useOtpInputLogic.ts'
 import type { OtpInputProps } from '../../Types/OtpInput.types.ts'
@@ -60,6 +60,16 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
             handleDigitPaste,
         } = handler
         const { validationInput, setDigitRef, firstDigitRef } = refs
+        const digitRefCallbacks = useMemo(
+            () =>
+                Array.from({ length: digitCount }, (_, index) =>
+                    index === 0
+                        ? firstDigitRef
+                        : (element: HTMLInputElement | null) =>
+                              setDigitRef(index, element),
+                ),
+            [digitCount, firstDigitRef, setDigitRef],
+        )
 
         return (
             <div
@@ -120,11 +130,7 @@ export const OtpInput = forwardRef<HTMLInputElement, OtpInputProps>(
                         <input
                             key={index}
                             id={`${groupId}-digit-${index + 1}`}
-                            ref={
-                                index === 0
-                                    ? firstDigitRef
-                                    : (element) => setDigitRef(index, element)
-                            }
+                            ref={digitRefCallbacks[index]}
                             type="text"
                             inputMode="numeric"
                             autoComplete={index === 0 ? 'one-time-code' : 'off'}

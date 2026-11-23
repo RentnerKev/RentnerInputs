@@ -5,6 +5,8 @@ import { useInputDefaults, useInputMessages } from '../useInputDefaults.ts'
 import { mergeAriaDescribedBy } from '../../../../lib/Inputs/fieldA11y.utils.ts'
 import type { InputFieldProps } from '../../Types/InputField.types.ts'
 
+const EMPTY_CLASS_NAMES: NonNullable<InputFieldProps['classNames']> = {}
+
 export default function useInputFieldLogic({
     logic,
     inputType,
@@ -78,7 +80,14 @@ export default function useInputFieldLogic({
         hasLabel ? labelId : undefined,
     )
     void [_portalContainer, _portalClassName, _portalZIndex]
-    const classNames = { ...defaults.classNames, ...providedClassNames }
+    const classNames =
+        !defaults.classNames && !providedClassNames
+            ? EMPTY_CLASS_NAMES
+            : !providedClassNames
+              ? defaults.classNames!
+              : !defaults.classNames
+                ? providedClassNames
+                : { ...defaults.classNames, ...providedClassNames }
     const size = controlSize ?? defaults.controlSize
     const sizeClassName =
         size === 'sm'
@@ -88,11 +97,14 @@ export default function useInputFieldLogic({
               : size === 'lg'
                 ? 'h-rentner-control-lg py-0'
                 : ''
-    const design = {
-        ...DESIGN_CONFIG,
-        ...defaults.customDesign,
-        ...customDesign,
-    }
+    const design =
+        !defaults.customDesign && !customDesign
+            ? DESIGN_CONFIG
+            : {
+                  ...DESIGN_CONFIG,
+                  ...defaults.customDesign,
+                  ...customDesign,
+              }
     const hasLeftIcon = Boolean(icon || logic.state.hasError)
     const fieldClassName = `peer block focus:ring-2 focus-visible:outline-none transition-[background-color,border-color,box-shadow,color] ${classNames.control ?? `${className ?? classNames.input ?? 'w-full py-3 rounded-rentner-control'} ${design.bg} border ${design.text} ${design.placeholder} ${logic.state.hasError ? `${design.errorBorder} focus:ring-2 ${design.errorRing}` : `${design.border} focus:ring-2 ${design.focusRing} ${design.focusBorder}`}`} ${sizeClassName} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`
     const passwordStrengthBarClass =

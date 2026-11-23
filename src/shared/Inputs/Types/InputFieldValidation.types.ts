@@ -33,6 +33,7 @@ export interface UseInputFieldLogicOptions<Element extends InputElement> {
     validate?: InputValidator
     acceptsValue?: (value: string) => boolean
     selectZeroOnFocus?: boolean
+    trackFocus?: boolean
     locale?: InputLocale
     messages?: Partial<InputMessages>
     error?: string | null

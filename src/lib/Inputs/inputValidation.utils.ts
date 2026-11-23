@@ -8,20 +8,22 @@ import {
     isCompleteMoneyValue,
 } from './money.utils.ts'
 
+const WHITESPACE_REGEX = /\s/
+
 export function validateEmail(
     value: string,
     messages: InputMessages = inputMessageCatalog.de,
 ) {
     if (!value) return null
     const at = value.indexOf('@')
+    if (at <= 0 || value.indexOf('@', at + 1) !== -1) {
+        return messages.invalidEmail
+    }
+    const dot = value.indexOf('.', at + 2)
     // Same grammar as the former regexp: nonempty local part, exactly one @,
     // no ECMAScript whitespace, and a dot with characters on both domain sides.
     const valid =
-        at > 0 &&
-        value.indexOf('@', at + 1) === -1 &&
-        !/\s/.test(value) &&
-        value.indexOf('.', at + 2) < value.length - 1 &&
-        value.indexOf('.', at + 2) !== -1
+        dot !== -1 && dot < value.length - 1 && !WHITESPACE_REGEX.test(value)
     return valid ? null : messages.invalidEmail
 }
 
@@ -30,17 +32,41 @@ export function validatePhone(
     messages: InputMessages = inputMessageCatalog.de,
 ) {
     if (!value) return null
-    if (!/^\+?[0-9(][0-9()\s./-]*$/.test(value) || !/[0-9]/.test(value))
+    const len = value.length
+    let i = value.charCodeAt(0) === 43 ? 1 : 0
+    if (i >= len) return messages.invalidPhone
+    const first = value.charCodeAt(i)
+    if (!((first >= 48 && first <= 57) || first === 40)) {
         return messages.invalidPhone
+    }
+    let hasDigit = false
     let depth = 0
-    for (const character of value) {
-        if (character === '(') depth++
-        else if (character === ')') {
+    for (; i < len; i += 1) {
+        const code = value.charCodeAt(i)
+        if (code >= 48 && code <= 57) {
+            hasDigit = true
+        } else if (code === 40) {
+            depth += 1
+        } else if (code === 41) {
             if (depth === 0) return messages.invalidPhone
-            depth--
+            depth -= 1
+        } else if (
+            code === 32 ||
+            code === 45 ||
+            code === 46 ||
+            code === 47 ||
+            code === 9 ||
+            (code >= 10 && code <= 13) ||
+            code === 160
+        ) {
+            continue
+        } else if (code >= 128 && WHITESPACE_REGEX.test(value[i]!)) {
+            continue
+        } else {
+            return messages.invalidPhone
         }
     }
-    return depth === 0 ? null : messages.invalidPhone
+    return hasDigit && depth === 0 ? null : messages.invalidPhone
 }
 
 export function validateNumber(
@@ -49,11 +75,13 @@ export function validateNumber(
     maxValue?: number,
     messages: InputMessages = inputMessageCatalog.de,
 ) {
-    if (value && Number.isNaN(Number(value))) return messages.onlyNumbers
-    if (value && minValue !== undefined && Number(value) < minValue) {
+    if (!value) return null
+    const numericValue = Number(value)
+    if (Number.isNaN(numericValue)) return messages.onlyNumbers
+    if (minValue !== undefined && numericValue < minValue) {
         return messages.minValue(minValue)
     }
-    if (value && maxValue !== undefined && Number(value) > maxValue) {
+    if (maxValue !== undefined && numericValue > maxValue) {
         return messages.maxValue(maxValue)
     }
     return null
@@ -64,9 +92,7 @@ export function validateMoney(
     messages: InputMessages = inputMessageCatalog.de,
     locale: InputLocale = 'de',
 ) {
-    return value &&
-        (!acceptsLocalizedMoney(value, locale) ||
-            !isCompleteMoneyValue(value, locale))
+    return value && !isCompleteMoneyValue(value, locale)
         ? messages.onlyMoneyCharacters
         : null
 }
@@ -76,7 +102,11 @@ export function acceptsMoney(value: string, locale: InputLocale = 'de') {
 }
 
 export function acceptsQuantity(value: string) {
-    return value === '' || /^[0-9]*$/.test(value)
+    for (let i = 0; i < value.length; i += 1) {
+        const code = value.charCodeAt(i)
+        if (code < 48 || code > 57) return false
+    }
+    return true
 }
 
 export function resolveNumberBound(

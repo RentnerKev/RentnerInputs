@@ -24,22 +24,26 @@ export function mapFieldError(error: unknown): string | null {
 }
 export function getFieldError<T>(
     field: FieldAdapter<T>,
-    options: FieldAdapterOptions = {},
+    options?: FieldAdapterOptions,
 ): string | null {
+    const showErrors = options?.showErrors
     if (
-        options.showErrors === 'never' ||
-        (options.showErrors !== 'always' && !field.state.meta?.isTouched)
+        showErrors === 'never' ||
+        (showErrors !== 'always' && !field.state.meta?.isTouched)
     )
         return null
-    for (const error of field.state.meta?.errors ?? []) {
-        const message = (options.mapError ?? mapFieldError)(error)
+    const errors = field.state.meta?.errors
+    if (!errors?.length) return null
+    const mapper = options?.mapError ?? mapFieldError
+    for (let i = 0; i < errors.length; i += 1) {
+        const message = mapper(errors[i])
         if (message) return message
     }
     return null
 }
 export function getInputFieldProps<T>(
     field: FieldAdapter<T>,
-    options: FieldAdapterOptions = {},
+    options?: FieldAdapterOptions,
 ) {
     return {
         name: field.name,

@@ -41,11 +41,14 @@ export default function useOtpInputLogic(
         'aria-describedby': ariaDescribedBy,
     } = props
     const defaults = useInputDefaults()
-    const design = {
-        ...DESIGN_CONFIG,
-        ...defaults.customDesign,
-        ...customDesign,
-    }
+    const design =
+        !defaults.customDesign && !customDesign
+            ? DESIGN_CONFIG
+            : {
+                  ...DESIGN_CONFIG,
+                  ...defaults.customDesign,
+                  ...customDesign,
+              }
     const logic = useOtpField({
         value,
         onValueChange,

@@ -27,18 +27,33 @@ export default function useOtpField({
     const resolvedValidationMode =
         validationMode ?? defaults.validationMode ?? 'built-in'
     const digitCount = Number.isInteger(length) && length > 0 ? length : 6
-    const digits = Array.from(
-        { length: digitCount },
-        (_, index) => value[index]?.replace(/\D/g, '').slice(-1) ?? '',
-    )
+    const digits: string[] = []
+    let hasEmptyDigit = false
+    for (let index = 0; index < digitCount; index += 1) {
+        const raw = value[index]
+        let digit = ''
+        if (raw) {
+            if (
+                raw.length === 1 &&
+                raw.charCodeAt(0) >= 48 &&
+                raw.charCodeAt(0) <= 57
+            ) {
+                digit = raw
+            } else {
+                const cleaned = raw.replace(/\D/g, '')
+                digit = cleaned ? cleaned[cleaned.length - 1]! : ''
+            }
+        }
+        if (!digit) hasEmptyDigit = true
+        digits.push(digit)
+    }
     const code = digits.join('')
     const [isTouched, setIsTouched] = useState(false)
     const inputRefs = useRef<Array<HTMLInputElement | null>>([])
     const validationInputRef = useRef<HTMLInputElement>(null)
+    const lastCustomValidityRef = useRef('')
     const internalError =
-        resolvedValidationMode === 'built-in' &&
-        required &&
-        digits.some((digit) => !digit)
+        resolvedValidationMode === 'built-in' && required && hasEmptyDigit
             ? messages.otpIncomplete(digitCount)
             : null
     const resolvedError =
@@ -54,14 +69,15 @@ export default function useOtpField({
         (externalError !== undefined || status === 'error' || isTouched)
     const visualStatus = hasError
         ? 'error'
-        : status === 'success' && digits.every(Boolean)
+        : status === 'success' && !hasEmptyDigit
           ? 'success'
           : 'idle'
 
     useEffect(() => {
-        validationInputRef.current?.setCustomValidity(
-            disabled || readOnly ? '' : (resolvedError ?? ''),
-        )
+        const nextValidity = disabled || readOnly ? '' : (resolvedError ?? '')
+        if (lastCustomValidityRef.current === nextValidity) return
+        lastCustomValidityRef.current = nextValidity
+        validationInputRef.current?.setCustomValidity(nextValidity)
     }, [disabled, readOnly, resolvedError])
 
     const setDigitRef = useCallback(

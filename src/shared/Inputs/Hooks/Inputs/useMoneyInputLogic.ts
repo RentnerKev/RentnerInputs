@@ -1,5 +1,5 @@
+import { useMemo, type Ref } from 'react'
 import type { MoneyInputLogicResult } from '../../Types/MoneyInputLogicResult.types.ts'
-import type { Ref } from 'react'
 import type { MoneyInputComponentProps } from '../../Types/MoneyInput.types.ts'
 import { useInputDefaults, useInputMessages } from '../useInputDefaults.ts'
 import {
@@ -16,20 +16,20 @@ export default function useMoneyInputLogic(
     const defaults = useInputDefaults()
     const messages = useInputMessages(props.locale, props.messages)
     const locale = props.locale ?? defaults.locale ?? 'de'
+    const currency = props.currency ?? 'EUR'
     const field = useFieldValidation<HTMLInputElement>({
         ...props,
         validate: (value) => validateMoney(value, messages, locale),
         acceptsValue: (value) => acceptsMoney(value, locale),
         selectZeroOnFocus: true,
+        trackFocus: true,
         forwardedRef,
     })
-    let displayValue = field.state.safeValue
-
-    if (!field.state.isFocused && displayValue) {
-        displayValue =
-            formatMoneyValue(displayValue, props.currency ?? 'EUR', locale) ??
-            `${displayValue} ${props.currency ?? 'EUR'}`
-    }
+    const displayValue = useMemo(() => {
+        const safe = field.state.safeValue
+        if (field.state.isFocused || !safe) return safe
+        return formatMoneyValue(safe, currency, locale) ?? `${safe} ${currency}`
+    }, [field.state.isFocused, field.state.safeValue, currency, locale])
 
     return {
         refs: { field: field.refs.field },

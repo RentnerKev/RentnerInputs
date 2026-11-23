@@ -1,5 +1,5 @@
 import type { PasswordInputLogicResult } from '../../Types/PasswordInputLogicResult.types.ts'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Ref } from 'react'
 import { useInputDefaults, useInputMessages } from '../useInputDefaults.ts'
 import { DESIGN_CONFIG } from '../../../../config/inputDesign.config.ts'
@@ -15,15 +15,26 @@ export default function usePasswordInputLogic(
     const showLength = props.showLength
     const messages = useInputMessages(props.locale, props.messages)
     const defaults = useInputDefaults()
-    const design = {
-        ...DESIGN_CONFIG,
-        ...defaults.customDesign,
-        ...props.customDesign,
-    }
+    const design =
+        !defaults.customDesign && !props.customDesign
+            ? DESIGN_CONFIG
+            : {
+                  ...DESIGN_CONFIG,
+                  ...defaults.customDesign,
+                  ...props.customDesign,
+              }
     const field = useFieldValidation<HTMLInputElement>({
         ...props,
         forwardedRef,
     })
+    const shouldShowPasswordStrength = props.showPasswordStrength === true
+    const passwordStrength = useMemo(
+        () =>
+            shouldShowPasswordStrength
+                ? getPasswordStrength(field.state.safeValue, messages)
+                : undefined,
+        [shouldShowPasswordStrength, field.state.safeValue, messages],
+    )
 
     function togglePassword() {
         setShowPassword((currentValue) => !currentValue)
@@ -42,11 +53,8 @@ export default function usePasswordInputLogic(
             effectiveShowLength: field.state.effectiveShowLength,
             counterText: field.state.counterText,
             showPassword,
-            passwordStrength:
-                props.showPasswordStrength === true
-                    ? getPasswordStrength(field.state.safeValue, messages)
-                    : undefined,
-            shouldShowPasswordStrength: props.showPasswordStrength === true,
+            passwordStrength,
+            shouldShowPasswordStrength,
             dynamicPaddingRight:
                 field.state.dynamicPaddingRight + (showLength ? 40 : 32),
         },

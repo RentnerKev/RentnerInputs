@@ -6,6 +6,8 @@ import { mergeAriaDescribedBy } from '../../../../lib/Inputs/fieldA11y.utils.ts'
 import { useFieldValidation } from './useFieldValidation.ts'
 import type { TextareaComponentProps } from '../../Types/Textarea.types.ts'
 
+const EMPTY_CLASS_NAMES: NonNullable<TextareaComponentProps['classNames']> = {}
+
 export default function useTextareaLogic(
     props: TextareaComponentProps,
     ref: Ref<HTMLTextAreaElement>,
@@ -72,7 +74,14 @@ export default function useTextareaLogic(
     )
     const defaults = useInputDefaults()
     void [_portalContainer, _portalClassName, _portalZIndex]
-    const classNames = { ...defaults.classNames, ...providedClassNames }
+    const classNames =
+        !defaults.classNames && !providedClassNames
+            ? EMPTY_CLASS_NAMES
+            : !providedClassNames
+              ? defaults.classNames!
+              : !defaults.classNames
+                ? providedClassNames
+                : { ...defaults.classNames, ...providedClassNames }
     const size = controlSize ?? defaults.controlSize
     const sizeClassName =
         size === 'sm'
@@ -82,11 +91,14 @@ export default function useTextareaLogic(
               : size === 'lg'
                 ? 'h-rentner-control-lg py-0'
                 : ''
-    const design = {
-        ...DESIGN_CONFIG,
-        ...defaults.customDesign,
-        ...customDesign,
-    }
+    const design =
+        !defaults.customDesign && !customDesign
+            ? DESIGN_CONFIG
+            : {
+                  ...DESIGN_CONFIG,
+                  ...defaults.customDesign,
+                  ...customDesign,
+              }
     const hasLeftIcon = Boolean(icon || logic.state.hasError)
     const fieldClassName = `peer block resize-y focus:ring-2 focus-visible:outline-none transition-[background-color,border-color,box-shadow,color] ${classNames.control ?? `${className ?? classNames.textarea ?? 'min-h-28 w-full py-3 rounded-rentner-control'} ${design.bg} border ${design.text} ${design.placeholder} ${logic.state.hasError ? `${design.errorBorder} focus:ring-2 ${design.errorRing}` : `${design.border} focus:ring-2 ${design.focusRing} ${design.focusBorder}`}`} ${sizeClassName} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`
 

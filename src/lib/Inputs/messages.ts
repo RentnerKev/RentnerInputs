@@ -132,19 +132,33 @@ export function resolveInputMessages(
     locale: InputLocale = 'de',
     messages?: Partial<InputMessages>,
 ): Required<InputMessages> {
-    const normalizedLocale = locale.toLowerCase().replace('_', '-')
-    const language = normalizedLocale.split('-')[0]
-    const messageLocale =
-        language === 'en' || language === 'es' || language === 'fr'
-            ? language
-            : 'de'
+    let messageLocale: 'de' | 'en' | 'es' | 'fr'
+    if (locale === 'de') {
+        messageLocale = 'de'
+    } else if (locale === 'en') {
+        messageLocale = 'en'
+    } else if (locale === 'es') {
+        messageLocale = 'es'
+    } else if (locale === 'fr') {
+        messageLocale = 'fr'
+    } else {
+        const normalizedLocale = locale.toLowerCase().replace('_', '-')
+        const sep = normalizedLocale.indexOf('-')
+        const language =
+            sep === -1 ? normalizedLocale : normalizedLocale.slice(0, sep)
+        messageLocale =
+            language === 'en' || language === 'es' || language === 'fr'
+                ? language
+                : 'de'
+    }
 
     const catalog = inputMessageCatalog[messageLocale]
+    if (!messages) return catalog
     return {
         ...catalog,
         ...messages,
-        otpInvalid: messages?.otpInvalid ?? catalog.otpInvalid,
-        otpVerified: messages?.otpVerified ?? catalog.otpVerified,
+        otpInvalid: messages.otpInvalid ?? catalog.otpInvalid,
+        otpVerified: messages.otpVerified ?? catalog.otpVerified,
     }
 }
 
