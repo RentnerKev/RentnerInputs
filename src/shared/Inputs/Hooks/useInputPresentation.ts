@@ -1,5 +1,8 @@
 import { useInputDefaults } from './useInputDefaults.ts'
 import type { InputVisualProps } from '../Types/InputShared.types.ts'
+
+const EMPTY_CLASS_NAMES: NonNullable<InputVisualProps['classNames']> = {}
+
 export function useInputPresentation(
     props: Pick<
         InputVisualProps,
@@ -12,9 +15,17 @@ export function useInputPresentation(
 ) {
     const defaults = useInputDefaults()
     const size = props.controlSize ?? defaults.controlSize
+    const classNames =
+        !defaults.classNames && !props.classNames
+            ? EMPTY_CLASS_NAMES
+            : !props.classNames
+              ? defaults.classNames!
+              : !defaults.classNames
+                ? props.classNames
+                : { ...defaults.classNames, ...props.classNames }
     return {
         state: {
-            classNames: { ...defaults.classNames, ...props.classNames },
+            classNames,
             sizeClassName:
                 size === 'sm'
                     ? 'h-rentner-control-sm'

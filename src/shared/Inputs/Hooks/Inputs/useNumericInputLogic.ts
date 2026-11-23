@@ -1,10 +1,7 @@
 import { useState, type Ref } from 'react'
 import type { NumericInputProps } from '../../Types/NumericInput.types.ts'
 import { useInputMessages } from '../useInputDefaults.ts'
-import {
-    validateNumber,
-    resolveNumberBound,
-} from '../../../../lib/Inputs/inputValidation.utils.ts'
+import { resolveNumberBound } from '../../../../lib/Inputs/inputValidation.utils.ts'
 import { parseNumericDraft } from '../../../../lib/Inputs/numeric.utils.ts'
 import type { NumericInputLogicResult } from '../../Types/NumericInputLogicResult.types.ts'
 import { useFieldValidation } from './useFieldValidation.ts'
@@ -13,6 +10,8 @@ export default function useNumericInputLogic(
     ref: Ref<HTMLInputElement>,
 ): NumericInputLogicResult {
     const messages = useInputMessages(props.locale, props.messages)
+    const minValue = resolveNumberBound(props.min, undefined)
+    const maxValue = resolveNumberBound(props.max, undefined)
     const [draft, setDraft] = useState(
         props.value === null ? '' : String(props.value),
     )
@@ -26,15 +25,18 @@ export default function useNumericInputLogic(
         value: draft,
         forwardedRef: ref,
         onValueChange: setDraft,
-        validate: (value) =>
-            parseNumericDraft(value) === undefined
-                ? messages.invalidInput
-                : validateNumber(
-                      value.replace(',', '.'),
-                      resolveNumberBound(props.min, undefined),
-                      resolveNumberBound(props.max, undefined),
-                      messages,
-                  ),
+        validate: (value) => {
+            const parsed = parseNumericDraft(value)
+            if (parsed === undefined) return messages.invalidInput
+            if (parsed === null) return null
+            if (minValue !== undefined && parsed < minValue) {
+                return messages.minValue(minValue)
+            }
+            if (maxValue !== undefined && parsed > maxValue) {
+                return messages.maxValue(maxValue)
+            }
+            return null
+        },
         onBlur: (event) => {
             if (props.disabled || props.readOnly) {
                 props.onBlur?.(event)

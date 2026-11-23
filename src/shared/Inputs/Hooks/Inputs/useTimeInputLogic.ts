@@ -137,11 +137,14 @@ export default function useTimeInputLogic(
         'aria-readonly': readOnly || undefined,
         'aria-disabled': disabled || undefined,
     } satisfies AriaAttributes
-    const design = {
-        ...DESIGN_CONFIG,
-        ...defaults.customDesign,
-        ...customDesign,
-    }
+    const design =
+        !defaults.customDesign && !customDesign
+            ? DESIGN_CONFIG
+            : {
+                  ...DESIGN_CONFIG,
+                  ...defaults.customDesign,
+                  ...customDesign,
+              }
     const fieldClasses =
         className ??
         defaults.classNames?.input ??

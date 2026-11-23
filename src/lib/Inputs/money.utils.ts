@@ -5,38 +5,99 @@ import type {
 import { resolveInputIntlLocale } from './messages.ts'
 import type { InputLocale } from '../../shared/Inputs/Types/Messages.types.ts'
 
-const moneyLocaleInfoCache = new Map<string, MoneyLocaleInfo>()
+interface InternalMoneyLocaleInfo extends MoneyLocaleInfo {
+    usesAsciiDigits: boolean
+    localizedDigits: readonly string[]
+    singleUnitDigitMap: Map<string, string> | null
+    hasWhitespaceGroup: boolean
+    fallbackDecimals: readonly string[]
+}
 
-const numberFormatCache = new Map<string, Intl.NumberFormat>()
+interface CurrencyFormatEntry {
+    integerFormatter: Intl.NumberFormat
+    defaultFractionDigits: number
+}
 
-function getNumberFormatter(
-    locale: string,
-    options: Intl.NumberFormatOptions = {},
-) {
-    const key = JSON.stringify([locale, options])
-    const cached = numberFormatCache.get(key)
+const moneyLocaleInfoCache = /* @__PURE__ */ new Map<
+    string,
+    InternalMoneyLocaleInfo
+>()
+const currencyFormatCache = /* @__PURE__ */ new Map<
+    string,
+    CurrencyFormatEntry
+>()
+const WHITESPACE_GROUP_REGEX =
+    /[ \u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]/gu
+
+function getCurrencyFormatEntry(
+    intlLocale: string,
+    currency: string,
+): CurrencyFormatEntry {
+    const key = `${intlLocale}\0${currency}`
+    const cached = currencyFormatCache.get(key)
     if (cached) return cached
-    const formatter = new Intl.NumberFormat(locale, options)
-    if (numberFormatCache.size >= 64)
-        numberFormatCache.delete(numberFormatCache.keys().next().value!)
-    numberFormatCache.set(key, formatter)
-    return formatter
+    const integerFormatter = new Intl.NumberFormat(intlLocale, {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    })
+    const defaultFractionDigits =
+        new Intl.NumberFormat(intlLocale, {
+            style: 'currency',
+            currency,
+        }).resolvedOptions().minimumFractionDigits ?? 2
+    const entry: CurrencyFormatEntry = {
+        integerFormatter,
+        defaultFractionDigits,
+    }
+    if (currencyFormatCache.size >= 64) {
+        currencyFormatCache.delete(currencyFormatCache.keys().next().value!)
+    }
+    currencyFormatCache.set(key, entry)
+    return entry
 }
 
 function normalizeLocalizedDigits(
     value: string,
-    digits: MoneyLocaleInfo['digits'],
+    info: InternalMoneyLocaleInfo,
 ) {
+    if (info.usesAsciiDigits) return value
+    if (info.singleUnitDigitMap) {
+        const map = info.singleUnitDigitMap
+        let normalized = ''
+        let changed = false
+        for (let i = 0; i < value.length; i += 1) {
+            const ch = value[i]!
+            const mapped = map.get(ch)
+            if (mapped !== undefined) {
+                if (!changed) {
+                    normalized = value.slice(0, i)
+                    changed = true
+                }
+                normalized += mapped
+            } else if (changed) {
+                normalized += ch
+            }
+        }
+        return changed ? normalized : value
+    }
+
+    const digits = info.digits
     let normalized = ''
     let index = 0
 
     while (index < value.length) {
-        const digit = digits.find(([localized]) =>
-            value.startsWith(localized, index),
-        )
-        if (digit) {
-            normalized += digit[1]
-            index += digit[0].length
+        let matched: [string, string] | undefined
+        for (let i = 0; i < digits.length; i += 1) {
+            if (value.startsWith(digits[i]![0], index)) {
+                matched = digits[i]
+                break
+            }
+        }
+        if (matched) {
+            normalized += matched[1]
+            index += matched[0].length
             continue
         }
 
@@ -48,56 +109,90 @@ function normalizeLocalizedDigits(
     return normalized
 }
 
-function normalizeLocaleGroupingWhitespace(value: string, group?: string) {
-    if (!group || !/^\s$/u.test(group)) return value
-    return value.replace(
-        /[ \u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]/gu,
-        group,
-    )
-}
-
 function isDigitSequence(value: string) {
-    return /^\d*$/.test(value)
+    for (let i = 0; i < value.length; i += 1) {
+        const code = value.charCodeAt(i)
+        if (code < 48 || code > 57) return false
+    }
+    return true
 }
 
-function getMoneyLocaleInfo(locale: InputLocale): MoneyLocaleInfo {
+function isNonEmptyDigitSequence(value: string) {
+    return value.length > 0 && isDigitSequence(value)
+}
+
+function getMoneyLocaleInfo(locale: InputLocale): InternalMoneyLocaleInfo {
     const intlLocale = resolveInputIntlLocale(locale)
     const cachedInfo = moneyLocaleInfoCache.get(intlLocale)
     if (cachedInfo) return cachedInfo
 
-    const digitFormatter = getNumberFormatter(intlLocale, {
+    const digitFormatter = new Intl.NumberFormat(intlLocale, {
         useGrouping: false,
         maximumFractionDigits: 0,
     })
-    const digits = Array.from(
-        { length: 10 },
-        (_, digit) =>
-            [digitFormatter.format(digit), String(digit)] as [string, string],
-    )
-    for (let digit = 0; digit < 10; digit++) {
-        digits.push([String(digit), String(digit)])
+    const localizedDigits: string[] = []
+    const digits: Array<[string, string]> = []
+    let usesAsciiDigits = true
+    let allSingleUnit = true
+    for (let digit = 0; digit < 10; digit += 1) {
+        const ascii = String(digit)
+        const localized = digitFormatter.format(digit)
+        localizedDigits.push(localized)
+        digits.push([localized, ascii])
+        if (localized !== ascii) usesAsciiDigits = false
+        if (localized.length !== 1) allSingleUnit = false
+    }
+    for (let digit = 0; digit < 10; digit += 1) {
+        const ascii = String(digit)
+        digits.push([ascii, ascii])
     }
     digits.sort((left, right) => right[0].length - left[0].length)
 
-    const numberFormatter = getNumberFormatter(intlLocale)
+    let singleUnitDigitMap: Map<string, string> | null = null
+    if (!usesAsciiDigits && allSingleUnit) {
+        singleUnitDigitMap = new Map<string, string>()
+        for (let digit = 0; digit < 10; digit += 1) {
+            const localized = localizedDigits[digit]!
+            const ascii = String(digit)
+            if (localized !== ascii) singleUnitDigitMap.set(localized, ascii)
+        }
+    }
+
+    const numberFormatter = new Intl.NumberFormat(intlLocale)
     const parts = numberFormatter.formatToParts(1234.5)
     const decimal = parts.find((part) => part.type === 'decimal')?.value ?? '.'
     const groupingParts = numberFormatter.formatToParts(1234567890123.5)
     const group = groupingParts.find((part) => part.type === 'group')?.value
-    const integerGroupSizes = groupingParts
-        .filter((part) => part.type === 'integer')
-        .map((part) => normalizeLocalizedDigits(part.value, digits).length)
-    const primaryGroupSize = integerGroupSizes.at(-1) ?? 3
-    const secondaryGroupSize = integerGroupSizes.at(-2) ?? primaryGroupSize
+    const hasWhitespaceGroup = Boolean(group && /^\s$/u.test(group))
+    const fallbackDecimals: string[] = []
+    if (decimal !== '.' && group !== '.') fallbackDecimals.push('.')
+    if (decimal !== ',' && group !== ',') fallbackDecimals.push(',')
 
-    const info = {
+    const info: InternalMoneyLocaleInfo = {
         decimal,
         group,
-        primaryGroupSize,
-        secondaryGroupSize,
+        primaryGroupSize: 3,
+        secondaryGroupSize: 3,
         digits,
         intlLocale,
+        usesAsciiDigits,
+        localizedDigits,
+        singleUnitDigitMap,
+        hasWhitespaceGroup,
+        fallbackDecimals,
     }
+    const integerGroupSizes: number[] = []
+    for (let i = 0; i < groupingParts.length; i += 1) {
+        const part = groupingParts[i]!
+        if (part.type === 'integer') {
+            integerGroupSizes.push(
+                normalizeLocalizedDigits(part.value, info).length,
+            )
+        }
+    }
+    info.primaryGroupSize = integerGroupSizes.at(-1) ?? 3
+    info.secondaryGroupSize = integerGroupSizes.at(-2) ?? info.primaryGroupSize
+
     if (moneyLocaleInfoCache.size >= 32) {
         const oldestLocale = moneyLocaleInfoCache.keys().next().value
         if (oldestLocale !== undefined) {
@@ -115,86 +210,118 @@ function parseMoneyInput(
     if (value === '') return { accepted: true, complete: false }
 
     const info = getMoneyLocaleInfo(locale)
+    const whitespaceNormalized = info.hasWhitespaceGroup
+        ? value.replace(WHITESPACE_GROUP_REGEX, info.group!)
+        : value
     const normalizedDigits = normalizeLocalizedDigits(
-        normalizeLocaleGroupingWhitespace(value, info.group),
-        info.digits,
+        whitespaceNormalized,
+        info,
     )
-    const fallbackDecimals = ['.', ','].filter(
-        (separator) => separator !== info.decimal && separator !== info.group,
-    )
-    const fallbackDecimalsInValue = fallbackDecimals.filter((separator) =>
-        normalizedDigits.includes(separator),
-    )
+
     const hasLocaleDecimal = normalizedDigits.includes(info.decimal)
+    let fallbackDecimal: string | undefined
+    let fallbackCount = 0
+    for (let i = 0; i < info.fallbackDecimals.length; i += 1) {
+        const sep = info.fallbackDecimals[i]!
+        if (normalizedDigits.includes(sep)) {
+            fallbackDecimal = sep
+            fallbackCount += 1
+        }
+    }
+
+    if (fallbackCount > 1 || (hasLocaleDecimal && fallbackCount > 0)) {
+        return { accepted: false, complete: false }
+    }
+
+    const decimal = hasLocaleDecimal ? info.decimal : fallbackDecimal
+    let integerPart: string
+    let fractionPart: string | undefined
+    if (decimal) {
+        const decIdx = normalizedDigits.indexOf(decimal)
+        if (decIdx !== -1) {
+            if (
+                normalizedDigits.indexOf(decimal, decIdx + decimal.length) !==
+                -1
+            ) {
+                return { accepted: false, complete: false }
+            }
+            integerPart = normalizedDigits.slice(0, decIdx)
+            fractionPart = normalizedDigits.slice(decIdx + decimal.length)
+        } else {
+            integerPart = normalizedDigits
+        }
+    } else {
+        integerPart = normalizedDigits
+    }
 
     if (
-        fallbackDecimalsInValue.length > 1 ||
-        (hasLocaleDecimal && fallbackDecimalsInValue.length > 0)
+        fractionPart !== undefined &&
+        (!isDigitSequence(fractionPart) ||
+            (info.group !== undefined && fractionPart.includes(info.group)))
     ) {
         return { accepted: false, complete: false }
     }
 
-    const decimal = hasLocaleDecimal ? info.decimal : fallbackDecimalsInValue[0]
-    const segments = decimal
-        ? normalizedDigits.split(decimal)
-        : [normalizedDigits]
-    if (segments.length > 2) return { accepted: false, complete: false }
-
-    const [integerPart = '', fractionPart] = segments
-    const integerGroups = info.group
-        ? integerPart.split(info.group)
-        : [integerPart]
-    const normalizedGroups = integerGroups.map((part) =>
-        normalizeLocalizedDigits(part, info.digits),
-    )
-    if (
-        !isDigitSequence(fractionPart ?? '') ||
-        (info.group !== undefined && fractionPart?.includes(info.group))
-    ) {
-        return { accepted: false, complete: false }
-    }
+    const groupSep = info.group
+    const normalizedGroups =
+        groupSep && integerPart.includes(groupSep)
+            ? integerPart.split(groupSep)
+            : [integerPart]
 
     let completeInteger = false
     let acceptedIntegerPrefix = false
 
     if (normalizedGroups.length === 1) {
-        const integer = normalizedGroups[0]
+        const integer = normalizedGroups[0]!
         completeInteger = isDigitSequence(integer)
         acceptedIntegerPrefix = completeInteger
     } else {
-        const first = normalizedGroups[0]
-        const last = normalizedGroups.at(-1) ?? ''
-        const middle = normalizedGroups.slice(1, -1)
+        const len = normalizedGroups.length
+        const first = normalizedGroups[0]!
+        const last = normalizedGroups[len - 1]!
         const validFirst =
-            /^\d+$/.test(first) && first.length <= info.secondaryGroupSize
-        const validMiddle = middle.every(
-            (part) =>
-                /^\d+$/.test(part) && part.length === info.secondaryGroupSize,
-        )
+            isNonEmptyDigitSequence(first) &&
+            first.length <= info.secondaryGroupSize
+        let validMiddle = true
+        for (let i = 1; i < len - 1; i += 1) {
+            const part = normalizedGroups[i]!
+            if (
+                part.length !== info.secondaryGroupSize ||
+                !isNonEmptyDigitSequence(part)
+            ) {
+                validMiddle = false
+                break
+            }
+        }
+        const lastIsDigits = isNonEmptyDigitSequence(last)
         const completedLastGroup =
-            /^\d+$/.test(last) && last.length === info.primaryGroupSize
+            lastIsDigits && last.length === info.primaryGroupSize
         const partialLastGroup =
-            /^\d+$/.test(last) && last.length < info.primaryGroupSize
+            lastIsDigits && last.length < info.primaryGroupSize
         const trailingGroupSeparator = last === ''
         const validPrefixTail =
             partialLastGroup ||
             (trailingGroupSeparator &&
-                (middle.length === 0 ||
-                    (middle.at(-1)?.length ?? 0) === info.secondaryGroupSize))
+                (len === 2 ||
+                    normalizedGroups[len - 2]!.length ===
+                        info.secondaryGroupSize))
 
         acceptedIntegerPrefix =
             validFirst && validMiddle && (completedLastGroup || validPrefixTail)
         completeInteger = validFirst && validMiddle && completedLastGroup
     }
 
-    const normalizedInteger = normalizedGroups.join('')
-    const hasDigits = /\d/.test(`${normalizedInteger}${fractionPart ?? ''}`)
-    const complete = completeInteger && hasDigits
-    const accepted =
-        acceptedIntegerPrefix &&
-        (fractionPart === undefined || isDigitSequence(fractionPart))
+    if (!acceptedIntegerPrefix) return { accepted: false, complete: false }
 
-    if (!accepted) return { accepted: false, complete: false }
+    const normalizedInteger =
+        normalizedGroups.length === 1
+            ? normalizedGroups[0]!
+            : normalizedGroups.join('')
+    const hasDigits =
+        normalizedInteger.length > 0 ||
+        (fractionPart !== undefined && fractionPart.length > 0)
+    const complete = completeInteger && hasDigits
+
     if (!complete) return { accepted: true, complete: false }
 
     return {
@@ -238,40 +365,51 @@ export function formatMoneyValue(
     if (!result.complete || !result.parts) return undefined
 
     const { integer, fraction: fractionPart } = result.parts
-    const { intlLocale, decimal } = getMoneyLocaleInfo(locale)
-
-    const currencyFormatter = getNumberFormatter(intlLocale, {
-        style: 'currency',
+    const info = getMoneyLocaleInfo(locale)
+    const { integerFormatter, defaultFractionDigits } = getCurrencyFormatEntry(
+        info.intlLocale,
         currency,
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-    })
-    const currencyParts = currencyFormatter.formatToParts(BigInt(integer))
-    const defaultFractionDigits =
-        getNumberFormatter(intlLocale, {
-            style: 'currency',
-            currency,
-        }).resolvedOptions().minimumFractionDigits ?? 2
+    )
+    const currencyParts = integerFormatter.formatToParts(BigInt(integer))
     const fraction = (fractionPart ?? '').padEnd(defaultFractionDigits, '0')
 
-    if (fraction) {
-        const digitFormatter = getNumberFormatter(intlLocale, {
-            useGrouping: false,
-            maximumFractionDigits: 0,
-        })
-        const localizedFraction = [...fraction]
-            .map((digit) => digitFormatter.format(Number(digit)))
-            .join('')
-        const lastNumberPartIndex = currencyParts.findLastIndex(
-            (part) => part.type === 'integer' || part.type === 'group',
-        )
-        currencyParts.splice(
-            lastNumberPartIndex + 1,
-            0,
-            { type: 'decimal', value: decimal },
-            { type: 'fraction', value: localizedFraction },
-        )
+    if (!fraction) {
+        let out = ''
+        for (let i = 0; i < currencyParts.length; i += 1) {
+            out += currencyParts[i]!.value
+        }
+        return out
     }
 
-    return currencyParts.map((part) => part.value).join('')
+    let localizedFraction: string
+    if (info.usesAsciiDigits) {
+        localizedFraction = fraction
+    } else {
+        localizedFraction = ''
+        for (let i = 0; i < fraction.length; i += 1) {
+            localizedFraction +=
+                info.localizedDigits[fraction.charCodeAt(i) - 48]!
+        }
+    }
+
+    let lastNumberPartIndex = -1
+    for (let i = currencyParts.length - 1; i >= 0; i -= 1) {
+        const t = currencyParts[i]!.type
+        if (t === 'integer' || t === 'group') {
+            lastNumberPartIndex = i
+            break
+        }
+    }
+
+    let out = ''
+    for (let i = 0; i < currencyParts.length; i += 1) {
+        out += currencyParts[i]!.value
+        if (i === lastNumberPartIndex) {
+            out += info.decimal + localizedFraction
+        }
+    }
+    if (lastNumberPartIndex === -1) {
+        out = info.decimal + localizedFraction + out
+    }
+    return out
 }

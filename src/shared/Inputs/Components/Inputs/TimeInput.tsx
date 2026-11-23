@@ -5,11 +5,11 @@ import useTimeDropdownLogic from '../../Hooks/Inputs/useTimeDropdownLogic.ts'
 import type { TimeDropdownProps } from '../../Types/TimeDropdown.types.ts'
 import { ChevronDown, Clock } from 'lucide-react'
 import { ErrorTooltip } from './ErrorTooltip.tsx'
-import { forwardRef } from 'react'
+import { forwardRef, memo, useCallback } from 'react'
 import useTimeInputLogic from '../../Hooks/Inputs/useTimeInputLogic.ts'
 import type { TimeInputComponentProps } from '../../Types/TimeInput.types.ts'
 
-function TimeDropdown({
+const TimeDropdown = /* @__PURE__ */ memo(function TimeDropdown({
     label,
     value,
     placeholder,
@@ -147,7 +147,7 @@ function TimeDropdown({
                 )}
         </div>
     )
-}
+})
 
 export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
     function TimeInput(props, ref) {
@@ -187,6 +187,16 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
             fieldClassName,
             hasLeftIcon,
         } = state
+
+        const { setIsHourDropdownOpen, setIsMinuteDropdownOpen } = setter
+        const closeHourDropdown = useCallback(
+            () => setIsHourDropdownOpen(false),
+            [setIsHourDropdownOpen],
+        )
+        const closeMinuteDropdown = useCallback(
+            () => setIsMinuteDropdownOpen(false),
+            [setIsMinuteDropdownOpen],
+        )
 
         return (
             <div className={presentation.classNames.root ?? 'group w-full'}>
@@ -285,7 +295,7 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                                 'aria-required': undefined,
                             }}
                             onToggle={handler.toggleHourDropdown}
-                            onClose={() => setter.setIsHourDropdownOpen(false)}
+                            onClose={closeHourDropdown}
                             onSelect={handler.selectHour}
                         />
                         <span className="text-lg font-semibold text-primary">
@@ -315,9 +325,7 @@ export const TimeInput = forwardRef<HTMLInputElement, TimeInputComponentProps>(
                                 'aria-required': undefined,
                             }}
                             onToggle={handler.toggleMinuteDropdown}
-                            onClose={() =>
-                                setter.setIsMinuteDropdownOpen(false)
-                            }
+                            onClose={closeMinuteDropdown}
                             onSelect={handler.selectMinute}
                         />
                     </div>

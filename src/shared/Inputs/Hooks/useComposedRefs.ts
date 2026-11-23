@@ -69,13 +69,24 @@ export function composeRefs<Element>(
     }
 }
 
+function assignSingleRef<Element>(
+    ref: OptionalRef<Element>,
+    element: Element | null,
+) {
+    if (typeof ref === 'function') return ref(element)
+    if (ref) ref.current = element
+}
+
 export function useComposedRefs<Element>(
     first: OptionalRef<Element>,
     second?: OptionalRef<Element>,
     third?: OptionalRef<Element>,
 ) {
-    return useMemo(
-        () => composeRefs(first, second, third),
-        [first, second, third],
-    )
+    return useMemo(() => {
+        if (second == null && third == null) {
+            if (typeof first === 'function') return first
+            return (element: Element | null) => assignSingleRef(first, element)
+        }
+        return composeRefs(first, second, third)
+    }, [first, second, third])
 }

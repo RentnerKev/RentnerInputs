@@ -5,8 +5,7 @@ import type {
 } from '../../Types/InputFieldValidation.types.ts'
 import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, FocusEvent, InvalidEvent } from 'react'
-import { resolveInputMessages } from '../../../../lib/Inputs/messages.ts'
-import { useInputDefaults } from '../useInputDefaults.ts'
+import { useInputDefaults, useInputMessages } from '../useInputDefaults.ts'
 import { useComposedRefs } from '../useComposedRefs.ts'
 
 import type { NativeErrorSnapshot } from '../../Types/InputFieldValidation.types.ts'
@@ -53,6 +52,7 @@ export function useFieldValidation<Element extends InputElement>({
     validate,
     acceptsValue,
     selectZeroOnFocus,
+    trackFocus = false,
     locale,
     messages,
     error: externalError,
@@ -64,14 +64,12 @@ export function useFieldValidation<Element extends InputElement>({
     const resolvedValidationMode =
         validationMode ?? defaults.validationMode ?? 'built-in'
     const safeValue = value === null || value === undefined ? '' : String(value)
-    const resolvedMessages = resolveInputMessages(locale ?? defaults.locale, {
-        ...defaults.messages,
-        ...messages,
-    })
+    const resolvedMessages = useInputMessages(locale, messages)
     const [isTouched, setIsTouched] = useState(false)
     const [isFocused, setIsFocused] = useState(false)
     const [nativeError, setNativeError] = useState<string | null>(null)
     const inputRef = useRef<Element | null>(null)
+    const lastCustomValidityRef = useRef('')
     const lastValueRef = useRef(safeValue)
     const valueChangedByInputRef = useRef<string | null>(null)
     const nativeErrorSnapshotRef = useRef<NativeErrorSnapshot | null>(null)
@@ -100,15 +98,21 @@ export function useFieldValidation<Element extends InputElement>({
         externalError !== undefined ? externalError : internalError
     const hasError =
         Boolean(currentError) && (externalError !== undefined || isTouched)
-    const counterText = maxLength
-        ? `${safeValue.length} / ${maxLength}`
-        : `${safeValue.length}`
-    const dynamicPaddingRight = showLength ? counterText.length * 8 + 24 : 16
+    const effectiveShowLength = showLength === true
+    const counterText = effectiveShowLength
+        ? maxLength
+            ? `${safeValue.length} / ${maxLength}`
+            : `${safeValue.length}`
+        : ''
+    const dynamicPaddingRight = effectiveShowLength
+        ? counterText.length * 8 + 24
+        : 16
 
     useEffect(() => {
-        inputRef.current?.setCustomValidity(
-            disabled || readOnly ? '' : (currentError ?? ''),
-        )
+        const nextValidity = disabled || readOnly ? '' : (currentError ?? '')
+        if (lastCustomValidityRef.current === nextValidity) return
+        lastCustomValidityRef.current = nextValidity
+        inputRef.current?.setCustomValidity(nextValidity)
     }, [currentError, disabled, readOnly])
 
     useEffect(() => {
@@ -169,7 +173,9 @@ export function useFieldValidation<Element extends InputElement>({
                             resolvedValidationMode === 'external'
                           ? null
                           : (validationError ?? nextNativeError)
-                input.setCustomValidity(currentValidityError ?? '')
+                const nextValidity = currentValidityError ?? ''
+                lastCustomValidityRef.current = nextValidity
+                input.setCustomValidity(nextValidity)
             }
             setNativeError(nextNativeError)
         }
@@ -236,7 +242,9 @@ export function useFieldValidation<Element extends InputElement>({
             nativeErrorSnapshotRef.current = nextNativeError
                 ? { constraints }
                 : null
-            input.setCustomValidity(validationError ?? nextNativeError ?? '')
+            const nextValidity = validationError ?? nextNativeError ?? ''
+            lastCustomValidityRef.current = nextValidity
+            input.setCustomValidity(nextValidity)
             setNativeError(nextNativeError)
         })
         observer.observe(input, {
@@ -260,7 +268,7 @@ export function useFieldValidation<Element extends InputElement>({
     }
 
     function handleFocus(event: FocusEvent<Element>) {
-        setIsFocused(true)
+        if (trackFocus) setIsFocused(true)
         if (
             selectZeroOnFocus &&
             (safeValue === '0' || safeValue === '0.00' || safeValue === '0,00')
@@ -272,7 +280,7 @@ export function useFieldValidation<Element extends InputElement>({
 
     function handleBlur(event: FocusEvent<Element>) {
         setIsTouched(true)
-        setIsFocused(false)
+        if (trackFocus) setIsFocused(false)
         onBlur?.(event)
     }
 

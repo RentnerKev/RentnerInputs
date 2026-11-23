@@ -17,6 +17,13 @@ function getDeepActiveElement(ownerDocument: Document): Element | null {
         active = active.shadowRoot.activeElement
     return active
 }
+const INITIAL_POSITION = {
+    top: 0,
+    left: 0,
+    width: 0,
+    maxHeight: 208,
+}
+
 export default function useTimeDropdownLogic({
     label,
     value,
@@ -29,12 +36,8 @@ export default function useTimeDropdownLogic({
     onSelect,
 }: TimeDropdownProps): TimeDropdownLogicResult {
     const rootRef = useRef<HTMLDivElement | null>(null)
-    const [position, setPosition] = useState({
-        top: 0,
-        left: 0,
-        width: 0,
-        maxHeight: 208,
-    })
+    const listboxRef = useRef<HTMLDivElement | null>(null)
+    const [position, setPosition] = useState(INITIAL_POSITION)
     useLayoutEffect(() => {
         if (!isOpen) return
         function updatePosition() {
@@ -42,25 +45,48 @@ export default function useTimeDropdownLogic({
             if (!rect) return
             const roomBelow = window.innerHeight - rect.bottom - 12
             const height = Math.min(208, Math.max(roomBelow, rect.top - 12))
-            setPosition({
-                top:
-                    roomBelow >= Math.min(208, rect.top - 12)
-                        ? rect.bottom + 6
-                        : Math.max(6, rect.top - height - 6),
-                left: rect.left,
-                width: rect.width,
-                maxHeight: Math.max(48, height),
-            })
+            const nextTop =
+                roomBelow >= Math.min(208, rect.top - 12)
+                    ? rect.bottom + 6
+                    : Math.max(6, rect.top - height - 6)
+            const nextLeft = rect.left
+            const nextWidth = rect.width
+            const nextMaxHeight = Math.max(48, height)
+            setPosition((prev) =>
+                prev.top === nextTop &&
+                prev.left === nextLeft &&
+                prev.width === nextWidth &&
+                prev.maxHeight === nextMaxHeight
+                    ? prev
+                    : {
+                          top: nextTop,
+                          left: nextLeft,
+                          width: nextWidth,
+                          maxHeight: nextMaxHeight,
+                      },
+            )
+        }
+        function handleScroll(event: Event) {
+            const target = event.target
+            if (
+                target instanceof Node &&
+                listboxRef.current?.contains(target)
+            ) {
+                return
+            }
+            updatePosition()
         }
         updatePosition()
         window.addEventListener('resize', updatePosition)
-        window.addEventListener('scroll', updatePosition, true)
+        window.addEventListener('scroll', handleScroll, {
+            capture: true,
+            passive: true,
+        })
         return () => {
             window.removeEventListener('resize', updatePosition)
-            window.removeEventListener('scroll', updatePosition, true)
+            window.removeEventListener('scroll', handleScroll, true)
         }
     }, [isOpen])
-    const listboxRef = useRef<HTMLDivElement | null>(null)
     const generatedLabelId = useId()
     const valueId = useId()
     const labelledBy =
@@ -91,13 +117,13 @@ export default function useTimeDropdownLogic({
             listboxRef.current?.querySelectorAll<HTMLButtonElement>(
                 '[role="option"]',
             )
-        const selectedOption = Array.from(optionElements ?? []).find(
-            (_, index) => options[index] === value,
-        )
-        const firstOption = optionElements?.[0]
-        const initialOption = selectedOption ?? firstOption
+        if (!optionElements?.length) return
+        const selectedIndex = options.indexOf(value)
+        const initialOption =
+            (selectedIndex >= 0 ? optionElements[selectedIndex] : undefined) ??
+            optionElements[0]
         if (initialOption) initialOption.focus()
-    }, [isOpen, listboxRef, options, value])
+    }, [isOpen, options, value])
 
     useEffect(() => {
         if (!isOpen) return
@@ -122,13 +148,6 @@ export default function useTimeDropdownLogic({
         document.addEventListener('mousedown', handleOutside)
         return () => document.removeEventListener('mousedown', handleOutside)
     }, [isOpen, onClose])
-    function focusOptionAt(index: number) {
-        const optionElements =
-            listboxRef.current?.querySelectorAll<HTMLButtonElement>(
-                '[role="option"]',
-            )
-        optionElements?.[index]?.focus()
-    }
 
     function handleOptionKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
         if (event.key === 'Tab') {
@@ -152,16 +171,22 @@ export default function useTimeDropdownLogic({
             )
         if (!optionElements?.length) return
 
-        const activeIndex = Array.from(optionElements).findIndex(
-            (option) =>
-                option ===
-                getDeepActiveElement(
-                    listboxRef.current?.ownerDocument ?? document,
-                ),
+        const deepActive = getDeepActiveElement(
+            listboxRef.current?.ownerDocument ?? document,
         )
-        const selectedIndex = Array.from(optionElements).findIndex(
-            (option) => option.getAttribute('aria-selected') === 'true',
-        )
+        let activeIndex = -1
+        let selectedIndex = -1
+        for (let i = 0; i < optionElements.length; i += 1) {
+            const option = optionElements[i]!
+            if (activeIndex === -1 && option === deepActive) activeIndex = i
+            if (
+                selectedIndex === -1 &&
+                option.getAttribute('aria-selected') === 'true'
+            ) {
+                selectedIndex = i
+            }
+            if (activeIndex !== -1 && selectedIndex !== -1) break
+        }
         const currentIndex =
             activeIndex >= 0 ? activeIndex : Math.max(selectedIndex, 0)
         let nextIndex: number | undefined
@@ -184,7 +209,7 @@ export default function useTimeDropdownLogic({
 
         if (nextIndex !== undefined) {
             event.preventDefault()
-            focusOptionAt(nextIndex)
+            optionElements[nextIndex]?.focus()
         }
     }
 

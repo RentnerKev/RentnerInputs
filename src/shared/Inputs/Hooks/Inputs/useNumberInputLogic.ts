@@ -20,11 +20,11 @@ export default function useNumberInputLogic(
         ...props,
         validate: (value) =>
             validateNumber(value, minValue, maxValue, messages),
-        acceptsValue: (value) =>
-            value === '' ||
-            maxValue === undefined ||
-            Number.isNaN(Number(value)) ||
-            Number(value) <= maxValue,
+        acceptsValue: (value) => {
+            if (value === '' || maxValue === undefined) return true
+            const parsed = Number(value)
+            return Number.isNaN(parsed) || parsed <= maxValue
+        },
         selectZeroOnFocus: true,
         forwardedRef,
     })
